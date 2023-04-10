@@ -2,7 +2,12 @@
 module.exports = {
   content: ["./components/**/*.{js,ts,jsx,tsx}", "./app/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        chirp: ["Chirp", "sans-serif"],
+        "chirp-extended": ["ChirpExtendedHeavy", "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };

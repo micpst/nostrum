@@ -1,7 +1,2 @@
-"use client";
-
-function Home() {
-  return <main>Nostrum</main>;
-}
-
-export default Home;
+import Explore from "@/app/explore/page";
+export default Explore;

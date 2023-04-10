@@ -1,5 +1,7 @@
-import "../styles/globals.css";
-import React from "react";
+import type { ReactNode } from "react";
+import Providers from "@/app/context/providers";
+import Header from "@/app/components/Header";
+import "@/styles/globals.css";
 
 export const metadata = {
   title: "Nostrum",
@@ -7,10 +9,17 @@ export const metadata = {
   authors: [{ name: "Michał Pstrąg" }],
 };
 
-function RootLayout({ children }: { children: React.ReactNode }) {
+function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <Providers>
+        <body className="font-chirp">
+          <div className="flex w-full justify-center">
+            <Header />
+            {children}
+          </div>
+        </body>
+      </Providers>
     </html>
   );
 }
