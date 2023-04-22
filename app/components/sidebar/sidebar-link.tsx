@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NavLink } from "@/app/components/Header";
+import CustomIcon from "@/app/components/ui/icon";
+import type { NavLink } from "@/app/components/sidebar/sidebar";
 
-function HeaderLink({ href, linkName, Icon }: NavLink) {
+function SidebarLink({ href, linkName, iconName }: NavLink) {
   const pathname = usePathname();
   const isActive = pathname === href;
-
-  const iconClass = isActive ? "stroke-1" : "";
   const textClass = isActive ? "font-bold" : "";
 
   return (
@@ -15,10 +14,11 @@ function HeaderLink({ href, linkName, Icon }: NavLink) {
         href={href}
         className="flex items-center self-start gap-4 p-3 xl:pr-7 rounded-full hover:bg-gray-100 text-xl"
       >
-        <Icon className={iconClass} size="1.75rem" />
+        <CustomIcon iconName={iconName} solid={isActive} />
         <span className={`${textClass} hidden xl:inline`}>{linkName}</span>
       </Link>
     </div>
   );
 }
-export default HeaderLink;
+
+export default SidebarLink;

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
+import Main from "@/app/components/common/main-container";
+import Sidebar from "@/app/components/sidebar/sidebar";
 import Providers from "@/app/context/providers";
-import Header from "@/app/components/Header";
 import "@/styles/globals.css";
 
 export const metadata = {
@@ -12,14 +13,14 @@ export const metadata = {
 function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <Providers>
-        <body className="font-chirp">
-          <div className="flex w-full justify-center">
-            <Header />
-            {children}
-          </div>
-        </body>
-      </Providers>
+      <body className="font-chirp">
+        <div className="flex w-full justify-center">
+          <Providers>
+            <Sidebar />
+            <Main>{children}</Main>
+          </Providers>
+        </div>
+      </body>
     </html>
   );
 }
