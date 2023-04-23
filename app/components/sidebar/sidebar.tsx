@@ -25,7 +25,7 @@ const navLinks: Readonly<NavLink[]> = [
 
 function Sidebar() {
   return (
-    <header className="flex border-r">
+    <header className="flex fixed top-0 left-0 border-r">
       <div className="flex flex-col justify-between w-full xs:w-auto xl:w-60 px-2 lg:px-4 py-1 xs:py-3">
         <div className="flex flex-col justify-center gap-2 items-center xl:items-start">
           <Logo />

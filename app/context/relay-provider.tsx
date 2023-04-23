@@ -1,52 +1,43 @@
 "use client";
 
-import React, { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { Dispatch, SetStateAction, ReactNode } from "react";
 import { relayInit } from "nostr-tools";
-import type { Relay, Event } from "nostr-tools";
-import { RELAYS } from "../lib/constants";
+import type { Event, Filter, Relay } from "nostr-tools";
+import { RELAYS } from "@/app/lib/constants";
 
-interface IRelayContext {
+type RelayContext = {
   allRelays: string[];
-  setAllRelays: React.Dispatch<React.SetStateAction<string[]>>;
+  setAllRelays: Dispatch<SetStateAction<string[]>>;
   activeRelay: Relay | undefined;
-  setActiveRelay: React.Dispatch<React.SetStateAction<any>>;
+  setActiveRelay: Dispatch<SetStateAction<Relay | undefined>>;
   relayUrl: string;
-  setRelayUrl: React.Dispatch<React.SetStateAction<string>>;
-  connect: (newRelayUrl: string) => Promise<any>;
+  setRelayUrl: Dispatch<SetStateAction<string>>;
+  connect: (newRelayUrl: string) => Promise<Relay | undefined>;
   connectedRelays: Set<Relay>;
-  setConnectedRelays: React.Dispatch<React.SetStateAction<Set<Relay>>>;
+  setConnectedRelays: Dispatch<SetStateAction<Set<Relay>>>;
   publish: (
     relays: string[],
-    event: any,
+    event: Event,
     onOk: () => void,
     onSeen: () => void,
     onFailed: () => void
   ) => void;
   subscribe: (
     relays: string[],
-    filter: any,
-    onEvent: (event: any) => void,
+    filter: Filter,
+    onEvent: (event: Event) => void,
     onEOSE: () => void
   ) => void;
-}
+};
 
-export const RelayContext = createContext<IRelayContext>({
-  allRelays: [],
-  setAllRelays: () => {},
-  activeRelay: undefined,
-  setActiveRelay: () => {},
-  relayUrl: "",
-  setRelayUrl: () => {},
-  connect: () => Promise.resolve(),
-  connectedRelays: new Set<Relay>(),
-  setConnectedRelays: () => {},
-  publish: () => {},
-  subscribe: () => {},
-});
+type RelayProviderProps = {
+  children: ReactNode;
+};
 
-const RelayProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const RelayContext = createContext<RelayContext | null>(null);
+
+export default function RelayProvider({ children }: RelayProviderProps) {
   const [allRelays, setAllRelays] = useState<string[]>(RELAYS);
   const [relayUrl, setRelayUrl] = useState<string>(RELAYS[0]);
   const [activeRelay, setActiveRelay] = useState<Relay>();
@@ -117,7 +108,7 @@ const RelayProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const publish = async (
     relays: string[],
-    event: any,
+    event: Event,
     onOk: () => void,
     onSeen: () => void,
     onFailed: () => void
@@ -151,8 +142,8 @@ const RelayProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const subscribe = async (
     relays: string[],
-    filter: any,
-    onEvent: (event: any) => void,
+    filter: Filter,
+    onEvent: (event: Event) => void,
     onEOSE: () => void
   ) => {
     for (const url of relays) {
@@ -162,7 +153,7 @@ const RelayProvider: React.FC<{ children: React.ReactNode }> = ({
 
       let sub = relay.sub([filter]);
 
-      sub.on("event", (event: any) => {
+      sub.on("event", (event: Event) => {
         // console.log("we got the event we wanted:", event);
         onEvent(event);
       });
@@ -176,25 +167,30 @@ const RelayProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  return (
-    <RelayContext.Provider
-      value={{
-        allRelays,
-        setAllRelays,
-        activeRelay,
-        setActiveRelay,
-        relayUrl,
-        setRelayUrl,
-        connect,
-        connectedRelays,
-        setConnectedRelays,
-        publish,
-        subscribe,
-      }}
-    >
-      {children}
-    </RelayContext.Provider>
-  );
-};
+  const value: RelayContext = {
+    allRelays,
+    setAllRelays,
+    activeRelay,
+    setActiveRelay,
+    relayUrl,
+    setRelayUrl,
+    connect,
+    connectedRelays,
+    setConnectedRelays,
+    publish,
+    subscribe,
+  };
 
-export default RelayProvider;
+  return (
+    <RelayContext.Provider value={value}>{children}</RelayContext.Provider>
+  );
+}
+
+export function useRelay(): RelayContext {
+  const context = useContext(RelayContext);
+
+  if (!context)
+    throw new Error("useRelay must be used within an RelayProvider");
+
+  return context;
+}
