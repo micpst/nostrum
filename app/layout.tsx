@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Main from "@/app/components/common/main-container";
+import Main from "@/app/components/common/main";
 import Sidebar from "@/app/components/sidebar/sidebar";
 import Providers from "@/app/context/providers";
 import "@/styles/globals.css";

@@ -25,16 +25,14 @@ const navLinks: Readonly<NavLink[]> = [
 
 function Sidebar() {
   return (
-    <header className="flex fixed top-0 left-0 border-r">
-      <div className="flex flex-col justify-between w-full xs:w-auto xl:w-60 px-2 lg:px-4 py-1 xs:py-3">
-        <div className="flex flex-col justify-center gap-2 items-center xl:items-start">
-          <Logo />
-          <nav className="flex items-center justify-around flex-col xs:justify-center xl:block">
-            {navLinks.map((linkData) => (
-              <SidebarLink {...linkData} key={linkData.href} />
-            ))}
-          </nav>
-        </div>
+    <header className="flex flex-col w-[4.5rem] sm:w-[7rem] md:w-[10rem] lg:w-[7rem] xl:w-[17rem] items-center md:items-end xl:items-start">
+      <div className="flex flex-col px-2 py-1 lg:px-4 xs:py-3 gap-2 fixed top-0 items-center xl:items-start">
+        <Logo />
+        <nav className="flex items-center justify-around flex-col xs:justify-center xl:block">
+          {navLinks.map((linkData) => (
+            <SidebarLink {...linkData} key={linkData.href} />
+          ))}
+        </nav>
       </div>
     </header>
   );
