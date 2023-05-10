@@ -2,7 +2,7 @@
 
 import Header from "@/app/components/common/header";
 import Post from "@/app/components/post/post";
-import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
+import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 
 function Explore() {
   const filter = {
@@ -15,12 +15,14 @@ function Explore() {
 
   const { posts, loading } = useInfiniteScroll(filter, options);
 
+  console.log(posts);
+
   return (
     <div className="w-full max-w-[40rem] border-x">
       <Header title="Explore" />
       <section>
         {posts.map((post) => (
-          <Post key={post.id} content={post.content} />
+          <Post key={post.id} event={post} />
         ))}
         {loading && <div>Loading...</div>}
       </section>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Event, Filter } from "nostr-tools";
-import { useRelay } from "@/app/context/relay-provider";
+import { useRelay } from "@/app/lib/context/relay-provider";
 
 type UseEvents = {
   events: Event[] | null;

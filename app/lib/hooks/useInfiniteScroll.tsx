@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Event, Filter } from "nostr-tools";
-import { useEvents } from "@/app/hooks/useEvents";
+import { useEvents } from "@/app/lib/hooks/useEvents";
 
 type InfiniteScroll = {
   posts: Event[];

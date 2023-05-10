@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import RelayProvider from "@/app/context/relay-provider";
-import WindowProvider from "@/app/context/window-provider";
+import RelayProvider from "@/app/lib/context/relay-provider";
+import WindowProvider from "@/app/lib/context/window-provider";
 
 function Providers({ children }: { children: ReactNode }) {
   return (

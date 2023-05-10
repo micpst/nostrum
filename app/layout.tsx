@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Main from "@/app/components/common/main";
 import Sidebar from "@/app/components/sidebar/sidebar";
-import Providers from "@/app/context/providers";
+import Providers from "@/app/lib/context/providers";
 import "@/styles/globals.css";
 
 export const metadata = {
