@@ -1,9 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useState, useEffect } from "react";
 import type { Event, Filter } from "nostr-tools";
 import { useEvents } from "@/app/lib/hooks/useEvents";
 
 type InfiniteScroll = {
-  posts: Event[];
+  events: Event[];
   loading: boolean;
 };
 
@@ -18,15 +20,15 @@ export function useInfiniteScroll(
 ): InfiniteScroll {
   const { initialSize = 10, stepSize = 10 } = options ?? {};
 
-  const [posts, setPosts] = useState<Event[]>([]);
-  const [postsTotal, setPostsTotal] = useState<number>(initialSize);
-  const [postsLimit, setPostsLimit] = useState<number>(initialSize);
-  const [postsUntil, setPostsUntil] = useState<number | undefined>(undefined);
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
+  const [eventsTotal, setEventsTotal] = useState<number>(initialSize);
+  const [eventsLimit, setEventsLimit] = useState<number>(initialSize);
+  const [eventsUntil, setEventsUntil] = useState<number | undefined>(undefined);
 
   const { events, loading } = useEvents({
     ...filter,
-    limit: postsLimit,
-    until: postsUntil,
+    limit: eventsLimit,
+    until: eventsUntil,
   });
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export function useInfiniteScroll(
       const scrollTop = window.innerHeight + document.documentElement.scrollTop;
       if (Math.ceil(scrollTop) !== document.documentElement.offsetHeight)
         return;
-      setPostsTotal((prev: number) => prev + stepSize);
+      setEventsTotal((prev: number) => prev + stepSize);
     };
 
     document.addEventListener("scroll", handleScroll);
@@ -42,17 +44,17 @@ export function useInfiniteScroll(
   }, []);
 
   useEffect(() => {
-    if (posts.length > 0) {
-      const lastEvent = posts.slice(-1)[0];
-      setPostsUntil(lastEvent.created_at);
-      setPostsLimit(stepSize);
+    if (allEvents.length > 0) {
+      const lastEvent = allEvents.slice(-1)[0];
+      setEventsUntil(lastEvent.created_at);
+      setEventsLimit(stepSize);
     }
-  }, [postsTotal]);
+  }, [eventsTotal]);
 
   useEffect(() => {
     if (!events) return;
-    setPosts((prev) => [...prev, ...events]);
+    setAllEvents((prev) => [...prev, ...events]);
   }, [events]);
 
-  return { posts, loading };
+  return { events: allEvents, loading };
 }

@@ -12,7 +12,6 @@ type UserNameProps = {
 
 function UserName({
   name,
-
   npub,
   className,
   iconClassName,

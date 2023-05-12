@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useState, useEffect } from "react";
 import type { Event, Filter } from "nostr-tools";
 import { useRelay } from "@/app/lib/context/relay-provider";

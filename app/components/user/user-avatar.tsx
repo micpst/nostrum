@@ -6,7 +6,7 @@ type UserAvatarProps = {
   src: string;
   alt: string;
   size?: number;
-  username?: string;
+  npub?: string;
   className?: string;
 };
 
@@ -21,23 +21,23 @@ function UserAvatar({
 
   return (
     <Link
-        href={npub ? `/${npub}` : "#"}
-        className={cn(
-            "blur-picture flex self-start",
-            !npub && "pointer-events-none",
-            className
-        )}
-        tabIndex={npub ? 0 : -1}
+      href={npub ? `/${npub}` : "#"}
+      className={cn(
+        "blur-picture flex self-start",
+        !npub && "pointer-events-none",
+        className
+      )}
+      tabIndex={npub ? 0 : -1}
     >
-        <NextImage
-          useSkeleton
-          imgClassName="rounded-full"
-          width={pictureSize}
-          height={pictureSize}
-          src={src}
-          alt={alt}
-          key={src}
-        />
+      <NextImage
+        useSkeleton
+        imgClassName="rounded-full"
+        width={pictureSize}
+        height={pictureSize}
+        src={src}
+        alt={alt}
+        key={src}
+      />
     </Link>
   );
 }
