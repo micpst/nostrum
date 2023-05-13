@@ -2,6 +2,8 @@
 
 import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
+import Error from "@/app/components/ui/error";
+import Loading from "@/app/components/ui/loading";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 
 function Explore() {
@@ -21,10 +23,13 @@ function Explore() {
     <div className="w-full max-w-[40rem] border-x border-light-border">
       <Header title="Explore" />
       <section>
-        {events.map((event) => (
-          <Note key={event.id} event={event} />
-        ))}
-        {loading && <div>Loading...</div>}
+        {loading ? (
+          <Loading className="mt-5" />
+        ) : !events ? (
+          <Error />
+        ) : (
+          events.map((event) => <Note key={event.id} event={event} />)
+        )}
       </section>
     </div>
   );
