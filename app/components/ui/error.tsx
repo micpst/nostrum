@@ -6,10 +6,7 @@ type ErrorProps = {
 
 function Error({ message }: ErrorProps): JSX.Element {
   return (
-    <div
-      className="flex flex-col items-center justify-center
-                 gap-2 py-5 px-3 text-light-secondary"
-    >
+    <div className="flex flex-col items-center justify-center gap-2 py-5 px-3 text-light-secondary">
       <p>{message ?? "Something went wrong. Try reloading."}</p>
     </div>
   );

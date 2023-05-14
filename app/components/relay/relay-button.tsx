@@ -21,10 +21,7 @@ function RelayButton({ url, fallback }: RelayButtonProps) {
   const onError = () => setSrc(fallback);
 
   return (
-    <button
-      className="flex gap-4 items-center w-full accent-tab hover-animatio px-4
-                   py-3 hover:bg-light-primary/5"
-    >
+    <button className="flex gap-4 items-center w-full accent-tab hover-animatio px-4 py-3 hover:bg-light-primary/5">
       <img
         className={cn(
           "h-12 w-12 rounded-full overflow-hidden",
@@ -34,7 +31,7 @@ function RelayButton({ url, fallback }: RelayButtonProps) {
         alt={name}
         onError={onError}
       />
-      <span className={isActive ? "font-bold text-violet-700" : ""}>
+      <span className={cn(isActive && "font-bold text-violet-700")}>
         {fullName}
       </span>
     </button>

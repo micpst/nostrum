@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import RelayButton from "@/app/components/relay/relay-button";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import Link from "next/link";
 
 function Relays() {
   const { activeRelay, allRelays, connect } = useRelay();
