@@ -18,7 +18,7 @@ function UserNpub({
     <Link
       href={`/${npub}`}
       className={cn(
-        "truncate text-light-secondary dark:text-dark-secondary",
+        "truncate text-light-secondary",
         className,
         disableLink && "pointer-events-none"
       )}

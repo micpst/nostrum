@@ -69,7 +69,7 @@ function NoteStats({
   return (
     <div
       className={cn(
-        "flex text-light-secondary inner:outline-none dark:text-dark-secondary",
+        "flex text-light-secondary inner:outline-none",
         viewNote ? "justify-around py-2" : "max-w-md justify-between"
       )}
     >

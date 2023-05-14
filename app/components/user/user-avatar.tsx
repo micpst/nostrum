@@ -1,5 +1,5 @@
-import Link from "next/link";
 import cn from "clsx";
+import Link from "next/link";
 import NextImage from "@/app/components/ui/next-image";
 
 type UserAvatarProps = {
@@ -18,7 +18,6 @@ function UserAvatar({
   className,
 }: UserAvatarProps): JSX.Element {
   const pictureSize = size ?? 48;
-
   return (
     <Link
       href={npub ? `/${npub}` : "#"}

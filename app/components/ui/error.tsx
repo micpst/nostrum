@@ -8,7 +8,7 @@ function Error({ message }: ErrorProps): JSX.Element {
   return (
     <div
       className="flex flex-col items-center justify-center
-                 gap-2 py-5 px-3 text-light-secondary dark:text-dark-secondary"
+                 gap-2 py-5 px-3 text-light-secondary"
     >
       <p>{message ?? "Something went wrong. Try reloading."}</p>
     </div>

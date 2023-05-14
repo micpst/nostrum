@@ -22,7 +22,7 @@ function UserTooltip({
   return (
     <div
       className={cn(
-        "group relative self-start text-light-primary dark:text-dark-primary",
+        "group relative self-start text-light-primary",
         avatar ? "[&>div]:translate-y-2" : "grid [&>div]:translate-y-7"
       )}
     >
