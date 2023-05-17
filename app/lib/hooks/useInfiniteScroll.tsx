@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Event, Filter } from "nostr-tools";
+import { useRelay } from "@/app/lib/context/relay-provider";
 import { useEvents } from "@/app/lib/hooks/useEvents";
 
 type InfiniteScroll = {
@@ -25,6 +26,7 @@ export function useInfiniteScroll(
   const [eventsLimit, setEventsLimit] = useState<number>(initialSize);
   const [eventsUntil, setEventsUntil] = useState<number | undefined>(undefined);
 
+  const { relayUrl } = useRelay();
   const { events, loading } = useEvents({
     ...filter,
     limit: eventsLimit,
@@ -55,6 +57,10 @@ export function useInfiniteScroll(
     if (!events) return;
     setAllEvents((prev) => [...prev, ...events]);
   }, [events]);
+
+  useEffect(() => {
+    setAllEvents([]);
+  }, [relayUrl]);
 
   return { events: allEvents, loading };
 }

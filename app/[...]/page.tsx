@@ -1,15 +1,11 @@
+import NotFound from "@/app/components/ui/not-found";
+
 export const metadata = {
   title: "Page not found / Nostrum",
 };
 
-function NotFound(): JSX.Element {
-  return (
-    <div className="w-full mt-20">
-      <p className="text-center text-light-secondary">
-        Hmm...this page doesn’t exist. Try searching for something else.
-      </p>
-    </div>
-  );
+function NotFoundPage(): JSX.Element {
+  return <NotFound />;
 }
 
-export default NotFound;
+export default NotFoundPage;

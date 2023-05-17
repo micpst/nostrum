@@ -1,11 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { navLinks } from "@/app/settings/[category]/page";
+import { useEffect } from "react";
+import { navLinks } from "@/app/components/settings/settings-list";
 
-function Settings(): void {
+function SettingsPage(): void {
   const { replace } = useRouter();
-  void replace(navLinks[0].href);
+
+  useEffect(() => {
+    void replace(navLinks[0].href);
+  }, []);
 }
 
-export default Settings;
+export default SettingsPage;

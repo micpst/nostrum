@@ -12,7 +12,7 @@ type UseEvents = {
 export function useEvents(filter: Filter): UseEvents {
   const { until } = filter;
 
-  const { subscribe, relayUrl } = useRelay();
+  const { relays, subscribe } = useRelay();
   const [events, setEvents] = useState<Event[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -31,11 +31,11 @@ export function useEvents(filter: Filter): UseEvents {
 
       setEvents(null);
       setLoading(true);
-      subscribe([relayUrl], filter, onEvent, onEOSE);
+      subscribe(relays, filter, onEvent, onEOSE);
     };
 
     getEvents();
-  }, [until, relayUrl]);
+  }, [until, relays]);
 
   return { events, loading };
 }

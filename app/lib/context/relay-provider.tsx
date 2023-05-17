@@ -6,18 +6,17 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { Dispatch, SetStateAction, ReactNode } from "react";
 import { relayInit } from "nostr-tools";
 import type { Event, Filter, Relay } from "nostr-tools";
+import { useLocalStorage } from "@/app/lib/hooks/useLocalStorage";
 import { RELAYS } from "@/app/lib/constants";
 
 type RelayContext = {
-  allRelays: string[];
-  setAllRelays: Dispatch<SetStateAction<string[]>>;
-  activeRelay: Relay | undefined;
-  setActiveRelay: Dispatch<SetStateAction<Relay | undefined>>;
-  relayUrl: string;
-  setRelayUrl: Dispatch<SetStateAction<string>>;
-  connect: (newRelayUrl: string) => Promise<Relay | undefined>;
-  connectedRelays: Set<Relay>;
-  setConnectedRelays: Dispatch<SetStateAction<Set<Relay>>>;
+  relays: string[];
+  addRelay: (relay?: string) => void;
+  removeRelay: (relay: string) => void;
+  resetRelays: () => void;
+  connect: (url?: string) => Promise<Relay | undefined>;
+  connectedRelays: Relay[];
+  disconnectedRelays: Relay[];
   publish: (
     relays: string[],
     event: Event,
@@ -40,70 +39,62 @@ type RelayProviderProps = {
 export const RelayContext = createContext<RelayContext | null>(null);
 
 export default function RelayProvider({ children }: RelayProviderProps) {
-  const [allRelays, setAllRelays] = useState<string[]>(RELAYS);
-  const [relayUrl, setRelayUrl] = useState<string>(RELAYS[0]);
-  const [activeRelay, setActiveRelay] = useState<Relay>();
-  const [connectedRelays, setConnectedRelays] = useState<Set<Relay>>(new Set());
+  const [relays, setRelays] = useLocalStorage<string[]>("relays", RELAYS);
+  const [connectedRelays, setConnectedRelays] = useState<Relay[]>([]);
+  const [disconnectedRelays, setDisconnectedRelays] = useState<Relay[]>([]);
 
   useEffect(() => {
-    connect(relayUrl);
-  }, [relayUrl]);
+    relays.forEach((relay) => connect(relay));
+  }, [relays]);
 
-  useEffect(() => {
-    console.log("NEW ACTIVE RELAY IS:", activeRelay);
-  }, [activeRelay]);
+  const resetRelays = (): void => {
+    setRelays(RELAYS);
+  };
 
-  useEffect(() => {
-    console.log("CONNECTED RELAYS URE:", connectedRelays);
-  }, [connectedRelays]);
+  const addRelay = (relay?: string): void => {
+    if (!relay) return;
+    if (relays.includes(relay)) return;
+    setRelays([...relays, relay.trim()]);
+  };
 
-  const connect = async (newRelayUrl: string) => {
-    console.log("connecting to relay:", newRelayUrl);
-    if (!newRelayUrl) return;
+  const removeRelay = (relay: string): void => {
+    const newRelays = relays.filter((r: string) => r !== relay);
+    setRelays(newRelays);
+  };
 
-    let relay: Relay;
-    let existingRelay: Relay | undefined;
-    if (connectedRelays.size > 0) {
-      existingRelay = Array.from(connectedRelays).find(
-        (r) => r.url === newRelayUrl
-      );
-    }
+  const connect = async (url?: string): Promise<Relay | undefined> => {
+    if (!url) return;
 
-    if (existingRelay) {
-      console.log("info", `✅ nostr (${newRelayUrl}): Already connected!`);
-      relay = existingRelay;
-      setActiveRelay(relay);
-    } else {
-      console.log("NEWING UP A RELAY");
-      relay = relayInit(newRelayUrl);
+    const existingRelay = connectedRelays.find((r) => r.url === url);
+    if (existingRelay) return existingRelay;
 
-      await relay.connect();
+    const relay = relayInit(url);
 
-      relay.on("connect", () => {
-        console.log("info", `✅ nostr (${newRelayUrl}): Connected!`);
-        if (relayUrl === relay.url) {
-          setActiveRelay(relay);
-          const isRelayInSet = Array.from(connectedRelays).some(
-            (r) => r.url === relay.url
-          );
+    await relay.connect();
 
-          if (!isRelayInSet) {
-            setConnectedRelays(new Set([...connectedRelays, relay]));
-          }
-        }
+    relay.on("connect", () => {
+      setConnectedRelays((prev) => {
+        const isConnected = prev.some((r) => r.url === relay.url);
+        return isConnected ? prev : [...prev, relay];
       });
+      setDisconnectedRelays((prev) => prev.filter((r) => r.url !== relay.url));
+    });
 
-      relay.on("disconnect", () => {
-        console.log("warn", `🚪 nostr (${newRelayUrl}): Connection closed.`);
-        setConnectedRelays(
-          new Set([...connectedRelays].filter((r) => r.url !== relay.url))
-        );
+    relay.on("disconnect", () => {
+      setDisconnectedRelays((prev) => {
+        const isDisconnected = prev.some((r) => r.url === relay.url);
+        return isDisconnected ? prev : [...prev, relay];
       });
+      setConnectedRelays((prev) => prev.filter((r) => r.url !== relay.url));
+    });
 
-      relay.on("error", () => {
-        console.log("error", `❌ nostr (${newRelayUrl}): Connection error!`);
+    relay.on("error", () => {
+      setDisconnectedRelays((prev) => {
+        const isDisconnected = prev.some((r) => r.url === relay.url);
+        return isDisconnected ? prev : [...prev, relay];
       });
-    }
+      setConnectedRelays((prev) => prev.filter((r) => r.url !== relay.url));
+    });
 
     return relay;
   };
@@ -115,30 +106,15 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     onSeen: () => void,
     onFailed: () => void
   ) => {
-    console.log("publishing to relays:", relays);
     for (const url of relays) {
       const relay = await connect(url);
+      if (!relay) continue;
 
-      if (!relay) return;
+      const pub = relay.publish(event);
 
-      let pub = relay.publish(event);
+      pub.on("ok", () => onOk());
 
-      pub.on("ok", () => {
-        console.log(`${url} has accepted our event`);
-        onOk();
-      });
-
-      // pub.on("seen", () => {
-      //   console.log(`we saw the event on ${url}`);
-      //   onSeen();
-      //   // relay.close();
-      // });
-
-      pub.on("failed", (reason: any) => {
-        console.log(`failed to publish to ${url}: ${reason}`);
-        onFailed();
-        // relay.close();
-      });
+      pub.on("failed", (reason: any) => onFailed());
     }
   };
 
@@ -150,35 +126,27 @@ export default function RelayProvider({ children }: RelayProviderProps) {
   ) => {
     for (const url of relays) {
       const relay = await connect(url);
-
       if (!relay) return;
 
       let sub = relay.sub([filter]);
 
-      sub.on("event", (event: Event) => {
-        // console.log("we got the event we wanted:", event);
-        onEvent(event);
-      });
+      sub.on("event", (event: Event) => onEvent(event));
 
       sub.on("eose", () => {
-        // console.log("we've reached the end:");
         sub.unsub();
         onEOSE();
-        // relay.close();
       });
     }
   };
 
   const value: RelayContext = {
-    allRelays,
-    setAllRelays,
-    activeRelay,
-    setActiveRelay,
-    relayUrl,
-    setRelayUrl,
+    relays,
+    addRelay,
+    removeRelay,
+    resetRelays,
     connect,
     connectedRelays,
-    setConnectedRelays,
+    disconnectedRelays,
     publish,
     subscribe,
   };

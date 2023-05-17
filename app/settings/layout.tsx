@@ -1,16 +1,16 @@
-import type { ReactNode } from "react";
-import Header from "@/app/components/common/header";
+"use client";
 
-export const metadata = {
-  title: "Settings / Nostrum",
-};
+import type { ReactNode } from "react";
+import SettingsList from "@/app/components/settings/settings-list";
 
 function SettingsLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="w-full border-x border-light-border">
-      <Header title="Settings" />
-      {children}
-    </div>
+    <>
+      <SettingsList />
+      <section className="w-full max-w-[37rem] border-x border-light-border">
+        {children}
+      </section>
+    </>
   );
 }
 

@@ -1,10 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-function Index(): void {
+function IndexPage(): void {
   const { replace } = useRouter();
-  void replace("/explore");
+
+  useEffect(() => {
+    void replace("/explore");
+  }, []);
 }
 
-export default Index;
+export default IndexPage;

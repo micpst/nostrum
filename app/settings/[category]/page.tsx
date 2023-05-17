@@ -1,23 +1,22 @@
 "use client";
 
-import type { IconName } from "@/app/components/ui/icon";
+import { usePathname } from "next/navigation";
+import Header from "@/app/components/common/header";
+import { navLinks } from "@/app/components/settings/settings-list";
+import NotFound from "@/app/components/ui/not-found";
 
-export type NavLink = {
-  href: string;
-  linkName: string;
-  iconName: IconName;
-};
+function CategoryPage() {
+  const pathname = usePathname();
+  const navLink = navLinks.find((link) => link.href === pathname);
 
-export const navLinks: Readonly<NavLink[]> = [
-  {
-    href: "/settings/relays",
-    linkName: "Relays",
-    iconName: "HashtagIcon",
-  },
-];
+  if (!navLink) return <NotFound />;
 
-function SettingsCategory() {
-  return <div className="w-full border-x border-light-border">test</div>;
+  return (
+    <>
+      <Header title={navLink.linkName} />
+      <navLink.Component />
+    </>
+  );
 }
 
-export default SettingsCategory;
+export default CategoryPage;
