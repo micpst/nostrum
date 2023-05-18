@@ -13,7 +13,7 @@ export const metadata = {
 function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="font-chirp">
+      <body className="font-chirp overflow-y-scroll">
         <div className="flex w-full justify-center">
           <Providers>
             <Sidebar />

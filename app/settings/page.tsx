@@ -1,11 +1,15 @@
-import Header from "@/app/components/common/header";
+"use client";
 
-function Settings() {
-  return (
-    <div className="w-full border-x border-light-border">
-      <Header title="Settings" />
-    </div>
-  );
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { navLinks } from "@/app/components/settings/settings-list";
+
+function SettingsPage(): void {
+  const { replace } = useRouter();
+
+  useEffect(() => {
+    void replace(navLinks[0].href);
+  }, []);
 }
 
-export default Settings;
+export default SettingsPage;

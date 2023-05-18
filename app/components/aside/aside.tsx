@@ -9,8 +9,10 @@ function Aside({ children }: { children: ReactNode }) {
   if (width < 1024) return null;
 
   return (
-    <aside className="flex w-[30rem] flex-col gap-4 px-4 py-3 pt-1">
-      <div className="sticky top-0 h-[50rem]">{children}</div>
+    <aside className="w-[30rem]">
+      <div className="flex flex-col gap-4 sticky top-0 px-4 pt-1">
+        {children}
+      </div>
     </aside>
   );
 }

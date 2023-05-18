@@ -1,3 +1,5 @@
+import cn from "clsx";
+
 export type IconName = keyof typeof OutlineIcons | keyof typeof SolidIcons;
 
 type IconProps = {
@@ -10,23 +12,33 @@ type CustomIconProps = IconProps & {
 };
 
 const OutlineIcons = {
+  ArrowLeftIcon,
   ArrowPathRoundedSquareIcon,
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogOutlineIcon,
+  GlobeIcon,
   HashtagIcon: HashtagOutlineIcon,
   HeartIcon: HeartOutlineIcon,
+  MinusIcon,
   NostrumIcon,
+  PlusIcon,
+  SpinnerIcon,
 };
 
 const SolidIcons = {
+  ArrowLeftIcon,
   ArrowPathRoundedSquareIcon,
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogSolidIcon,
+  GlobeIcon,
   HashtagIcon: HashtagSolidIcon,
   HeartIcon: HeartSolidIcon,
+  MinusIcon,
   NostrumIcon,
+  PlusIcon,
+  SpinnerIcon,
 };
 
 export default function CustomIcon({
@@ -119,6 +131,68 @@ function ChatBubbleOvalLeftIcon({ className }: IconProps): JSX.Element {
   return (
     <svg className={className} viewBox="0 0 24 24">
       <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path>
+    </svg>
+  );
+}
+
+function SpinnerIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg
+      className={cn("animate-spin", className)}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="#6d28d9"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="#6d28d9"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
+    </svg>
+  );
+}
+
+function ArrowLeftIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M14.586 12L7.543 4.96l1.414-1.42L17.414 12l-8.457 8.46-1.414-1.42L14.586 12z"></path>
+    </svg>
+  );
+}
+
+function GlobeIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 20 20">
+      <path d="M2.252 8A8.014 8.014 0 0 0 2 10c0 .69.088 1.36.252 2H5.1a19.83 19.83 0 0 1 0-4H2.252zm.818-2h2.346c.266-1.217.65-2.307 1.121-3.214A8.035 8.035 0 0 0 3.07 6zm14.678 2H14.9a19.83 19.83 0 0 1 0 4h2.848c.164-.64.252-1.31.252-2s-.088-1.36-.252-2zm-.818-2a8.035 8.035 0 0 0-3.467-3.214c.472.907.855 1.997 1.121 3.214h2.346zM7.112 8A17.763 17.763 0 0 0 7 10c0 .685.038 1.355.112 2h5.776a17.763 17.763 0 0 0 0-4H7.112zm.358-2h5.06a10.758 10.758 0 0 0-.783-2.177C11.119 2.568 10.447 2 10 2c-.448 0-1.119.568-1.747 1.823-.315.632-.58 1.367-.783 2.177zm-4.4 8a8.035 8.035 0 0 0 3.467 3.214c-.472-.907-.855-1.997-1.121-3.214H3.07zm13.86 0h-2.346c-.266 1.217-.65 2.307-1.121 3.214A8.035 8.035 0 0 0 16.93 14zm-9.46 0c.203.81.468 1.545.783 2.177C8.881 17.432 9.553 18 10 18c.448 0 1.119-.568 1.747-1.823.315-.632.58-1.367.783-2.177H7.47zM10 20C4.477 20 0 15.523 0 10S4.477 0 10 0s10 4.477 10 10-4.477 10-10 10z"></path>
+    </svg>
+  );
+}
+
+function MinusIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M9 11C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13H15C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11H9Z"></path>
+      <path d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4Z"></path>
+    </svg>
+  );
+}
+
+function PlusIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M9 11C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13H15C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11H9Z"></path>
+      <path d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4Z"></path>
+      <path
+        transform="rotate(90 12 11.8674)"
+        d="m9,10.86737c-0.55228,0 -1,0.4477 -1,1c0,0.5523 0.44772,1 1,1l6,0c0.5523,0 1,-0.4477 1,-1c0,-0.5523 -0.4477,-1 -1,-1l-6,0z"
+      />
     </svg>
   );
 }

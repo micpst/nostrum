@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useState, useEffect } from "react";
-import type { Event, Filter } from "nostr-tools";
+import type { Filter } from "nostr-tools";
 import { useEvents } from "@/app/lib/hooks/useEvents";
+import type { RelayEvent } from "@/app/lib/types/event";
 
 type InfiniteScroll = {
-  events: Event[];
+  events: RelayEvent[];
   loading: boolean;
 };
 
@@ -20,7 +21,8 @@ export function useInfiniteScroll(
 ): InfiniteScroll {
   const { initialSize = 10, stepSize = 10 } = options ?? {};
 
-  const [allEvents, setAllEvents] = useState<Event[]>([]);
+  const [allEvents, setAllEvents] = useState<RelayEvent[]>([]);
+  const [loadingFinished, setLoadingFinished] = useState<boolean>(true);
   const [eventsTotal, setEventsTotal] = useState<number>(initialSize);
   const [eventsLimit, setEventsLimit] = useState<number>(initialSize);
   const [eventsUntil, setEventsUntil] = useState<number | undefined>(undefined);
@@ -52,9 +54,21 @@ export function useInfiniteScroll(
   }, [eventsTotal]);
 
   useEffect(() => {
-    if (!events) return;
-    setAllEvents((prev) => [...prev, ...events]);
-  }, [events]);
+    setLoadingFinished(!Array.from(loading.values()).some((value) => value));
+  }, [loading]);
 
-  return { events: allEvents, loading };
+  useEffect(() => {
+    if (!events) return;
+
+    const allEvents = Array.from(events.values())
+      .sort((a, b) => b.created_at - a.created_at)
+      .slice(0, eventsLimit);
+
+    setAllEvents((prev) => [...prev, ...allEvents]);
+  }, [loadingFinished]);
+
+  return {
+    events: allEvents,
+    loading: !loadingFinished,
+  };
 }

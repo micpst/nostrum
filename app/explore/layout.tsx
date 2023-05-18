@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Aside from "@/app/components/aside/aside";
-import Suggestions from "@/app/components/aside/suggestions";
+import Relays from "@/app/components/aside/relays";
 
 export const metadata = {
   title: "Explore / Nostrum",
@@ -11,7 +11,7 @@ function ExploreLayout({ children }: { children: ReactNode }) {
     <>
       {children}
       <Aside>
-        <Suggestions />
+        <Relays />
       </Aside>
     </>
   );

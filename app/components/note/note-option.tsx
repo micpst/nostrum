@@ -1,9 +1,4 @@
 import cn from "clsx";
-// import { preventBubbling } from "@lib/utils";
-// import { HeroIcon } from "@components/ui/hero-icon";
-// import { ToolTip } from "@components/ui/tooltip";
-// import { NumberStats } from "./number-stats";
-// import type { IconName } from "@components/ui/hero-icon";
 import CustomIcon from "@/app/components/ui/icon";
 import type { IconName } from "@/app/components/ui/icon";
 
@@ -38,7 +33,6 @@ function NoteOption({
         disabled && "cursor-not-allowed",
         className
       )}
-      // onClick={preventBubbling(onClick)}
     >
       <i
         className={cn(
@@ -50,7 +44,6 @@ function NoteOption({
           className={viewTweet ? "h-6 w-6" : "h-5 w-5"}
           iconName={iconName}
         />
-        {/*<ToolTip tip={tip} />*/}
       </i>
       {/*{!viewTweet && (*/}
       {/*  <NumberStats move={move as number} stats={stats as number} />*/}

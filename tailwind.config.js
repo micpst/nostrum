@@ -30,7 +30,7 @@ module.exports = {
         "light-border": "#EFF3F4",
         "dark-line-reply": "#333639",
         "light-line-reply": "#CFD9DE",
-        "twitter-icon": "#D6D9DB",
+        "nostrum-icon": "#D6D9DB",
         "image-preview-hover": "#272C30",
       },
     },
