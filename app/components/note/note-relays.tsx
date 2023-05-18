@@ -1,15 +1,14 @@
 import cn from "clsx";
 import Link from "next/link";
-import { formatDate } from "@/app/lib/date";
-import type { Note } from "@/app/lib/types/note";
+import { RelayEvent } from "@/app/lib/types/event";
 
-type NoteDateProps = Pick<Note, "createdAt"> & {
+type NoteDateProps = Pick<RelayEvent, "relays"> & {
   noteLink: string;
   viewNote?: boolean;
 };
 
-function NoteDate({
-  createdAt,
+function NoteRelays({
+  relays,
   noteLink,
   viewNote,
 }: NoteDateProps): JSX.Element {
@@ -24,11 +23,11 @@ function NoteDate({
             viewNote && "text-light-secondary"
           )}
         >
-          {formatDate(createdAt, viewNote ? "full" : "note")}
+          seen on {relays.length} relay{relays.length > 1 ? "s" : ""}
         </Link>
       </div>
     </div>
   );
 }
 
-export default NoteDate;
+export default NoteRelays;

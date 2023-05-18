@@ -20,15 +20,14 @@ type RelayContext = {
   publish: (
     relays: string[],
     event: Event,
-    onOk: () => void,
-    onSeen: () => void,
-    onFailed: () => void
+    onOk: (url: string) => void,
+    onFailed: (url: string) => void
   ) => void;
   subscribe: (
     relays: string[],
     filter: Filter,
-    onEvent: (event: Event) => void,
-    onEOSE: () => void
+    onEvent: (event: Event, url: string) => void,
+    onEOSE: (url: string) => void
   ) => void;
 };
 
@@ -102,9 +101,8 @@ export default function RelayProvider({ children }: RelayProviderProps) {
   const publish = async (
     relays: string[],
     event: Event,
-    onOk: () => void,
-    onSeen: () => void,
-    onFailed: () => void
+    onOk: (url: string) => void,
+    onFailed: (url: string) => void
   ) => {
     for (const url of relays) {
       const relay = await connect(url);
@@ -112,17 +110,17 @@ export default function RelayProvider({ children }: RelayProviderProps) {
 
       const pub = relay.publish(event);
 
-      pub.on("ok", () => onOk());
+      pub.on("ok", () => onOk(url));
 
-      pub.on("failed", (reason: any) => onFailed());
+      pub.on("failed", (reason: any) => onFailed(url));
     }
   };
 
   const subscribe = async (
     relays: string[],
     filter: Filter,
-    onEvent: (event: Event) => void,
-    onEOSE: () => void
+    onEvent: (event: Event, url: string) => void,
+    onEOSE: (url: string) => void
   ) => {
     for (const url of relays) {
       const relay = await connect(url);
@@ -130,11 +128,11 @@ export default function RelayProvider({ children }: RelayProviderProps) {
 
       let sub = relay.sub([filter]);
 
-      sub.on("event", (event: Event) => onEvent(event));
+      sub.on("event", (event: Event) => onEvent(event, url));
 
       sub.on("eose", () => {
         sub.unsub();
-        onEOSE();
+        onEOSE(url);
       });
     }
   };

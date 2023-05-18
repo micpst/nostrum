@@ -2,7 +2,8 @@
 
 import cn from "clsx";
 import { utils } from "nostr-tools";
-import { SyntheticEvent, useCallback, useState } from "react";
+import { useState } from "react";
+import type { SyntheticEvent } from "react";
 import CustomIcon from "@/app/components/ui/icon";
 import { useRelay } from "@/app/lib/context/relay-provider";
 

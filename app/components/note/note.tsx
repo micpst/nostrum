@@ -3,16 +3,17 @@
 import cn from "clsx";
 import Link from "next/link";
 import { nip19 } from "nostr-tools";
-import type { Event } from "nostr-tools";
 import NoteDate from "@/app/components/note/note-date";
+import NoteRelays from "@/app/components/note/note-relays";
 import NoteStats from "@/app/components/note/note-stats";
 import UserAvatar from "@/app/components/user/user-avatar";
 import UserName from "@/app/components/user/user-name";
 import UserNpub from "@/app/components/user/user-npub";
 import UserTooltip from "@/app/components/user/user-tooltip";
+import type { RelayEvent } from "@/app/lib/types/event";
 
 export type NoteProps = {
-  event: Event;
+  event: RelayEvent;
   parentNote?: boolean;
 };
 
@@ -53,6 +54,7 @@ function Note({ event, parentNote }: NoteProps) {
                 <UserNpub npub={npub} />
               </UserTooltip>
               <NoteDate noteLink={""} createdAt={event.created_at * 1000} />
+              <NoteRelays noteLink={""} relays={event.relays} />
             </div>
           </div>
           <p className="whitespace-pre-line break-words">{event.content}</p>
