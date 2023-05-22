@@ -23,26 +23,24 @@ export function useEvents(filter: Filter): UseEvents {
   );
 
   useEffect(() => {
-    const getEvents = (): void => {
-      let newEvents: Map<string, RelayEvent> = new Map();
+    let newEvents: Map<string, RelayEvent> = new Map();
 
-      const onEvent = (event: Event, url: string): void => {
-        const ev = newEvents.get(event.id);
-        if (ev) newEvents.set(event.id, { ...ev, relays: [...ev.relays, url] });
-        else newEvents.set(event.id, { ...event, relays: [url] });
-      };
-
-      const onEOSE = (url: string): void => {
-        setEvents(newEvents);
-        setLoading((prev) => new Map(prev.set(url, false)));
-      };
-
-      setEvents(undefined);
-      setLoading(new Map(relays.map((relay) => [relay, true])));
-      subscribe(relays, filter, onEvent, onEOSE);
+    const onEvent = (event: Event, url: string): void => {
+      const ev = newEvents.get(event.id);
+      newEvents.set(event.id, {
+        ...event,
+        relays: [...(ev?.relays ?? []), url],
+      });
     };
 
-    getEvents();
+    const onEOSE = (url: string): void => {
+      setEvents(newEvents);
+      setLoading((prev) => new Map(prev.set(url, false)));
+    };
+
+    setEvents(undefined);
+    setLoading(new Map(relays.map((relay) => [relay, true])));
+    subscribe(relays, filter, onEvent, onEOSE);
   }, [until, relays]);
 
   return { events, loading };

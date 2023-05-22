@@ -64,8 +64,6 @@ function NoteStats({
   const noteIsLiked = userLikes.includes(userId);
   const noteIsReposted = userReposts.includes(userId);
 
-  const isStatsVisible = !!(totalReplies || totalReposts || totalLikes);
-
   return (
     <div
       className={cn(
@@ -74,14 +72,12 @@ function NoteStats({
       )}
     >
       <NoteOption
-        className="hover:text-accent-blue focus-visible:text-accent-blue"
-        iconClassName="group-hover:bg-accent-blue/10 group-active:bg-accent-blue/20
-                         group-focus-visible:bg-accent-blue/10 group-focus-visible:ring-accent-blue/80"
+        className="hover:text-violet-700 focus-visible:text-violet-700"
+        iconClassName="group-hover:bg-violet-700/10 group-active:bg-violet-700/20 group-hover:fill-violet-700
+                       group-focus-visible:bg-violet-700/10 group-focus-visible:ring-violet-700/80 group-focus-visible:fill-violet-700"
         tip="Reply"
-        move={replyMove}
         stats={currentReplies}
         iconName="ChatBubbleOvalLeftIcon"
-        viewTweet={viewNote}
         onClick={openModal}
         disabled={reply}
       />
@@ -90,26 +86,22 @@ function NoteStats({
           "hover:text-accent-green focus-visible:text-accent-green",
           noteIsReposted && "text-accent-green [&>i>svg]:[stroke-width:2px]"
         )}
-        iconClassName="group-hover:bg-accent-green/10 group-active:bg-accent-green/20
-                         group-focus-visible:bg-accent-green/10 group-focus-visible:ring-accent-green/80"
+        iconClassName="group-hover:bg-accent-green/10 group-active:bg-accent-green/20 group-hover:fill-accent-green
+                       group-focus-visible:bg-accent-green/10 group-focus-visible:ring-accent-green/80 group-focus-visible:fill-accent-green"
         tip={noteIsReposted ? "Undo Retweet" : "Retweet"}
-        move={tweetMove}
         stats={currentReposts}
         iconName="ArrowPathRoundedSquareIcon"
-        viewTweet={viewNote}
       />
       <NoteOption
         className={cn(
           "hover:text-accent-pink focus-visible:text-accent-pink",
           noteIsLiked && "text-accent-pink [&>i>svg]:fill-accent-pink"
         )}
-        iconClassName="group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20
-                         group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80"
+        iconClassName="group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20 group-hover:fill-accent-pink
+                       group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80 group-focus-visible:fill-accent-pink"
         tip={noteIsLiked ? "Unlike" : "Like"}
-        move={likeMove}
         stats={currentLikes}
         iconName="HeartIcon"
-        viewTweet={viewNote}
       />
     </div>
   );
