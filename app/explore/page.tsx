@@ -1,5 +1,6 @@
 "use client";
 
+import { Kind } from "nostr-tools";
 import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
@@ -8,7 +9,7 @@ import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 
 function ExplorePage() {
   const filter = {
-    kinds: [1],
+    kinds: [Kind.Text],
   };
   const options = {
     initialSize: 40,

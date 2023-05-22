@@ -3,11 +3,11 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Dispatch, SetStateAction, ReactNode } from "react";
-import { relayInit } from "nostr-tools";
+import type { ReactNode } from "react";
+import { CountPayload, relayInit } from "nostr-tools";
 import type { Event, Filter, Relay } from "nostr-tools";
-import { useLocalStorage } from "@/app/lib/hooks/useLocalStorage";
 import { RELAYS } from "@/app/lib/constants";
+import { useLocalStorage } from "@/app/lib/hooks/useLocalStorage";
 
 type RelayContext = {
   relays: string[];
@@ -17,6 +17,11 @@ type RelayContext = {
   connect: (url?: string) => Promise<Relay | undefined>;
   connectedRelays: Relay[];
   disconnectedRelays: Relay[];
+  count: (
+    relays: string[],
+    filter: Filter,
+    onCount: (event: CountPayload, url: string) => void
+  ) => void;
   publish: (
     relays: string[],
     event: Event,
@@ -45,6 +50,13 @@ export default function RelayProvider({ children }: RelayProviderProps) {
   useEffect(() => {
     relays.forEach((relay) => connect(relay));
   }, [relays]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      disconnectedRelays.forEach((relay) => relay.connect());
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, []);
 
   const resetRelays = (): void => {
     setRelays(RELAYS);
@@ -126,7 +138,7 @@ export default function RelayProvider({ children }: RelayProviderProps) {
       const relay = await connect(url);
       if (!relay) return;
 
-      let sub = relay.sub([filter]);
+      const sub = relay.sub([filter]);
 
       sub.on("event", (event: Event) => onEvent(event, url));
 
@@ -137,14 +149,37 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     }
   };
 
+  const count = async (
+    relays: string[],
+    filter: Filter,
+    onCount: (event: CountPayload, url: string) => void
+  ) => {
+    for (const url of relays) {
+      const relay = await connect(url);
+      if (!relay) return;
+
+      const sub = await relay.sub([filter], { verb: "COUNT" });
+
+      const timeout = setTimeout(() => {
+        sub.unsub();
+      }, 2000);
+
+      sub.on("count", (event: CountPayload) => {
+        clearTimeout(timeout);
+        onCount(event, url);
+      });
+    }
+  };
+
   const value: RelayContext = {
     relays,
     addRelay,
     removeRelay,
     resetRelays,
-    connect,
     connectedRelays,
     disconnectedRelays,
+    connect,
+    count,
     publish,
     subscribe,
   };

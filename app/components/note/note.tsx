@@ -1,8 +1,8 @@
 "use client";
 
 import cn from "clsx";
-import Link from "next/link";
 import { nip19 } from "nostr-tools";
+import NoteContent from "@/app/components/note/note-content";
 import NoteDate from "@/app/components/note/note-date";
 import NoteRelays from "@/app/components/note/note-relays";
 import NoteStats from "@/app/components/note/note-stats";
@@ -21,11 +21,10 @@ function Note({ event, parentNote }: NoteProps) {
   const npub = nip19.npubEncode(event.pubkey);
 
   return (
-    <Link
-      href=""
+    <article
       className={cn(
-        `accent-tab hover-card relative flex flex-col 
-             gap-y-4 px-4 py-3 outline-none duration-200`,
+        `accent-tab hover:bg-dark-primary/30 relative flex flex-col gap-y-4 px-4 py-3 
+         outline-none duration-200 cursor-pointer`,
         parentNote ? "mt-0.5 pt-2.5 pb-0" : "border-b border-light-border"
       )}
     >
@@ -57,8 +56,8 @@ function Note({ event, parentNote }: NoteProps) {
               <NoteRelays noteLink={""} relays={event.relays} />
             </div>
           </div>
-          <p className="whitespace-pre-line break-words">{event.content}</p>
-          <div className="mt-1 flex flex-col gap-2">
+          <NoteContent event={event} />
+          <div className="mt-3 flex flex-col gap-2">
             <NoteStats
               // reply={reply}
               userId={event.pubkey}
@@ -71,7 +70,7 @@ function Note({ event, parentNote }: NoteProps) {
           </div>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }
 

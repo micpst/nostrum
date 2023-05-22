@@ -22,7 +22,7 @@ function UserAvatar({
     <Link
       href={npub ? `/${npub}` : "#"}
       className={cn(
-        "blur-picture flex self-start",
+        "blur-picture flex self-start transition hover:brightness-75 hover:duration-200",
         !npub && "pointer-events-none",
         className
       )}

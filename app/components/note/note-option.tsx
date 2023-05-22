@@ -1,30 +1,27 @@
 import cn from "clsx";
+
 import CustomIcon from "@/app/components/ui/icon";
+import { formatNumber } from "@/app/lib/date";
 import type { IconName } from "@/app/components/ui/icon";
 
-type PostOptionProps = {
+type NoteOptionProps = {
   tip: string;
-  move?: number;
   stats?: number;
   iconName: IconName;
   disabled?: boolean;
   className: string;
-  viewTweet?: boolean;
   iconClassName: string;
   onClick?: (...args: unknown[]) => unknown;
 };
 
 function NoteOption({
-  tip,
-  move,
   stats,
   disabled,
   iconName,
   className,
-  viewTweet,
   iconClassName,
   onClick,
-}: PostOptionProps): JSX.Element {
+}: NoteOptionProps): JSX.Element {
   return (
     <button
       className={cn(
@@ -33,21 +30,18 @@ function NoteOption({
         disabled && "cursor-not-allowed",
         className
       )}
+      onClick={onClick}
     >
-      <i
+      <CustomIcon
         className={cn(
-          "relative rounded-full p-2 not-italic group-focus-visible:ring-2",
+          "fill-light-secondary h-9 w-9 rounded-full p-2 not-italic group-focus-visible:ring-2",
           iconClassName
         )}
-      >
-        <CustomIcon
-          className={viewTweet ? "h-6 w-6" : "h-5 w-5"}
-          iconName={iconName}
-        />
-      </i>
-      {/*{!viewTweet && (*/}
-      {/*  <NumberStats move={move as number} stats={stats as number} />*/}
-      {/*)}*/}
+        iconName={iconName}
+      />
+      <div className="overflow-hidden">
+        <p className="text-sm">{formatNumber(stats as number)}</p>
+      </div>
     </button>
   );
 }
