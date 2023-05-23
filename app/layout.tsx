@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import BottomBar from "@/app/components/bottombar/bottombar";
 import Main from "@/app/components/common/main";
 import Sidebar from "@/app/components/sidebar/sidebar";
 import Providers from "@/app/lib/context/providers";
@@ -18,6 +19,7 @@ function RootLayout({ children }: { children: ReactNode }) {
           <Providers>
             <Sidebar />
             <Main>{children}</Main>
+            <BottomBar />
           </Providers>
         </div>
       </body>

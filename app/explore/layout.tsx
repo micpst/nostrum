@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Aside from "@/app/components/aside/aside";
-import Relays from "@/app/components/aside/relays";
+import AsideLogin from "@/app/components/aside/aside-login";
 
 export const metadata = {
   title: "Explore / Nostrum",
@@ -11,7 +11,7 @@ function ExploreLayout({ children }: { children: ReactNode }) {
     <>
       {children}
       <Aside>
-        <Relays />
+        <AsideLogin />
       </Aside>
     </>
   );
