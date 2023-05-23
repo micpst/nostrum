@@ -20,6 +20,7 @@ const OutlineIcons = {
   GlobeIcon,
   HashtagIcon: HashtagOutlineIcon,
   HeartIcon: HeartOutlineIcon,
+  HomeIcon: HomeOutlineIcon,
   MinusIcon,
   NostrumIcon,
   PlusIcon,
@@ -35,6 +36,7 @@ const SolidIcons = {
   GlobeIcon,
   HashtagIcon: HashtagSolidIcon,
   HeartIcon: HeartSolidIcon,
+  HomeIcon: HomeSolidIcon,
   MinusIcon,
   NostrumIcon,
   PlusIcon,
@@ -91,6 +93,22 @@ function HashtagSolidIcon({ className }: IconProps): JSX.Element {
   return (
     <svg className={className} viewBox="0 0 24 24">
       <path d="M10.64 3.157l-.36 3.593h4.99l.38-3.892 2.99.299-.36 3.593h2.97v2.5h-3.22l-.55 5.5h2.77v2.5h-3.02l-.39 3.892-2.98-.299.36-3.593H9.23l-.39 3.892-2.98-.299.36-3.593H2.75v-2.5h3.72l.55-5.5H3.75v-2.5h3.52l.38-3.892 2.99.299zm3.83 11.593l.55-5.5h-4.99l-.55 5.5h4.99z" />
+    </svg>
+  );
+}
+
+function HomeOutlineIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M12 9c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4zm0 6c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm0-13.304L.622 8.807l1.06 1.696L3 9.679V19.5C3 20.881 4.119 22 5.5 22h13c1.381 0 2.5-1.119 2.5-2.5V9.679l1.318.824 1.06-1.696L12 1.696zM19 19.5c0 .276-.224.5-.5.5h-13c-.276 0-.5-.224-.5-.5V8.429l7-4.375 7 4.375V19.5z" />
+    </svg>
+  );
+}
+
+function HomeSolidIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M12 1.696L.622 8.807l1.06 1.696L3 9.679V19.5C3 20.881 4.119 22 5.5 22h13c1.381 0 2.5-1.119 2.5-2.5V9.679l1.318.824 1.06-1.696L12 1.696zM12 16.5c-1.933 0-3.5-1.567-3.5-3.5s1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5-1.567 3.5-3.5 3.5z" />
     </svg>
   );
 }

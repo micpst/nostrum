@@ -3,9 +3,13 @@
 import LoginButton from "@/app/components/login/login-button";
 import LoginLink from "@/app/components/login/login-link";
 import { useWindow } from "@/app/lib/context/window-provider";
+import { useAuth } from "@/app/lib/context/auth-provider";
 
-function BottomBar() {
+function BottomBar(): JSX.Element | null {
+  const { publicKey, login } = useAuth();
   const { width } = useWindow();
+
+  if (publicKey) return null;
 
   return (
     <div className="fixed bottom-0 w-full bg-violet-700 text-dark-primary py-3">
@@ -29,6 +33,7 @@ function BottomBar() {
           <LoginButton
             text="Login"
             className="flex-1 bg-white text-black border-white"
+            onClick={login}
           />
           <LoginLink
             text="Learn more"

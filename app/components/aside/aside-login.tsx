@@ -2,8 +2,13 @@
 
 import LoginButton from "@/app/components/login/login-button";
 import LoginLink from "@/app/components/login/login-link";
+import { useAuth } from "@/app/lib/context/auth-provider";
 
-function AsideLogin() {
+function AsideLogin(): JSX.Element | null {
+  const { publicKey, login } = useAuth();
+
+  if (publicKey) return null;
+
   return (
     <section className="px-4 py-3 rounded-2xl bg-gray-100">
       <div className="pb-3">
@@ -16,6 +21,7 @@ function AsideLogin() {
         <LoginButton
           text="Login with Extension"
           className="bg-black text-white"
+          onClick={login}
         />
         <LoginLink
           text="Learn more"
