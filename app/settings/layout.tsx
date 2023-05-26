@@ -1,7 +1,10 @@
-"use client";
-
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import SettingsList from "@/app/components/settings/settings-list";
+
+export const metadata: Metadata = {
+  title: "Settings / Nostrum",
+};
 
 function SettingsLayout({ children }: { children: ReactNode }) {
   return (

@@ -6,6 +6,7 @@ import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
+import withAuth from "@/app/lib/hoc/with-auth";
 
 function HomePage() {
   const filter = {
@@ -33,4 +34,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default withAuth(HomePage);

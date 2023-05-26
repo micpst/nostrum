@@ -6,7 +6,10 @@ type MainProps = {
 
 export function Main({ children }: MainProps): JSX.Element {
   return (
-    <main className="flex w-[calc(100vw-4.5rem)] sm:w-[calc(100vw-7rem)] md:w-[calc(100vw-10rem)] lg:w-[calc(100vw-7rem)] min-h-screen max-w-[64rem]">
+    <main
+      className="flex w-[calc(100vw-4.5rem)] max-w-[64rem] min-h-screen z-10
+                 sm:w-[calc(100vw-7rem)] md:w-[calc(100vw-10rem)] lg:w-[calc(100vw-7rem)]"
+    >
       {children}
     </main>
   );

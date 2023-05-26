@@ -17,6 +17,7 @@ const OutlineIcons = {
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogOutlineIcon,
+  EllipsisHorizontalIcon,
   GlobeIcon,
   HashtagIcon: HashtagOutlineIcon,
   HeartIcon: HeartOutlineIcon,
@@ -25,6 +26,7 @@ const OutlineIcons = {
   NostrumIcon,
   PlusIcon,
   SpinnerIcon,
+  TriangleIcon,
 };
 
 const SolidIcons = {
@@ -33,6 +35,7 @@ const SolidIcons = {
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogSolidIcon,
+  EllipsisHorizontalIcon,
   GlobeIcon,
   HashtagIcon: HashtagSolidIcon,
   HeartIcon: HeartSolidIcon,
@@ -41,6 +44,7 @@ const SolidIcons = {
   NostrumIcon,
   PlusIcon,
   SpinnerIcon,
+  TriangleIcon,
 };
 
 export default function CustomIcon({
@@ -137,6 +141,14 @@ function HeartSolidIcon({ className }: IconProps): JSX.Element {
   );
 }
 
+function EllipsisHorizontalIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+    </svg>
+  );
+}
+
 function ArrowPathRoundedSquareIcon({ className }: IconProps): JSX.Element {
   return (
     <svg className={className} viewBox="0 0 24 24">
@@ -211,6 +223,14 @@ function PlusIcon({ className }: IconProps): JSX.Element {
         transform="rotate(90 12 11.8674)"
         d="m9,10.86737c-0.55228,0 -1,0.4477 -1,1c0,0.5523 0.44772,1 1,1l6,0c0.5523,0 1,-0.4477 1,-1c0,-0.5523 -0.4477,-1 -1,-1l-6,0z"
       />
+    </svg>
+  );
+}
+
+function TriangleIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M22 17H2L12 6l10 11z" />
     </svg>
   );
 }

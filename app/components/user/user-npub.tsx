@@ -4,16 +4,18 @@ import { shortenHash } from "@/app/lib/utils";
 
 type UserNpubProps = {
   npub: string;
+  npubLength?: number;
   className?: string;
   disableLink?: boolean;
 };
 
 function UserNpub({
   npub,
+  npubLength,
   className,
   disableLink,
 }: UserNpubProps): JSX.Element {
-  const shortNpub = shortenHash(npub);
+  const shortNpub = shortenHash(npub, npubLength);
   return (
     <Link
       href={`/${npub}`}
@@ -24,7 +26,7 @@ function UserNpub({
       )}
       tabIndex={-1}
     >
-      @{shortNpub}
+      {shortNpub}
     </Link>
   );
 }

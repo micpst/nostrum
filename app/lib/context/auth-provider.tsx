@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useLocalStorage } from "@/app/lib/hooks/useLocalStorage";
@@ -7,6 +9,7 @@ type AuthContext = {
   isLoading: boolean;
   publicKey: string | undefined;
   login: () => void;
+  logout: () => void;
 };
 
 type AuthProviderProps = {
@@ -26,46 +29,40 @@ export default function AuthProvider({
   const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    if (window.nostr === undefined) {
+      setIsConnected(false);
+      setIsLoading(false);
+      return;
+    }
+
     if (isConnected) {
-      if (typeof window.nostr === "undefined") {
-        setIsConnected(false);
-        return;
-      }
-
-      setIsLoading(true);
-
-      nostr
+      window.nostr
         .getPublicKey()
-        .then((publicKey: string) => {
-          setPublicKey(publicKey);
-          setIsConnected(true);
-        })
-        .catch(() => {
-          setIsConnected(false);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        .then((publicKey: string) => setPublicKey(publicKey))
+        .catch(() => setIsConnected(false))
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
   const login = (): void => {
-    setIsLoading(true);
+    if (window.nostr === undefined) return;
 
-    if (typeof window.nostr !== "undefined") {
-      nostr
-        .getPublicKey()
-        .then((publicKey: string) => {
-          setPublicKey(publicKey);
-          setIsConnected(true);
-        })
-        .catch(() => {
-          setIsConnected(false);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
+    window.nostr
+      .getPublicKey()
+      .then((publicKey: string) => {
+        setPublicKey(publicKey);
+        setIsConnected(true);
+      })
+      .catch(() => {
+        setIsConnected(false);
+      });
+  };
+
+  const logout = (): void => {
+    setIsConnected(false);
+    setPublicKey(undefined);
   };
 
   const value: AuthContext = {
@@ -73,6 +70,7 @@ export default function AuthProvider({
     isLoading,
     publicKey,
     login,
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

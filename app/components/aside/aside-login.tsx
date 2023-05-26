@@ -5,7 +5,7 @@ import LoginLink from "@/app/components/login/login-link";
 import { useAuth } from "@/app/lib/context/auth-provider";
 
 function AsideLogin(): JSX.Element | null {
-  const { publicKey, login } = useAuth();
+  const { publicKey } = useAuth();
 
   if (publicKey) return null;
 
@@ -21,7 +21,6 @@ function AsideLogin(): JSX.Element | null {
         <LoginButton
           text="Login with Extension"
           className="bg-black text-white"
-          onClick={login}
         />
         <LoginLink
           text="Learn more"
