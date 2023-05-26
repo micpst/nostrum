@@ -72,9 +72,9 @@ function NoteStats({
       )}
     >
       <NoteOption
-        className="hover:text-violet-700 focus-visible:text-violet-700"
-        iconClassName="group-hover:bg-violet-700/10 group-active:bg-violet-700/20 group-hover:fill-violet-700
-                       group-focus-visible:bg-violet-700/10 group-focus-visible:ring-violet-700/80 group-focus-visible:fill-violet-700"
+        className="hover:text-main-accent focus-visible:text-main-accent"
+        iconClassName="group-hover:bg-main-accent/10 group-active:bg-main-accent/20 group-hover:fill-main-accent
+                       group-focus-visible:bg-main-accent/10 group-focus-visible:ring-main-accent/80 group-focus-visible:fill-main-accent"
         tip="Reply"
         stats={currentReplies}
         iconName="ChatBubbleOvalLeftIcon"

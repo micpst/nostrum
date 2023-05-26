@@ -5,6 +5,7 @@ import SidebarLink from "@/app/components/sidebar/sidebar-link";
 import SidebarProfile from "@/app/components/sidebar/sidebar-profile";
 import type { IconName } from "@/app/components/ui/icon";
 import { useAuth } from "@/app/lib/context/auth-provider";
+import CustomIcon from "@/app/components/ui/icon";
 
 export type NavLink = {
   href: string;
@@ -50,7 +51,27 @@ function Sidebar(): JSX.Element {
               .map((linkData) => (
                 <SidebarLink {...linkData} key={linkData.href} />
               ))}
+            {publicKey && (
+              <SidebarLink
+                href={`/${publicKey}`}
+                linkName="Profile"
+                iconName="ProfileIcon"
+              />
+            )}
           </nav>
+          {publicKey && (
+            <button
+              className="rounded-full p-3 bg-main-accent text-lg font-bold text-white
+                       outline-none transition hover:brightness-90 active:brightness-75
+                       xs:hover:bg-main-accent/90 xs:active:bg-main-accent/75 xl:w-11/12"
+            >
+              <CustomIcon
+                className="block h-6 w-6 fill-white xl:hidden"
+                iconName="PenIcon"
+              />
+              <p className="hidden xl:block">Publish</p>
+            </button>
+          )}
         </div>
         <SidebarProfile />
       </div>

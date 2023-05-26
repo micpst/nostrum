@@ -9,7 +9,7 @@ function Logo() {
         href="/"
       >
         <CustomIcon
-          className="h-7 w-7 fill-violet-700"
+          className="h-7 w-7 fill-main-accent"
           iconName="NostrumIcon"
         />
       </Link>

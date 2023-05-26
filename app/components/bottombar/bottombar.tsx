@@ -12,7 +12,7 @@ function BottomBar(): JSX.Element | null {
   if (publicKey) return null;
 
   return (
-    <div className="fixed bottom-0 w-full bg-violet-700 text-dark-primary py-3 z-30">
+    <div className="fixed bottom-0 w-full bg-main-accent text-dark-primary py-3 z-30">
       <div className="flex items-center justify-center lg:justify-between mx-4 lg:mx-[calc(100vw/2-500px)]">
         {width > 1024 && (
           <div>
@@ -37,7 +37,7 @@ function BottomBar(): JSX.Element | null {
           <LoginLink
             text="Learn more"
             href="https://guides.getalby.com/overall-guide/alby-browser-extension/features/nostr"
-            className="flex-1 bg-violet-700 border-white"
+            className="flex-1 bg-main-accent border-white"
           />
         </div>
       </div>

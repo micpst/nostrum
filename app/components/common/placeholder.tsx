@@ -5,7 +5,7 @@ function Placeholder(): JSX.Element {
     <main className="flex min-h-screen items-center justify-center">
       <i>
         <CustomIcon
-          className="h-20 w-20 fill-violet-700"
+          className="h-20 w-20 fill-main-accent"
           iconName="NostrumIcon"
         />
       </i>

@@ -31,7 +31,7 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
   tags.forEach((tag) => {
     augmentedContent = augmentedContent.replaceAll(
       tag,
-      `<a class="text-violet-700 hover:underline" href="#">${tag}</a>`
+      `<a class="text-main-accent hover:underline" href="#">${tag}</a>`
     );
   });
 
@@ -42,7 +42,7 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
   links.forEach((link) => {
     augmentedContent = augmentedContent.replaceAll(
       link,
-      `<a class="text-violet-700 hover:underline" href=${link}>${link}</a>`
+      `<a class="text-main-accent hover:underline" href=${link}>${link}</a>`
     );
   });
 

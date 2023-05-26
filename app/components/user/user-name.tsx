@@ -31,7 +31,7 @@ function UserName({
       {verified && (
         <i>
           <CustomIcon
-            className={cn("fill-violet-700", iconClassName ?? "h-5 w-5")}
+            className={cn("fill-main-accent", iconClassName ?? "h-5 w-5")}
             iconName="BadgeIcon"
             solid
           />

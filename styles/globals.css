@@ -6,10 +6,10 @@
 
 @layer base {
     :root {
-        --main-background: var(--dark-background);
-        --main-search-background: var(--dark-search-background);
-        --main-sidebar-background: var(--dark-sidebar-background);
-        --main-accent: var(--accent-blue);
+        --main-background: var(--light-background);
+        --main-search-background: var(--light-search-background);
+        --main-sidebar-background: var(--light-sidebar-background);
+        --main-accent: var(--accent-purple);
 
         --dark-background: 0 0 0;
         --dim-background: 22 33 44;
@@ -26,7 +26,7 @@
         --accent-yellow: 255 213 0;
         --accent-blue: 29 155 240;
         --accent-pink: 249 26 130;
-        --accent-purple: 120 87 255;
+        --accent-purple: 109 40 217;
         --accent-orange: 255 122 0;
         --accent-green: 0 184 122;
     }

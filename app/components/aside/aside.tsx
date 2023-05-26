@@ -10,7 +10,7 @@ function Aside({ children }: { children: ReactNode }) {
 
   return (
     <aside className="w-[30rem]">
-      <div className="flex flex-col gap-4 sticky top-0 px-4 pt-1">
+      <div className="flex flex-col gap-4 sticky top-0 px-4 pt-1.5">
         {children}
       </div>
     </aside>

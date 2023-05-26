@@ -17,6 +17,7 @@ const OutlineIcons = {
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogOutlineIcon,
+  CrossIcon,
   EllipsisHorizontalIcon,
   GlobeIcon,
   HashtagIcon: HashtagOutlineIcon,
@@ -24,7 +25,10 @@ const OutlineIcons = {
   HomeIcon: HomeOutlineIcon,
   MinusIcon,
   NostrumIcon,
+  PenIcon,
   PlusIcon,
+  ProfileIcon: ProfileOutlineIcon,
+  SearchIcon,
   SpinnerIcon,
   TriangleIcon,
 };
@@ -35,6 +39,7 @@ const SolidIcons = {
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogSolidIcon,
+  CrossIcon,
   EllipsisHorizontalIcon,
   GlobeIcon,
   HashtagIcon: HashtagSolidIcon,
@@ -42,7 +47,10 @@ const SolidIcons = {
   HomeIcon: HomeSolidIcon,
   MinusIcon,
   NostrumIcon,
+  PenIcon,
   PlusIcon,
+  ProfileIcon: ProfileSolidIcon,
+  SearchIcon,
   SpinnerIcon,
   TriangleIcon,
 };
@@ -149,6 +157,30 @@ function EllipsisHorizontalIcon({ className }: IconProps): JSX.Element {
   );
 }
 
+function PenIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M23 3c-6.62-.1-10.38 2.421-13.05 6.03C7.29 12.61 6 17.331 6 22h2c0-1.007.07-2.012.19-3H12c4.1 0 7.48-3.082 7.94-7.054C22.79 10.147 23.17 6.359 23 3zm-7 8h-1.5v2H16c.63-.016 1.2-.08 1.72-.188C16.95 15.24 14.68 17 12 17H8.55c.57-2.512 1.57-4.851 3-6.78 2.16-2.912 5.29-4.911 9.45-5.187C20.95 8.079 19.9 11 16 11zM4 9V6H1V4h3V1h2v3h3v2H6v3H4z" />
+    </svg>
+  );
+}
+
+function ProfileOutlineIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M5.651 19h12.698c-.337-1.8-1.023-3.21-1.945-4.19C15.318 13.65 13.838 13 12 13s-3.317.65-4.404 1.81c-.922.98-1.608 2.39-1.945 4.19zm.486-5.56C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46zM12 4c-1.105 0-2 .9-2 2s.895 2 2 2 2-.9 2-2-.895-2-2-2zM8 6c0-2.21 1.791-4 4-4s4 1.79 4 4-1.791 4-4 4-4-1.79-4-4z" />
+    </svg>
+  );
+}
+
+function ProfileSolidIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z" />
+    </svg>
+  );
+}
+
 function ArrowPathRoundedSquareIcon({ className }: IconProps): JSX.Element {
   return (
     <svg className={className} viewBox="0 0 24 24">
@@ -161,6 +193,22 @@ function ChatBubbleOvalLeftIcon({ className }: IconProps): JSX.Element {
   return (
     <svg className={className} viewBox="0 0 24 24">
       <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path>
+    </svg>
+  );
+}
+
+function SearchIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z" />
+    </svg>
+  );
+}
+
+function CrossIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 16 16">
+      <path d="M6.09 7.5L.04 1.46 1.46.04 7.5 6.09 13.54.04l1.42 1.42L8.91 7.5l6.05 6.04-1.42 1.42L7.5 8.91l-6.04 6.05-1.42-1.42L6.09 7.5z" />
     </svg>
   );
 }

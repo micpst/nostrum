@@ -17,7 +17,7 @@ function SettingsLink({ href, linkName }: SettingsLinkProps) {
       href={href}
       className={cn(
         "flex items-center justify-between px-4 py-3 text-light-secondary hover:bg-light-secondary/5",
-        isActive && "bg-light-secondary/5 border-r-2 border-violet-700"
+        isActive && "bg-light-secondary/5 border-r-2 border-main-accent"
       )}
     >
       <span>{linkName}</span>
