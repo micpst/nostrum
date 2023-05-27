@@ -28,13 +28,6 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
     augmentedContent.replaceAll(text, augmentedReference);
   });
 
-  tags.forEach((tag) => {
-    augmentedContent = augmentedContent.replaceAll(
-      tag,
-      `<a class="text-main-accent hover:underline" href="#">${tag}</a>`
-    );
-  });
-
   images.forEach((image) => {
     augmentedContent = augmentedContent.replaceAll(image, "");
   });
@@ -43,6 +36,13 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
     augmentedContent = augmentedContent.replaceAll(
       link,
       `<a class="text-main-accent hover:underline" href=${link}>${link}</a>`
+    );
+  });
+
+  tags.forEach((tag) => {
+    augmentedContent = augmentedContent.replaceAll(
+      tag,
+      `<a class="text-main-accent hover:underline" href="#">${tag}</a>`
     );
   });
 

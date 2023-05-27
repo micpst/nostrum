@@ -6,8 +6,8 @@ import { useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import CustomIcon from "@/app/components/ui/icon";
 
-function AsideSearchbar(): JSX.Element | null {
-  const [inputValue, setInputValue] = useState("");
+function AsideSearchbar(): JSX.Element {
+  const [inputValue, setInputValue] = useState<string>("");
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -59,17 +59,16 @@ function AsideSearchbar(): JSX.Element | null {
           onChange={handleChange}
           onKeyUp={handleEscape}
         />
-        <button
+        <div
           className={cn(
-            "rounded-full scale-50 bg-main-accent fill-main-background p-1.5 opacity-0 transition hover:brightness-90 disabled:opacity-0",
+            "rounded-full scale-50 bg-main-accent fill-main-background p-1.5 cursor-pointer opacity-0 transition hover:brightness-90 disabled:opacity-0",
             inputValue &&
               "focus:scale-100 focus:opacity-100 peer-focus:scale-100 peer-focus:opacity-100"
           )}
           onClick={clearInputValue(true)}
-          disabled={!inputValue}
         >
           <CustomIcon className="h-2.5 w-2.5" iconName="CrossIcon" />
-        </button>
+        </div>
       </label>
     </form>
   );

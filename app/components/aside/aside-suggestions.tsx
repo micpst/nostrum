@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useAuth } from "@/app/lib/context/auth-provider";
 
-function AsideSuggestions(): JSX.Element | null {
+function AsideSuggestions(): JSX.Element {
   const { publicKey } = useAuth();
 
   return (
