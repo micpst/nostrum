@@ -15,7 +15,6 @@ const postImageBorderRadius: Readonly<PostImageBorderRadius> = {
 };
 
 function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
-  console.log(imagesPreview);
   const previewCount = imagesPreview.length % 4;
   const images = imagesPreview.slice(0, 4);
 
