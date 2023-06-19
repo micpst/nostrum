@@ -1,6 +1,7 @@
+import type { Metadata } from "next";
 import NotFound from "@/app/components/ui/not-found";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Page not found / Nostrum",
 };
 

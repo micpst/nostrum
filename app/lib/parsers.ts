@@ -10,7 +10,9 @@ const topDomains = [
   /\.biz/,
   /\.za/,
   /\.info/,
+  /\.live/,
   /\.social/,
+  /\.space/,
   /\.cc/,
   /\.ca/,
   /\.cn/,
@@ -42,7 +44,7 @@ const imageRegex = new RegExp(
 );
 
 const linkRegex = new RegExp(
-  /(https?:\/\/)?[\w\-~]+(\.[\w\-~]+)+(\/[\w\-~@:%]*)*(#[\w\-]*)?(\?\S*)?/g
+  /(https?:\/\/)?[\w\-~]+(\.[\w\-~]+)+(\/[\w\-~@:%]*)*(#[\w\-]*)?(\?\S*)?.(html|htm|php)?/g
 );
 
 const tagRegex = new RegExp(/#\w+/g);

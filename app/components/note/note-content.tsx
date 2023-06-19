@@ -28,13 +28,6 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
     augmentedContent.replaceAll(text, augmentedReference);
   });
 
-  tags.forEach((tag) => {
-    augmentedContent = augmentedContent.replaceAll(
-      tag,
-      `<a class="text-violet-700 hover:underline" href="#">${tag}</a>`
-    );
-  });
-
   images.forEach((image) => {
     augmentedContent = augmentedContent.replaceAll(image, "");
   });
@@ -42,7 +35,14 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
   links.forEach((link) => {
     augmentedContent = augmentedContent.replaceAll(
       link,
-      `<a class="text-violet-700 hover:underline" href=${link}>${link}</a>`
+      `<a class="text-main-accent hover:underline" href=${link}>${link}</a>`
+    );
+  });
+
+  tags.forEach((tag) => {
+    augmentedContent = augmentedContent.replaceAll(
+      tag,
+      `<a class="text-main-accent hover:underline" href="#">${tag}</a>`
     );
   });
 
@@ -61,7 +61,9 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
         dangerouslySetInnerHTML={{ __html: sanitize(augmentedContent) }}
       />
       <div className="mt-1 flex flex-col gap-2">
-        {imagesPreview.length && <ImagePreview imagesPreview={imagesPreview} />}
+        {imagesPreview.length ? (
+          <ImagePreview imagesPreview={imagesPreview} />
+        ) : null}
       </div>
     </>
   );

@@ -1,30 +1,35 @@
 import cn from "clsx";
 import Link from "next/link";
 import { shortenHash } from "@/app/lib/utils";
+import { nip19 } from "nostr-tools";
 
 type UserNpubProps = {
-  npub: string;
+  pubkey: string;
+  npubLength?: number;
   className?: string;
   disableLink?: boolean;
 };
 
 function UserNpub({
-  npub,
+  pubkey,
+  npubLength,
   className,
   disableLink,
 }: UserNpubProps): JSX.Element {
-  const shortNpub = shortenHash(npub);
+  const npub = nip19.npubEncode(pubkey);
+  const shortNpub = shortenHash(npub, npubLength);
+
   return (
     <Link
-      href={`/${npub}`}
+      href={`user/${pubkey}`}
       className={cn(
-        "truncate text-light-secondary",
+        "truncate text-light-secondary underline decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className,
         disableLink && "pointer-events-none"
       )}
-      tabIndex={-1}
+      tabIndex={disableLink ? -1 : 0}
     >
-      @{shortNpub}
+      {shortNpub}
     </Link>
   );
 }
