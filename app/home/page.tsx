@@ -1,34 +1,64 @@
 "use client";
 
-import { Kind } from "nostr-tools";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
+import { useFeed } from "@/app/lib/context/feed-provider";
 import withAuth from "@/app/lib/hoc/with-auth";
+// import InfiniteScroll from "@/app/components/ui/infinite-scroll";
 
 function HomePage() {
-  const filter = {
-    kinds: [Kind.Text],
-  };
-  const options = {
-    initialSize: 40,
-    stepSize: 20,
-  };
+  const { notes, isLoading, setIsExplore, loadNotes } = useFeed();
 
-  const { events, loading } = useInfiniteScroll(filter, options);
+  useEffect(() => {
+    void setIsExplore(false);
+  }, []);
+
+  const intObserver = useRef();
+  const lastNoteRef = useCallback(
+    (note: any) => {
+      if (isLoading) return;
+
+      if (intObserver.current) intObserver.current.disconnect();
+
+      intObserver.current = new IntersectionObserver((posts) => {
+        if (posts[0].isIntersecting) void loadNotes();
+      });
+
+      if (note) intObserver.current.observe(note);
+    },
+    [isLoading]
+  );
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
       <Header title="Home" sticky border />
       <section>
-        {!loading && !events.length ? (
+        {!isLoading && !notes.length ? (
           <Error />
         ) : (
-          events.map((event) => <Note key={event.id} event={event} />)
+          notes.map((note, i) =>
+            i === notes.length - 5 ? (
+              <Note ref={lastNoteRef} key={note.id} event={note} />
+            ) : (
+              <Note key={note.id} event={note} />
+            )
+          )
         )}
-        {loading && <Loading className="mt-5" />}
+        {isLoading ? <Loading className="my-5" /> : null}
+        {/*<InfiniteScroll isLoading={isLoading}>*/}
+        {/*{!isLoading && !notes.length && <Error />}*/}
+        {/*{notes.map((note, i) =>*/}
+        {/*  i === notes.length - 1 ? (*/}
+        {/*    <Note ref={lastNoteRef} key={note.id} event={note} />*/}
+        {/*  ) : (*/}
+        {/*    <Note key={note.id} event={note} />*/}
+        {/*  )*/}
+        {/*)}*/}
+        {/*{isLoading && <Loading className="mt-5" />}*/}
+        {/*</InfiniteScroll>*/}
       </section>
     </div>
   );

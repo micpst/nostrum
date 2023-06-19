@@ -5,27 +5,26 @@ import CustomIcon from "@/app/components/ui/icon";
 type UserNameProps = {
   name: string;
   verified: boolean;
-  npub?: string;
+  pubkey: string;
   className?: string;
   iconClassName?: string;
 };
 
 function UserName({
   name,
-  npub,
+  pubkey,
   className,
   iconClassName,
   verified,
 }: UserNameProps): JSX.Element {
   return (
     <Link
-      href={npub ? `/${npub}` : "#"}
+      href={`user/${pubkey}`}
       className={cn(
-        "flex items-center gap-1 truncate font-bold",
-        npub ? "custom-underline" : "pointer-events-none",
+        "flex items-center gap-1 truncate font-bold underline decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className
       )}
-      tabIndex={npub ? 0 : -1}
+      tabIndex={pubkey ? 0 : -1}
     >
       <p className="truncate">{name}</p>
       {verified && (

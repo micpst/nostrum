@@ -3,38 +3,38 @@ import Link from "next/link";
 import NextImage from "@/app/components/ui/next-image";
 
 type UserAvatarProps = {
-  src: string;
-  alt: string;
+  src?: string;
   size?: number;
-  npub?: string;
+  pubkey?: string;
   className?: string;
 };
 
 function UserAvatar({
   src,
-  alt,
   size,
-  npub,
+  pubkey,
   className,
 }: UserAvatarProps): JSX.Element {
   const pictureSize = size ?? 48;
+  const pictureSrc = src ?? "";
   return (
     <Link
-      href={npub ? `/${npub}` : "#"}
+      href={pubkey ? `user/${pubkey}` : "#"}
       className={cn(
         "blur-picture flex self-start transition hover:brightness-75 hover:duration-200",
-        !npub && "pointer-events-none",
+        !pubkey && "pointer-events-none",
         className
       )}
-      tabIndex={npub ? 0 : -1}
+      tabIndex={pubkey ? 0 : -1}
     >
       <NextImage
         useSkeleton
         imgClassName="rounded-full"
         width={pictureSize}
         height={pictureSize}
-        src={src}
-        alt={alt}
+        src={pictureSrc}
+        fallbackSrc="/assets/default_profile.png"
+        alt="user avatar"
         key={src}
       />
     </Link>

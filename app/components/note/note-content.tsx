@@ -61,7 +61,9 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
         dangerouslySetInnerHTML={{ __html: sanitize(augmentedContent) }}
       />
       <div className="mt-1 flex flex-col gap-2">
-        {imagesPreview.length && <ImagePreview imagesPreview={imagesPreview} />}
+        {imagesPreview.length ? (
+          <ImagePreview imagesPreview={imagesPreview} />
+        ) : null}
       </div>
     </>
   );

@@ -9,6 +9,7 @@ import UserAvatar from "@/app/components/user/user-avatar";
 import UserName from "@/app/components/user/user-name";
 import UserNpub from "@/app/components/user/user-npub";
 import { useAuth } from "@/app/lib/context/auth-provider";
+import { useProfile } from "@/app/lib/context/profile-provider";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: 0 },
@@ -22,10 +23,11 @@ export const variants: Variants = {
 
 function SidebarProfile(): JSX.Element | null {
   const { publicKey, logout } = useAuth();
+  const { profiles } = useProfile();
 
   if (!publicKey) return null;
 
-  const npub = nip19.npubEncode(publicKey);
+  const user = profiles?.get(publicKey);
 
   return (
     <>
@@ -37,14 +39,17 @@ function SidebarProfile(): JSX.Element | null {
           )}
         >
           <div className="flex gap-3 truncate">
-            <UserAvatar
-              src="/assets/default_profile.png"
-              alt={npub}
-              size={40}
-            />
+            <UserAvatar src={user?.picture} size={40} />
             <div className="hidden truncate text-start leading-5 xl:block">
-              <UserName name="test" className="start" verified />
-              <UserNpub npub={npub} disableLink />
+              {user && (
+                <UserName
+                  name={user.name}
+                  pubkey={publicKey}
+                  className="start"
+                  verified
+                />
+              )}
+              <UserNpub pubkey={publicKey} disableLink />
             </div>
           </div>
           <CustomIcon

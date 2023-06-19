@@ -5,9 +5,9 @@ export type Note = {
   text?: string;
   images?: ImagesPreview;
   parent?: { id: string; username: string };
-  userLikes: string[];
   createdBy: string;
   createdAt: number;
+  userLikes: string[];
   userReplies: number;
   userReposts: string[];
 };

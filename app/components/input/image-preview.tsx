@@ -15,11 +15,18 @@ const postImageBorderRadius: Readonly<PostImageBorderRadius> = {
 };
 
 function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
-  const previewCount = imagesPreview.length;
+  console.log(imagesPreview);
+  const previewCount = imagesPreview.length % 4;
+  const images = imagesPreview.slice(0, 4);
 
   return (
-    <div className="grid grid-cols-2 grid-rows-2 rounded-2xl mt-2 gap-0.5 h-[42vw] xs:h-[37vw] md:h-[271px]">
-      {imagesPreview.map(({ id, src, alt }, index) => (
+    <div
+      className={cn(
+        "grid grid-cols-2 grid-rows-2 rounded-2xl mt-2 gap-0.5",
+        previewCount > 1 && "h-[271px]"
+      )}
+    >
+      {images.map(({ id, src, alt }, index) => (
         <button
           key={id}
           type="button"

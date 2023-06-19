@@ -8,6 +8,7 @@ import { CountPayload, relayInit } from "nostr-tools";
 import type { Event, Filter, Relay } from "nostr-tools";
 import { RELAYS } from "@/app/lib/constants";
 import { useLocalStorage } from "@/app/lib/hooks/useLocalStorage";
+import { RelayEvent } from "@/app/lib/types/event";
 
 type RelayContext = {
   relays: string[];
@@ -22,6 +23,7 @@ type RelayContext = {
     filter: Filter,
     onCount: (event: CountPayload, url: string) => void
   ) => void;
+  list: (relays: string[], filter: Filter) => Promise<RelayEvent[]>;
   publish: (
     relays: string[],
     event: Event,
@@ -149,6 +151,42 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     }
   };
 
+  const list = async (
+    relays: string[],
+    filter: Filter
+  ): Promise<RelayEvent[]> => {
+    const newEvents: Map<string, RelayEvent> = new Map();
+    const isLoading: Map<string, boolean> = new Map(
+      relays.map((relay) => [relay, true])
+    );
+
+    return new Promise<RelayEvent[]>(async (resolve, reject) => {
+      if (!relays.length) return resolve([]);
+
+      for (const url of relays) {
+        const relay = await connect(url);
+        if (!relay) return;
+
+        const sub = relay.sub([filter]);
+
+        sub.on("event", (event: Event) => {
+          const ev = newEvents.get(event.id);
+          newEvents.set(event.id, {
+            ...event,
+            relays: [...(ev?.relays ?? []), url],
+          });
+        });
+
+        sub.on("eose", () => {
+          sub.unsub();
+          isLoading.set(url, false);
+          if (!Array.from(isLoading.values()).some((v) => v))
+            return resolve(Array.from([...newEvents.values()]));
+        });
+      }
+    });
+  };
+
   const count = async (
     relays: string[],
     filter: Filter,
@@ -180,6 +218,7 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     disconnectedRelays,
     connect,
     count,
+    list,
     publish,
     subscribe,
   };
