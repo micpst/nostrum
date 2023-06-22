@@ -5,7 +5,7 @@ import Loader from "@/app/components/common/loader";
 import Main from "@/app/components/common/main";
 import Sidebar from "@/app/components/sidebar/sidebar";
 import Providers from "@/app/lib/context/providers";
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 
 export const metadata: Metadata = {
   title: "Nostrum",

@@ -14,6 +14,7 @@ type CustomIconProps = IconProps & {
 const OutlineIcons = {
   ArrowLeftIcon,
   ArrowPathRoundedSquareIcon,
+  ArrowRightIcon,
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogOutlineIcon,
@@ -36,6 +37,7 @@ const OutlineIcons = {
 const SolidIcons = {
   ArrowLeftIcon,
   ArrowPathRoundedSquareIcon,
+  ArrowRightIcon,
   BadgeIcon,
   ChatBubbleOvalLeftIcon,
   CogIcon: CogSolidIcon,
@@ -237,10 +239,18 @@ function SpinnerIcon({ className }: IconProps): JSX.Element {
   );
 }
 
-function ArrowLeftIcon({ className }: IconProps): JSX.Element {
+function ArrowRightIcon({ className }: IconProps): JSX.Element {
   return (
     <svg className={className} viewBox="0 0 24 24">
       <path d="M14.586 12L7.543 4.96l1.414-1.42L17.414 12l-8.457 8.46-1.414-1.42L14.586 12z"></path>
+    </svg>
+  );
+}
+
+function ArrowLeftIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path d="M7.414 13l5.043 5.04-1.414 1.42L3.586 12l7.457-7.46 1.414 1.42L7.414 11H21v2H7.414z"></path>
     </svg>
   );
 }

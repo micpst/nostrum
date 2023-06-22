@@ -2,7 +2,6 @@
 
 import cn from "clsx";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import { nip19 } from "nostr-tools";
 import { Menu } from "@headlessui/react";
 import CustomIcon from "@/app/components/ui/icon";
 import UserAvatar from "@/app/components/user/user-avatar";

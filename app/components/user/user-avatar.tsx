@@ -1,5 +1,6 @@
 import cn from "clsx";
 import Link from "next/link";
+import { nip19 } from "nostr-tools";
 import NextImage from "@/app/components/ui/next-image";
 
 type UserAvatarProps = {
@@ -17,9 +18,12 @@ function UserAvatar({
 }: UserAvatarProps): JSX.Element {
   const pictureSize = size ?? 48;
   const pictureSrc = src ?? "";
+
+  const CustomTag = pubkey ? Link : "div";
+
   return (
-    <Link
-      href={pubkey ? `user/${pubkey}` : "#"}
+    <CustomTag
+      href={pubkey ? `u/${nip19.npubEncode(pubkey)}` : ""}
       className={cn(
         "blur-picture flex self-start transition hover:brightness-75 hover:duration-200",
         !pubkey && "pointer-events-none",
@@ -29,15 +33,15 @@ function UserAvatar({
     >
       <NextImage
         useSkeleton
-        imgClassName="rounded-full"
+        imgClassName="rounded-full bg-cover w-full h-full"
         width={pictureSize}
         height={pictureSize}
         src={pictureSrc}
         fallbackSrc="/assets/default_profile.png"
-        alt="user avatar"
+        alt="avatar"
         key={src}
       />
-    </Link>
+    </CustomTag>
   );
 }
 

@@ -6,6 +6,7 @@ import SidebarProfile from "@/app/components/sidebar/sidebar-profile";
 import type { IconName } from "@/app/components/ui/icon";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import CustomIcon from "@/app/components/ui/icon";
+import { nip19 } from "nostr-tools";
 
 export type NavLink = {
   href: string;
@@ -36,6 +37,7 @@ const navLinks: Readonly<NavLink[]> = [
 
 function Sidebar(): JSX.Element {
   const { publicKey } = useAuth();
+  const npub = nip19.npubEncode(publicKey || "");
 
   return (
     <header
@@ -53,7 +55,7 @@ function Sidebar(): JSX.Element {
               ))}
             {publicKey && (
               <SidebarLink
-                href={`user/${publicKey}`}
+                href={`u/${npub}`}
                 linkName="Profile"
                 iconName="ProfileIcon"
               />
@@ -61,7 +63,7 @@ function Sidebar(): JSX.Element {
           </nav>
           {publicKey && (
             <button
-              className="rounded-full p-3 bg-main-accent text-lg font-bold text-white
+              className="rounded-full mt-2 p-3 bg-main-accent text-lg font-bold text-white
                        outline-none transition hover:brightness-90 active:brightness-75
                        xs:hover:bg-main-accent/90 xs:active:bg-main-accent/75 xl:w-11/12"
             >

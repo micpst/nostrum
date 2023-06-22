@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 type NextImageProps = {
   fallbackSrc?: string;
+  src: string;
   alt: string;
   width?: number;
   children?: ReactNode;
@@ -44,7 +45,14 @@ function NextImage({
         <img
           src={src}
           alt={alt}
-          className="rounded-full bg-cover w-full h-full"
+          className={cn(
+            imgClassName,
+            loading
+              ? blurClassName ?? "animate-pulse bg-light-secondary"
+              : previewCount === 1
+              ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
+              : "object-cover"
+          )}
           width={width}
           height={height}
           onLoad={handleLoad}
@@ -60,7 +68,7 @@ function NextImage({
               ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
               : "object-cover"
           )}
-          src={fallbackSrc}
+          src={fallbackSrc || ""}
           width={width}
           height={height}
           alt={alt}

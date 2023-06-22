@@ -50,7 +50,9 @@ const Note = forwardRef(
                 <UserTooltip npub={npub}>
                   {author && (
                     <UserName
-                      name={author.name}
+                      name={
+                        author.displayName || author.display_name || author.name
+                      }
                       pubkey={event.pubkey}
                       verified={author.verified}
                       className="text-light-primary"

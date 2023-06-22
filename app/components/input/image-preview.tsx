@@ -1,5 +1,6 @@
 import cn from "clsx";
 import { ImagesPreview } from "@/app/lib/types/file";
+import NextImage from "@/app/components/ui/next-image";
 
 type ImagePreviewProps = {
   imagesPreview: ImagesPreview;
@@ -39,8 +40,9 @@ function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
             }
           )}
         >
-          <img
-            className={cn(
+          <NextImage
+            className="w-full h-full"
+            imgClassName={cn(
               "relative h-full w-full cursor-pointer object-cover",
               postImageBorderRadius[previewCount][index]
             )}

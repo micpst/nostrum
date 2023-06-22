@@ -22,7 +22,7 @@ function SettingsLink({ href, linkName }: SettingsLinkProps) {
     >
       <span>{linkName}</span>
       <CustomIcon
-        iconName="ArrowLeftIcon"
+        iconName="ArrowRightIcon"
         className="fill-light-secondary w-5 h-5"
       />
     </Link>
