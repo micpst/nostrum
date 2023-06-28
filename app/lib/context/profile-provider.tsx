@@ -14,6 +14,7 @@ type ProfileContext = {
   isLoading: boolean;
   addProfiles: (pubkeys: string[]) => void;
   removeProfiles: (pubkeys: string[]) => void;
+  setProfile: (profile: User) => void;
 };
 
 type ProfileProviderProps = {
@@ -59,6 +60,22 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
       isLoading: true,
     }));
 
+    const defaultProfiles = pubkeys.map(
+      (pubkey) =>
+        [
+          pubkey,
+          {
+            pubkey,
+            name: "",
+            about: "",
+            picture: "",
+            banner: "",
+            nip05: "",
+            verified: false,
+          },
+        ] as [string, User]
+    );
+
     const events = await list(relays, filter);
     const profiles = await Promise.all(
       events.map(async (event) => {
@@ -69,14 +86,32 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
           {
             ...parsed,
             verified: profile?.pubkey === event.pubkey,
+            pubkey: event.pubkey,
           },
         ] as [string, User];
       })
     );
 
     setState((prev) => ({
-      profiles: new Map([...prev.profiles, ...profiles]),
+      profiles: new Map([...prev.profiles, ...defaultProfiles, ...profiles]),
       isLoading: false,
+    }));
+  };
+
+  const setProfile = async (data: User): Promise<void> => {
+    const profile = await nip05.queryProfile(data.nip05 || "");
+    setState((prev) => ({
+      ...prev,
+      profiles: new Map([
+        ...prev.profiles,
+        [
+          data.pubkey,
+          {
+            ...data,
+            verified: profile?.pubkey === data.pubkey,
+          },
+        ],
+      ]),
     }));
   };
 
@@ -88,6 +123,7 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     ...state,
     addProfiles,
     removeProfiles,
+    setProfile,
   };
 
   return (

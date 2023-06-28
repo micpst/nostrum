@@ -34,7 +34,7 @@ function HomePage() {
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
-      <Header title="Home" sticky border />
+      <Header title="Home" />
       <section>
         {!isLoading && !notes.length ? (
           <Error />

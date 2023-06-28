@@ -66,7 +66,6 @@ export default function FeedProvider({
       references: new Map(),
       isLoading: false,
     });
-    void loadNotes();
   }, [relays]);
 
   const loadNotes = async () => {

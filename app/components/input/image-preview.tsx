@@ -1,5 +1,6 @@
 import cn from "clsx";
 import { ImagesPreview } from "@/app/lib/types/file";
+import NextImage from "@/app/components/ui/next-image";
 
 type ImagePreviewProps = {
   imagesPreview: ImagesPreview;
@@ -15,8 +16,8 @@ const postImageBorderRadius: Readonly<PostImageBorderRadius> = {
 };
 
 function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
-  const previewCount = imagesPreview.length % 4;
   const images = imagesPreview.slice(0, 4);
+  const previewCount = images.length;
 
   return (
     <div
@@ -39,10 +40,12 @@ function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
             }
           )}
         >
-          <img
-            className={cn(
-              "relative h-full w-full cursor-pointer object-cover",
-              postImageBorderRadius[previewCount][index]
+          <NextImage
+            className={cn(previewCount > 1 ? "w-full h-full" : "max-h-[500px]")}
+            imgClassName={cn(
+              "relative cursor-pointer object-cover",
+              postImageBorderRadius[previewCount][index],
+              previewCount > 1 ? "w-full h-full" : "max-h-[500px]"
             )}
             src={src}
             alt={alt}

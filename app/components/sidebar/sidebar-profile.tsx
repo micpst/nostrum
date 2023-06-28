@@ -1,8 +1,8 @@
 "use client";
 
 import cn from "clsx";
-import { AnimatePresence, motion, Variants } from "framer-motion";
-import { nip19 } from "nostr-tools";
+import { AnimatePresence, motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { Menu } from "@headlessui/react";
 import CustomIcon from "@/app/components/ui/icon";
 import UserAvatar from "@/app/components/user/user-avatar";
@@ -43,10 +43,9 @@ function SidebarProfile(): JSX.Element | null {
             <div className="hidden truncate text-start leading-5 xl:block">
               {user && (
                 <UserName
-                  name={user.name}
-                  pubkey={publicKey}
                   className="start"
-                  verified
+                  name={user.name}
+                  verified={user.verified}
                 />
               )}
               <UserNpub pubkey={publicKey} disableLink />
