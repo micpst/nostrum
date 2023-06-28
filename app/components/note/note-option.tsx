@@ -39,9 +39,11 @@ function NoteOption({
         )}
         iconName={iconName}
       />
-      <div className="overflow-hidden">
-        <p className="text-sm">{formatNumber(stats as number)}</p>
-      </div>
+      {stats ? (
+        <div className="overflow-hidden">
+          <p className="text-sm">{formatNumber(stats as number)}</p>
+        </div>
+      ) : undefined}
     </button>
   );
 }

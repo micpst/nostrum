@@ -48,7 +48,7 @@ function NextImage({
           className={cn(
             imgClassName,
             loading
-              ? blurClassName ?? "animate-pulse bg-light-secondary"
+              ? blurClassName ?? "bg-main-sidebar-background"
               : previewCount === 1
               ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
               : "object-cover"
@@ -63,7 +63,7 @@ function NextImage({
           className={cn(
             imgClassName,
             loading
-              ? blurClassName ?? "animate-pulse bg-light-secondary"
+              ? blurClassName ?? "bg-main-sidebar-background"
               : previewCount === 1
               ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
               : "object-cover"

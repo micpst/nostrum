@@ -24,12 +24,7 @@ type RelayContext = {
     onCount: (event: CountPayload, url: string) => void
   ) => void;
   list: (relays: string[], filter: Filter) => Promise<RelayEvent[]>;
-  publish: (
-    relays: string[],
-    event: Event,
-    onOk: (url: string) => void,
-    onFailed: (url: string) => void
-  ) => void;
+  publish: (relays: string[], event: Event) => Promise<void>;
   subscribe: (
     relays: string[],
     filter: Filter,
@@ -112,22 +107,29 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     return relay;
   };
 
-  const publish = async (
-    relays: string[],
-    event: Event,
-    onOk: (url: string) => void,
-    onFailed: (url: string) => void
-  ) => {
-    for (const url of relays) {
-      const relay = await connect(url);
-      if (!relay) continue;
+  const publish = async (relays: string[], event: Event): Promise<void> => {
+    const isLoading: Map<string, boolean> = new Map(
+      relays.map((relay) => [relay, true])
+    );
 
-      const pub = relay.publish(event);
+    return new Promise<void>(async (resolve, reject) => {
+      for (const url of relays) {
+        const relay = await connect(url);
+        if (!relay) continue;
 
-      pub.on("ok", () => onOk(url));
+        const pub = relay.publish(event);
 
-      pub.on("failed", (reason: any) => onFailed(url));
-    }
+        pub.on("ok", () => {
+          isLoading.set(url, false);
+          if (!Array.from(isLoading.values()).some((v) => v)) return resolve();
+        });
+
+        pub.on("failed", (reason: any) => {
+          isLoading.set(url, false);
+          if (!Array.from(isLoading.values()).some((v) => v)) return resolve();
+        });
+      }
+    });
   };
 
   const subscribe = async (

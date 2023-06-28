@@ -1,21 +1,19 @@
 import UserName from "@/app/components/user/user-name";
-import type { User } from "@/app/lib/types/user";
+import { useUser } from "@/app/lib/context/user-provider";
 
-type UserHeaderProps = {
-  profile?: User;
-  isLoading: boolean;
-};
+function UserHeader(): JSX.Element {
+  const { user, isLoading } = useUser();
+  const username = user?.displayName || user?.display_name || user?.name;
 
-function UserHeader({ profile, isLoading }: UserHeaderProps): JSX.Element {
-  return isLoading || !profile ? (
+  return isLoading || !username ? (
     <h2 className="text-xl font-bold">Profile</h2>
   ) : (
     <UserName
       tag="h2"
-      name={profile.name || profile.displayName || profile.display_name || ""}
+      name={username}
       className="text-xl"
       iconClassName="w-6 h-6"
-      verified={profile.verified}
+      verified={user.verified}
     />
   );
 }

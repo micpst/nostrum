@@ -3,11 +3,12 @@ import type { ReactNode } from "react";
 import Button from "@/app/components/ui/button";
 import type { IconName } from "@/app/components/ui/icon";
 import CustomIcon from "@/app/components/ui/icon";
+import ToolTip from "@/app/components/ui/tool-tip";
 
 type HeaderProps = {
+  tip?: string;
   title?: string;
-  sticky?: boolean;
-  border?: boolean;
+  disableSticky?: boolean;
   children?: ReactNode;
   iconName?: IconName;
   useActionButton?: boolean;
@@ -16,9 +17,9 @@ type HeaderProps = {
 };
 
 function Header({
+  tip,
   title,
-  sticky,
-  border,
+  disableSticky,
   className,
   children,
   useActionButton,
@@ -30,8 +31,7 @@ function Header({
       className={cn(
         "hover-animation even z-10 bg-main-background/60 px-3 py-4 backdrop-blur-md",
         className ?? "flex items-center gap-6",
-        sticky && "sticky top-0",
-        border && "border-b"
+        !disableSticky && "sticky top-0"
       )}
     >
       {useActionButton && (
@@ -43,6 +43,7 @@ function Header({
             className="h-5 w-5"
             iconName={iconName ?? "ArrowLeftIcon"}
           />
+          <ToolTip tip={tip ?? "Back"} />
         </Button>
       )}
       {title && <h2 className="text-xl font-bold">{title}</h2>}

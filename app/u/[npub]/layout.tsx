@@ -1,20 +1,21 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
 import { useEffect } from "react";
-import { useProfile } from "@/app/lib/context/profile-provider";
-import Header from "@/app/components/common/header";
-import UserHomeCover from "@/app/components/user/user-home-cover";
-import UserHomeAvatar from "@/app/components/user/user-home-avatar";
+import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
-import { useRouter } from "next/navigation";
-import FollowButton from "@/app/components/ui/follow-button";
-import UserEditProfile from "@/app/components/user/user-edit-profile";
-import Loading from "@/app/components/ui/loading";
+import { useProfile } from "@/app/lib/context/profile-provider";
+import UserProvider from "@/app/lib/context/user-provider";
 import { shortenHash } from "@/app/lib/utils";
+import Header from "@/app/components/common/header";
+import FollowButton from "@/app/components/ui/follow-button";
+import Loading from "@/app/components/ui/loading";
 import UserDetails from "@/app/components/user/user-details";
+import UserEditProfile from "@/app/components/user/user-edit-profile";
 import UserHeader from "@/app/components/user/user-header";
+import UserHomeAvatar from "@/app/components/user/user-home-avatar";
+import UserHomeCover from "@/app/components/user/user-home-cover";
 import UserNav from "@/app/components/user/user-nav";
 
 function ProfileLayout({
@@ -54,6 +55,11 @@ function ProfileLayout({
       }
     : undefined;
 
+  const value = {
+    user: profile,
+    isLoading,
+  };
+
   useEffect(() => {
     if (isPubkeyValid && !profiles.has(pubkey)) {
       void addProfiles([pubkey]);
@@ -62,55 +68,59 @@ function ProfileLayout({
   }, []);
 
   return (
-    <div className="w-full max-w-[40rem] border-x border-light-border">
-      <Header sticky border useActionButton action={back}>
-        <UserHeader profile={profile} isLoading={isLoading} />
-      </Header>
-      <section>
-        {isLoading && !profile ? (
-          <Loading className="mt-5" />
-        ) : !isPubkeyValid ? (
-          <>
-            <UserHomeCover />
-            <div className="flex flex-col gap-8">
+    <UserProvider value={value}>
+      <div className="w-full max-w-[40rem] border-x border-light-border">
+        <Header useActionButton action={back}>
+          <UserHeader />
+        </Header>
+        <section>
+          {isLoading && !profile ? (
+            <Loading className="mt-5" />
+          ) : !isPubkeyValid ? (
+            <>
+              <UserHomeCover />
+              <div className="flex flex-col gap-8">
+                <div className="relative flex flex-col gap-3 px-4 py-3">
+                  <UserHomeAvatar />
+                  <p className="text-xl font-bold">@{shortNpub}</p>
+                </div>
+                <div className="p-8 text-center">
+                  <p className="text-3xl font-bold">
+                    This account doesn’t exist
+                  </p>
+                  <p className="text-light-secondary">
+                    Try searching for another.
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <UserHomeCover coverData={coverData} />
               <div className="relative flex flex-col gap-3 px-4 py-3">
-                <UserHomeAvatar />
-                <p className="text-xl font-bold">@{shortNpub}</p>
+                <div className="flex justify-between">
+                  <UserHomeAvatar src={profile?.picture} />
+                  {isOwner ? (
+                    <UserEditProfile />
+                  ) : (
+                    <div className="flex gap-2 self-start">
+                      <FollowButton />
+                    </div>
+                  )}
+                </div>
+                {profile ? <UserDetails {...profile} /> : undefined}
               </div>
-              <div className="p-8 text-center">
-                <p className="text-3xl font-bold">This account doesn’t exist</p>
-                <p className="text-light-secondary">
-                  Try searching for another.
-                </p>
-              </div>
-            </div>
-          </>
-        ) : (
+            </>
+          )}
+        </section>
+        {profile ? (
           <>
-            <UserHomeCover coverData={coverData} />
-            <div className="relative flex flex-col gap-3 px-4 py-3">
-              <div className="flex justify-between">
-                <UserHomeAvatar profileData={profileData} />
-                {isOwner ? (
-                  <UserEditProfile />
-                ) : (
-                  <div className="flex gap-2 self-start">
-                    <FollowButton />
-                  </div>
-                )}
-              </div>
-              <UserDetails pubkey={pubkey} {...profile} />
-            </div>
+            <UserNav />
+            {children}
           </>
-        )}
-      </section>
-      {profile ? (
-        <>
-          <UserNav />
-          {children}
-        </>
-      ) : null}
-    </div>
+        ) : undefined}
+      </div>
+    </UserProvider>
   );
 }
 

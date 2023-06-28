@@ -1,47 +1,95 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useState, useEffect } from "react";
-import type { Event, Filter } from "nostr-tools";
+import { useState } from "react";
+import { Kind, parseReferences } from "nostr-tools";
+import type { Filter } from "nostr-tools";
+import type { EventPointer } from "nostr-tools/lib/nip19";
+import { useProfile } from "@/app/lib/context/profile-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
-type UseEvents = {
-  events: Map<string, RelayEvent> | undefined;
-  loading: Map<string, boolean>;
+type UseNotes = {
+  notes: RelayEvent[];
+  references: Map<string, RelayEvent>;
+  isLoading: boolean;
+  loadMore: (filter: Filter) => Promise<void>;
 };
 
-export function useEvents(filter: Filter): UseEvents {
-  const { until } = filter;
+type FeedState = {
+  notes: Map<string, RelayEvent>;
+  references: Map<string, RelayEvent>;
+  isLoading: boolean;
+};
 
-  const { relays, subscribe } = useRelay();
+export function useNotes(
+  initPageSize: number = 20,
+  pageSize: number = 10
+): UseNotes {
+  const { addProfiles, isLoading } = useProfile();
+  const { relays, list, subscribe } = useRelay();
 
-  const [events, setEvents] = useState<Map<string, RelayEvent> | undefined>(
-    undefined
-  );
-  const [loading, setLoading] = useState<Map<string, boolean>>(
-    new Map(relays.map((relay) => [relay, false]))
-  );
+  const [state, setState] = useState<FeedState>({
+    notes: new Map(),
+    references: new Map(),
+    isLoading: false,
+  });
 
-  useEffect(() => {
-    let newEvents: Map<string, RelayEvent> = new Map();
+  const loadMore = async (filter: Filter) => {
+    setState((prev) => ({ ...prev, isLoading: true }));
 
-    const onEvent = (event: Event, url: string): void => {
-      const ev = newEvents.get(event.id);
-      newEvents.set(event.id, {
-        ...event,
-        relays: [...(ev?.relays ?? []), url],
-      });
-    };
+    const events = await list(relays, {
+      kinds: [Kind.Text],
+      limit: state.notes.size === 0 ? initPageSize : pageSize,
+      until:
+        state.notes.size > 0
+          ? Array.from(state.notes.values()).slice(-1)[0].created_at
+          : undefined,
+      ...filter,
+    });
 
-    const onEOSE = (url: string): void => {
-      setEvents(newEvents);
-      setLoading((prev) => new Map(prev.set(url, false)));
-    };
+    const newNotes = events
+      .filter((event) => !state.notes.has(event.id))
+      .sort((a, b) => b.created_at - a.created_at)
+      .slice(0, state.notes.size === 0 ? initPageSize : pageSize);
 
-    setEvents(undefined);
-    setLoading(new Map(relays.map((relay) => [relay, true])));
-    subscribe(relays, filter, onEvent, onEOSE);
-  }, [until, relays]);
+    const referencesIds = newNotes.flatMap(
+      (note: RelayEvent) =>
+        parseReferences(note)
+          .map(({ event }: { event?: EventPointer }) => event && event.id)
+          .filter((eventId?: string) => eventId) as string[]
+    );
 
-  return { events, loading };
+    const referencedNotes =
+      referencesIds.length > 0
+        ? await list(relays, {
+            kinds: [Kind.Text],
+            ids: referencesIds,
+          })
+        : [];
+
+    const pubkeys = new Set([
+      ...Array.from(newNotes.values()).map((note) => note.pubkey),
+      ...referencedNotes.map((note) => note.pubkey),
+    ]);
+    await addProfiles(Array.from(pubkeys));
+
+    setState((prev) => ({
+      notes: new Map([
+        ...prev.notes,
+        ...new Map(newNotes.map((event) => [event.id, event])),
+      ]),
+      references: new Map([
+        ...prev.references,
+        ...new Map(referencedNotes.map((event) => [event.id, event])),
+      ]),
+      isLoading: false,
+    }));
+  };
+
+  return {
+    notes: Array.from(state.notes.values()),
+    references: state.references,
+    isLoading: state.isLoading || isLoading,
+    loadMore,
+  };
 }

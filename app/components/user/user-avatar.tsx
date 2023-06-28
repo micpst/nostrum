@@ -11,14 +11,11 @@ type UserAvatarProps = {
 };
 
 function UserAvatar({
-  src,
-  size,
+  src = "/assets/default_profile.png",
+  size = 48,
   pubkey,
   className,
 }: UserAvatarProps): JSX.Element {
-  const pictureSize = size ?? 48;
-  const pictureSrc = src ?? "";
-
   const CustomTag = pubkey ? Link : "div";
 
   return (
@@ -34,9 +31,9 @@ function UserAvatar({
       <NextImage
         useSkeleton
         imgClassName="rounded-full bg-cover w-full h-full"
-        width={pictureSize}
-        height={pictureSize}
-        src={pictureSrc}
+        width={size}
+        height={size}
+        src={src}
         fallbackSrc="/assets/default_profile.png"
         alt="avatar"
         key={src}
