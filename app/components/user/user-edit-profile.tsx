@@ -126,15 +126,7 @@ function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
         open={open}
         closeModal={closeModal}
       >
-        <EditProfileModal
-          name={name}
-          picture={picture}
-          banner={banner}
-          loading={false}
-          inputNameError={""}
-          closeModal={closeModal}
-          updateData={updateData}
-        >
+        <EditProfileModal closeModal={closeModal} updateData={updateData}>
           {inputFields.map((inputData) => (
             <InputField
               {...inputData}
