@@ -9,6 +9,7 @@ type NextImageProps = {
   src: string;
   alt: string;
   width?: number;
+  height?: number;
   children?: ReactNode;
   useSkeleton?: boolean;
   imgClassName?: string;
