@@ -16,7 +16,7 @@ function HomePage() {
     void setIsExplore(false);
   }, []);
 
-  const intObserver = useRef();
+  const intObserver: any = useRef();
   const lastNoteRef = useCallback(
     (note: any) => {
       if (isLoading) return;

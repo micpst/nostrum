@@ -14,7 +14,7 @@ function ExplorePage() {
     void setIsExplore(true);
   }, []);
 
-  const intObserver = useRef();
+  const intObserver: any = useRef();
   const lastNoteRef = useCallback(
     (note: any) => {
       if (isLoading) return;

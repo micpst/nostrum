@@ -15,7 +15,7 @@ function ProfilePage(): JSX.Element | undefined {
     authors: [user?.pubkey || ""],
   };
 
-  const intObserver = useRef();
+  const intObserver: any = useRef();
   const lastNoteRef = useCallback(
     (note: any) => {
       if (isLoading) return;

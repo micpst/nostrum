@@ -1,16 +1,14 @@
 import cn from "clsx";
 import { useWindow } from "@/app/lib/context/window-provider";
 import type { ReactNode } from "react";
-import type { User } from "@/app/lib/types/user";
 
-type UserTooltipProps = Pick<User, "npub"> & {
+type UserTooltipProps = {
   modal?: boolean;
   avatar?: boolean;
   children: ReactNode;
 };
 
 function UserTooltip({
-  npub,
   modal,
   avatar,
   children,

@@ -40,14 +40,14 @@ const Note = forwardRef(
       >
         <div className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1">
           <div className="flex flex-col items-center gap-2">
-            <UserTooltip npub={npub}>
+            <UserTooltip>
               <UserAvatar src={author?.picture} pubkey={event.pubkey} />
             </UserTooltip>
           </div>
           <div className="flex min-w-0 flex-col">
             <div className="flex justify-between gap-2 text-light-secondary">
               <div className="flex gap-1 truncate xs:overflow-visible xs:whitespace-normal">
-                <UserTooltip npub={npub}>
+                <UserTooltip>
                   {author && (
                     <UserName
                       name={
@@ -59,7 +59,7 @@ const Note = forwardRef(
                     />
                   )}
                 </UserTooltip>
-                <UserTooltip npub={npub}>
+                <UserTooltip>
                   <UserNpub pubkey={event.pubkey} />
                 </UserTooltip>
                 <NoteDate noteLink={""} createdAt={event.created_at * 1000} />
