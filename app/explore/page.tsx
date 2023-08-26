@@ -1,18 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useFeed } from "@/app/lib/context/feed-provider";
+import { useExplore } from "@/app/lib/context/explore-provider";
 
 function ExplorePage() {
-  const { notes, isLoading, setIsExplore, loadNotes } = useFeed();
-
-  useEffect(() => {
-    void setIsExplore(true);
-  }, []);
+  const { notes, isLoading, loadMore } = useExplore();
 
   const intObserver: any = useRef();
   const lastNoteRef = useCallback(
@@ -22,7 +18,7 @@ function ExplorePage() {
       if (intObserver.current) intObserver.current.disconnect();
 
       intObserver.current = new IntersectionObserver((posts) => {
-        if (posts[0].isIntersecting) void loadNotes();
+        if (posts[0].isIntersecting) void loadMore();
       });
 
       if (note) intObserver.current.observe(note);

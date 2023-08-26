@@ -1,6 +1,6 @@
 import cn from "clsx";
-import { useWindow } from "@/app/lib/context/window-provider";
 import type { ReactNode } from "react";
+import { useWindow } from "@/app/lib/hooks/useWindow";
 
 type UserTooltipProps = {
   modal?: boolean;

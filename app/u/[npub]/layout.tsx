@@ -99,7 +99,7 @@ function ProfileLayout({
                     <UserEditProfile />
                   ) : (
                     <div className="flex gap-2 self-start">
-                      <FollowButton />
+                      <FollowButton userTargetPubkey={pubkey} />
                     </div>
                   )}
                 </div>

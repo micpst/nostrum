@@ -3,7 +3,7 @@
 import LoginButton from "@/app/components/login/login-button";
 import LoginLink from "@/app/components/login/login-link";
 import { useAuth } from "@/app/lib/context/auth-provider";
-import { useWindow } from "@/app/lib/context/window-provider";
+import { useWindow } from "@/app/lib/hooks/useWindow";
 
 function BottomBar(): JSX.Element | null {
   const { publicKey } = useAuth();
