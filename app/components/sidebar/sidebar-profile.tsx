@@ -27,7 +27,7 @@ function SidebarProfile(): JSX.Element | null {
 
   if (!publicKey) return null;
 
-  const user = profiles?.get(publicKey);
+  const user = profiles.get(publicKey);
 
   return (
     <>

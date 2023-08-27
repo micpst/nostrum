@@ -48,12 +48,7 @@ function ProfileLayout({
       }
     : undefined;
 
-  const profileData = profile?.picture
-    ? {
-        src: profile?.picture,
-        alt: "avatar",
-      }
-    : undefined;
+  const profileData = profile?.picture ? { src: profile.picture } : {};
 
   const value = {
     user: profile,
@@ -99,12 +94,12 @@ function ProfileLayout({
               <UserHomeCover coverData={coverData} />
               <div className="relative flex flex-col gap-3 px-4 py-3">
                 <div className="flex justify-between">
-                  <UserHomeAvatar src={profile?.picture} />
+                  <UserHomeAvatar {...profileData} />
                   {isOwner ? (
                     <UserEditProfile />
                   ) : (
                     <div className="flex gap-2 self-start">
-                      <FollowButton />
+                      <FollowButton userTargetPubkey={pubkey} />
                     </div>
                   )}
                 </div>

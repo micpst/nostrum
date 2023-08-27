@@ -2,7 +2,7 @@
 
 "use client";
 
-import { Kind, nip05 } from "nostr-tools";
+import { nip05 } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
@@ -31,7 +31,6 @@ export const ProfileContext = createContext<ProfileContext | null>(null);
 export default function ProfileProvider({ children }: ProfileProviderProps) {
   const { publicKey } = useAuth();
   const { relays, list } = useRelay();
-
   const [state, setState] = useState<ProfilesState>({
     profiles: new Map(),
     isLoading: false,
@@ -51,7 +50,7 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     if (pubkeys.length === 0) return;
 
     const filter = {
-      kinds: [Kind.Metadata],
+      kinds: [0],
       authors: pubkeys,
     };
 
@@ -76,7 +75,7 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
         ] as [string, User]
     );
 
-    const events = await list(relays, filter);
+    const events = await list(filter);
     const profiles = await Promise.all(
       events.map(async (event) => {
         const parsed = JSON.parse(event.content);

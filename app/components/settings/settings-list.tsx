@@ -3,7 +3,7 @@
 import Header from "@/app/components/common/header";
 import SettingsLink from "@/app/components/settings/settings-link";
 import SettingsRelays from "@/app/components/settings/settings-relays";
-import { useWindow } from "@/app/lib/context/window-provider";
+import { useWindow } from "@/app/lib/hooks/useWindow";
 
 export type NavLink = {
   href: string;

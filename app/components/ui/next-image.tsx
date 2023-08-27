@@ -1,14 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
+
 import cn from "clsx";
-import Image from "next/image";
 import { SyntheticEvent, useState } from "react";
-import type { ImageProps } from "next/image";
+import type { ImageProps } from "next/legacy/image";
 import type { ReactNode } from "react";
 
 type NextImageProps = {
-  fallbackSrc?: string;
   src: string;
+  fallbackSrc?: string;
   alt: string;
-  width?: number;
+  width?: string | number;
   children?: ReactNode;
   useSkeleton?: boolean;
   imgClassName?: string;
@@ -41,41 +42,22 @@ function NextImage({
 
   return (
     <figure style={{ width, height }} className={className}>
-      {src ? (
-        <img
-          src={src}
-          alt={alt}
-          className={cn(
-            imgClassName,
-            loading
-              ? blurClassName ?? "bg-main-sidebar-background"
-              : previewCount === 1
-              ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
-              : "object-cover"
-          )}
-          width={width}
-          height={height}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
-      ) : (
-        <Image
-          className={cn(
-            imgClassName,
-            loading
-              ? blurClassName ?? "bg-main-sidebar-background"
-              : previewCount === 1
-              ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
-              : "object-cover"
-          )}
-          src={fallbackSrc || ""}
-          width={width}
-          height={height}
-          alt={alt}
-          onLoadingComplete={handleLoad}
-          layout="responsive"
-        />
-      )}
+      <img
+        src={src}
+        alt={alt}
+        className={cn(
+          imgClassName,
+          loading
+            ? blurClassName ?? "bg-main-sidebar-background"
+            : previewCount === 1
+            ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
+            : "object-cover"
+        )}
+        width={width}
+        height={height}
+        onLoad={handleLoad}
+        onError={handleError}
+      />
       {children}
     </figure>
   );

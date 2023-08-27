@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useWindow } from "@/app/lib/context/window-provider";
+import { useWindow } from "@/app/lib/hooks/useWindow";
 
 function Aside({ children }: { children: ReactNode }) {
   const { width } = useWindow();

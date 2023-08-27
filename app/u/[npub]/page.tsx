@@ -1,21 +1,21 @@
 "use client";
 
-import { ReactNode, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import Note from "@/app/components/note/note";
-import { useNotes } from "@/app/lib/hooks/useEvents";
 import { useUser } from "@/app/lib/context/user-provider";
+import { useNotes } from "@/app/lib/hooks/useNotes";
 
 function ProfilePage(): JSX.Element | undefined {
-  const { notes, isLoading, loadMore } = useNotes();
+  const { notes, isLoading, init, loadMore } = useNotes();
   const { user } = useUser();
 
   const filter = {
     authors: [user?.pubkey || ""],
   };
 
-  const intObserver = useRef();
+  const intObserver: any = useRef();
   const lastNoteRef = useCallback(
     (note: any) => {
       if (isLoading) return;
@@ -32,7 +32,7 @@ function ProfilePage(): JSX.Element | undefined {
   );
 
   useEffect(() => {
-    void loadMore(filter);
+    void init(filter);
   }, []);
 
   if (!user) return undefined;

@@ -25,7 +25,7 @@ type UserEditProfileProps = {
 function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
   const { setProfile } = useProfile();
-  const { relays, publish } = useRelay();
+  const { publish } = useRelay();
   const { user } = useUser();
   const { about, name, picture, banner, nip05 } = user as User;
   const [editUserData, setEditUserData] = useState<EditableUserData>({
@@ -102,14 +102,10 @@ function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
     );
 
     const content = JSON.stringify(newUserData);
-    const event = await NostrService.createEvent(
-      Kind.Metadata,
-      user.pubkey,
-      content
-    );
+    const event = await NostrService.createEvent(0, user.pubkey, content);
 
     if (event) {
-      await publish(relays, event);
+      await publish(event);
       setProfile({
         pubkey: user.pubkey,
         ...newUserData,
