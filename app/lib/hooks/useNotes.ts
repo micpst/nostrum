@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useState } from "react";
-import { Kind, parseReferences } from "nostr-tools";
+import { parseReferences } from "nostr-tools";
 import type { Filter } from "nostr-tools";
 import type { EventPointer } from "nostr-tools/lib/nip19";
 import { useProfile } from "@/app/lib/context/profile-provider";
@@ -33,7 +33,7 @@ export function useNotes({
   pageSize = 10,
 }: UseNotesProps = {}): UseNotes {
   const { addProfiles, isLoading } = useProfile();
-  const { relays, list, subscribe } = useRelay();
+  const { list, subscribe } = useRelay();
 
   const [state, setState] = useState<State>({
     notes: new Map(),
@@ -56,8 +56,8 @@ export function useNotes({
       isLoading: true,
     });
 
-    const events = await list(relays, {
-      kinds: [Kind.Text],
+    const events = await list({
+      kinds: [1],
       limit: initPageSize,
       ...filter,
     });
@@ -75,8 +75,8 @@ export function useNotes({
 
     const referencedNotes =
       referencesIds.length > 0
-        ? await list(relays, {
-            kinds: [Kind.Text],
+        ? await list({
+            kinds: [1],
             ids: referencesIds,
           })
         : [];
@@ -97,8 +97,8 @@ export function useNotes({
   const loadMore = async (filter?: Filter): Promise<void> => {
     setState((prev) => ({ ...prev, isLoading: true }));
 
-    const events = await list(relays, {
-      kinds: [Kind.Text],
+    const events = await list({
+      kinds: [1],
       limit: pageSize,
       until:
         state.notes.size > 0
@@ -121,8 +121,8 @@ export function useNotes({
 
     const referencedNotes =
       referencesIds.length > 0
-        ? await list(relays, {
-            kinds: [Kind.Text],
+        ? await list({
+            kinds: [1],
             ids: referencesIds,
           })
         : [];

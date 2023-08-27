@@ -5,7 +5,7 @@ function UserHeader(): JSX.Element {
   const { user, isLoading } = useUser();
   const username = user?.displayName || user?.display_name || user?.name;
 
-  return isLoading || !username ? (
+  return !username ? (
     <h2 className="text-xl font-bold">Profile</h2>
   ) : (
     <UserName

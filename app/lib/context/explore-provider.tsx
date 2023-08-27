@@ -29,6 +29,7 @@ export default function ExploreProvider({ children }: ExploreProviderProps) {
   });
 
   useEffect(() => {
+    console.log("ExploreProvider: useEffect", relays);
     void init();
   }, [relays]);
 

@@ -2,7 +2,6 @@
 
 "use client";
 
-import { Kind } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
@@ -29,6 +28,7 @@ export default function FollowingProvider({
   const [following, setFollowing] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    console.log("FollowingProvider: useEffect", publicKey);
     if (publicKey === undefined) setFollowing(new Set());
     else void fetchFollowing();
   }, [publicKey, relays]);
@@ -36,8 +36,8 @@ export default function FollowingProvider({
   const fetchFollowing = async (): Promise<void> => {
     if (publicKey === undefined) return;
 
-    const events = await list(relays, {
-      kinds: [Kind.Contacts],
+    const events = await list({
+      kinds: [3],
       authors: [publicKey],
     });
 
@@ -54,14 +54,9 @@ export default function FollowingProvider({
 
     const newContacts = [...following, pubkey];
     const tags = newContacts.map((contact) => ["p", contact]);
-    const event = await NostrService.createEvent(
-      Kind.Contacts,
-      publicKey,
-      "",
-      tags
-    );
+    const event = await NostrService.createEvent(3, publicKey, "", tags);
 
-    if (event) await publish(relays, event);
+    if (event) await publish(event);
     setFollowing(new Set(newContacts));
   };
 
@@ -72,14 +67,9 @@ export default function FollowingProvider({
       (contact) => contact !== pubkey
     );
     const tags = newContacts.map((contact) => ["p", contact]);
-    const event = await NostrService.createEvent(
-      Kind.Contacts,
-      publicKey,
-      "",
-      tags
-    );
+    const event = await NostrService.createEvent(3, publicKey, "", tags);
 
-    if (event) await publish(relays, event);
+    if (event) await publish(event);
     setFollowing(new Set(newContacts));
   };
 

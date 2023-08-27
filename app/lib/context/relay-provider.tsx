@@ -2,25 +2,22 @@
 
 "use client";
 
-import { relayInit, verifySignature } from "nostr-tools";
+import { relayInit } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Event, Filter, Relay } from "nostr-tools";
 import type { ReactNode } from "react";
+import { RELAYS } from "@/app/lib/constants";
 import NostrService from "@/app/lib/services/nostr";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type RelayContext = {
   relays: string[];
   addRelay: (url: string) => void;
+  list: (filter: Filter) => Promise<RelayEvent[]>;
+  publish: (event: Event) => Promise<RelayEvent>;
   removeRelay: (url: string) => void;
   resetRelays: () => void;
-  list: (relays: string[], filter: Filter) => Promise<RelayEvent[]>;
-  publish: (relays: string[], event: Event) => Promise<RelayEvent>;
-  subscribe: (
-    relays: string[],
-    filter: Filter,
-    onEvent: (event: RelayEvent) => void
-  ) => void;
+  subscribe: (filter: Filter, onEvent: (event: RelayEvent) => void) => void;
 };
 
 type RelayProviderProps = {
@@ -42,16 +39,17 @@ export default function RelayProvider({ children }: RelayProviderProps) {
       } catch (e) {}
     };
 
-    relays.forEach(async (relay) => await connect(relay));
+    relays.forEach((relay) => void connect(relay));
     const timeout = setInterval(
-      () => relays.forEach(async (relay) => await connect(relay)),
+      () => relays.forEach((relay) => void connect(relay)),
       10_000
     );
     return () => clearInterval(timeout);
   }, [relays]);
 
   const resetRelays = (): void => {
-    // setRelays(RELAYS);
+    NostrService.resetRelays();
+    setRelays(new Map(RELAYS.map((url) => [url, relayInit(url)])));
   };
 
   const addRelay = (url: string): void => {
@@ -78,89 +76,31 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     });
   };
 
-  const publish = async (
-    urls: string[],
-    event: Event,
-    timeout: number = 3000
-  ): Promise<RelayEvent> => {
-    const publishedEvent: RelayEvent = {
-      ...event,
-      relays: [],
-    };
-    const selectedRelays: Relay[] = urls
-      .filter((url: string) => relays.has(url))
-      .map((url: string) => relays.get(url) as Relay);
-
-    return new Promise<RelayEvent>((resolve) => {
-      selectedRelays.forEach((relay) => {
-        const pub = relay.publish(event);
-
-        pub.on("ok", () => {
-          publishedEvent.relays.push(relay.url);
-          if (publishedEvent.relays.length === selectedRelays.length)
-            return resolve(publishedEvent);
-        });
-
-        pub.on("failed", (reason: any) => {
-          publishedEvent.relays.push(relay.url);
-          if (publishedEvent.relays.length === selectedRelays.length)
-            return resolve(publishedEvent);
-        });
-      });
-    });
+  const publish = async (event: Event): Promise<RelayEvent> => {
+    const selectedRelays = Array.from(relays.values());
+    return NostrService.publishEvent(selectedRelays, event);
   };
 
   const subscribe = (
-    urls: string[],
     filter: Filter,
     onEvent: (event: RelayEvent) => void
   ): void => {
-    urls
-      .filter((url: string) => relays.has(url))
-      .map((url: string) => relays.get(url) as Relay)
-      .forEach((relay: Relay) => {
-        relay
-          .sub([filter])
-          .on("event", (event: Event) =>
-            onEvent({ ...event, relays: [relay.url] })
-          );
-      });
+    const selectedRelays = Array.from(relays.values());
+    NostrService.subscribeEvents(selectedRelays, filter, onEvent);
   };
 
-  const list = async (
-    urls: string[],
-    filter: Filter
-  ): Promise<RelayEvent[]> => {
-    const newEvents: Map<string, RelayEvent> = new Map();
-    const selectedRelays: Relay[] = urls
-      .filter((url: string) => relays.has(url))
-      .map((url: string) => relays.get(url) as Relay);
-
-    await Promise.all(
-      selectedRelays.map(async (relay: Relay) => {
-        const events = await relay.list([filter]);
-        events
-          .filter((e) => verifySignature(e))
-          .forEach((e) => {
-            const ev = newEvents.get(e.id);
-            newEvents.set(e.id, {
-              ...e,
-              relays: [...(ev?.relays ?? []), relay.url],
-            });
-          });
-      })
-    );
-
-    return Array.from([...newEvents.values()]);
+  const list = async (filter: Filter): Promise<RelayEvent[]> => {
+    const selectedRelays = Array.from(relays.values());
+    return NostrService.listEvents(selectedRelays, filter);
   };
 
   const value: RelayContext = {
     relays: Array.from(relays.keys()),
     addRelay,
-    removeRelay,
-    resetRelays,
     list,
     publish,
+    removeRelay,
+    resetRelays,
     subscribe,
   };
 

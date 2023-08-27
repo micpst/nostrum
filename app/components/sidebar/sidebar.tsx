@@ -68,7 +68,7 @@ function Sidebar(): JSX.Element {
               ))}
             {publicKey && (
               <SidebarLink
-                href={`u/${npub}`}
+                href={`/u/${npub}`}
                 linkName="Profile"
                 iconName="ProfileIcon"
               />
