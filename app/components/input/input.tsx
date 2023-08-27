@@ -38,7 +38,7 @@ function Input({
 
   const { publicKey } = useAuth();
   const { profiles, isLoading, addProfiles, removeProfiles } = useProfile();
-  const { relays, publish } = useRelay();
+  const { publish } = useRelay();
 
   if (!publicKey) return null;
 
@@ -52,13 +52,13 @@ function Input({
     inputRef.current?.blur();
 
     const event = await NostrService.createEvent(
-      Kind.Text,
+      1,
       user.pubkey,
       inputValue.trim()
     );
 
     if (event) {
-      await publish(relays, event);
+      await publish(event);
       closeModal();
     }
   };

@@ -11,13 +11,12 @@ type UserAvatarProps = {
 };
 
 function UserAvatar({
-  src = "/assets/default_profile.png",
+  src,
   size = 48,
   pubkey,
   className,
 }: UserAvatarProps): JSX.Element {
   const CustomTag = pubkey ? Link : "div";
-
   return (
     <CustomTag
       href={pubkey ? `u/${nip19.npubEncode(pubkey)}` : ""}
@@ -33,7 +32,7 @@ function UserAvatar({
         imgClassName="rounded-full bg-cover w-full h-full"
         width={size}
         height={size}
-        src={src}
+        src={src || "/assets/default_profile.png"}
         fallbackSrc="/assets/default_profile.png"
         alt="avatar"
         key={src}
