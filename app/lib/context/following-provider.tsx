@@ -28,7 +28,6 @@ export default function FollowingProvider({
   const [following, setFollowing] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    console.log("FollowingProvider: useEffect", publicKey);
     if (publicKey === undefined) setFollowing(new Set());
     else void fetchFollowing();
   }, [publicKey, relays]);
