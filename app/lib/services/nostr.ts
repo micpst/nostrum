@@ -12,7 +12,11 @@ type NostrService = {
   ) => Promise<Event | undefined>;
   getRelays: () => Relay[];
   listEvents: (relays: Relay[], filter: Filter) => Promise<RelayEvent[]>;
-  publishEvent: (relays: Relay[], event: Event) => Promise<RelayEvent>;
+  publishEvent: (
+    relays: Relay[],
+    event: Event,
+    timeout?: number
+  ) => Promise<RelayEvent>;
   resetRelays: () => void;
   setRelays: (relays: Relay[]) => void;
   signEvent: (event: UnsignedEvent) => Promise<Event | undefined>;
@@ -91,15 +95,13 @@ async function listEvents(
   await Promise.all(
     relays.map(async (relay: Relay) => {
       const events = await relay.list([filter]);
-      events
-        .filter((e) => verifySignature(e))
-        .forEach((e) => {
-          const ev = newEvents.get(e.id);
-          newEvents.set(e.id, {
-            ...e,
-            relays: [...(ev?.relays ?? []), relay.url],
-          });
+      events.forEach((e) => {
+        const ev = newEvents.get(e.id);
+        newEvents.set(e.id, {
+          ...e,
+          relays: [...(ev?.relays ?? []), relay.url],
         });
+      });
     })
   );
   return Array.from([...newEvents.values()]);
@@ -107,15 +109,23 @@ async function listEvents(
 
 async function publishEvent(
   relays: Relay[],
-  event: Event
+  event: Event,
+  timeout: number = 1_500
 ): Promise<RelayEvent> {
   const urls = await Promise.all(
-    relays.map(async (relay) => {
-      try {
-        await relay.publish(event);
-        return relay.url;
-      } catch (err) {}
-    })
+    relays.map(
+      (relay) =>
+        new Promise<string | void>(async (resolve) => {
+          try {
+            const timeoutId = setTimeout(() => resolve(), timeout);
+            await relay.publish(event);
+            clearTimeout(timeoutId);
+            resolve(relay.url);
+          } catch (err) {
+            resolve();
+          }
+        })
+    )
   );
   return {
     ...event,
