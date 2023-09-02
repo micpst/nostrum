@@ -20,8 +20,6 @@ function NoteStats({
   const noteIsLiked = reactions.has(note.id);
   const noteIsReposted = false;
 
-  console.log(note, reactions, noteIsLiked);
-
   const handleLike = async () => {
     if (noteIsLiked) await unlike(note);
     else await like(note);
