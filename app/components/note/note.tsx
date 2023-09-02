@@ -69,7 +69,7 @@ const Note = forwardRef(
             </div>
             <NoteContent event={event} />
             <div className="mt-3 flex flex-col gap-2">
-              <NoteStats isOwner={isOwner} noteId={event.id} />
+              <NoteStats isOwner={isOwner} note={event} />
             </div>
           </div>
         </div>

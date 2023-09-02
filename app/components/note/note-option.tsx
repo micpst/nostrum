@@ -7,6 +7,7 @@ import type { IconName } from "@/app/components/ui/icon";
 type NoteOptionProps = {
   tip: string;
   stats?: number;
+  solid?: boolean;
   iconName: IconName;
   disabled?: boolean;
   className: string;
@@ -17,6 +18,7 @@ type NoteOptionProps = {
 function NoteOption({
   stats,
   disabled,
+  solid,
   iconName,
   className,
   iconClassName,
@@ -38,6 +40,7 @@ function NoteOption({
           iconClassName
         )}
         iconName={iconName}
+        solid={solid}
       />
       {stats ? (
         <div className="overflow-hidden">

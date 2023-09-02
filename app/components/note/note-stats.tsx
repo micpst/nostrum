@@ -1,29 +1,30 @@
 import cn from "clsx";
 import NoteOption from "@/app/components/note/note-option";
 import { useReactions } from "@/app/lib/context/reactions-provider";
+import type { RelayEvent } from "@/app/lib/types/event";
 
 type TweetStatsProps = {
-  reply?: boolean;
   isOwner: boolean;
-  noteId: string;
+  note: RelayEvent;
   viewNote?: boolean;
   openModal?: () => void;
 };
 
 function NoteStats({
-  reply,
-  noteId,
+  note,
   viewNote,
   openModal,
 }: TweetStatsProps): JSX.Element {
   const { reactions, like, unlike } = useReactions();
 
-  const noteIsLiked = reactions.has(noteId);
+  const noteIsLiked = reactions.has(note.id);
   const noteIsReposted = false;
 
+  console.log(note, reactions, noteIsLiked);
+
   const handleLike = async () => {
-    if (noteIsLiked) await unlike(noteId);
-    else await like(noteId);
+    if (noteIsLiked) await unlike(note);
+    else await like(note);
   };
 
   return (
@@ -40,7 +41,6 @@ function NoteStats({
         tip="Reply"
         iconName="ChatBubbleOvalLeftIcon"
         onClick={openModal}
-        disabled={reply}
       />
       <NoteOption
         className={cn(
@@ -55,12 +55,13 @@ function NoteStats({
       <NoteOption
         className={cn(
           "hover:text-accent-pink focus-visible:text-accent-pink",
-          noteIsLiked && "text-accent-pink [&>i>svg]:fill-accent-pink"
+          noteIsLiked && "text-accent-pink [&>svg]:fill-accent-pink"
         )}
         iconClassName="group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20 group-hover:fill-accent-pink
                        group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80 group-focus-visible:fill-accent-pink"
         tip={noteIsLiked ? "Unlike" : "Like"}
         iconName="HeartIcon"
+        solid={noteIsLiked}
         onClick={handleLike}
       />
     </div>
