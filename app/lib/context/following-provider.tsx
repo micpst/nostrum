@@ -55,8 +55,10 @@ export default function FollowingProvider({
     const tags = newContacts.map((contact) => ["p", contact]);
     const event = await NostrService.createEvent(3, publicKey, "", tags);
 
-    if (event) await publish(event);
-    setFollowing(new Set(newContacts));
+    if (event) {
+      await publish(event);
+      setFollowing(new Set(newContacts));
+    }
   };
 
   const unfollow = async (pubkey: string): Promise<void> => {
@@ -68,8 +70,10 @@ export default function FollowingProvider({
     const tags = newContacts.map((contact) => ["p", contact]);
     const event = await NostrService.createEvent(3, publicKey, "", tags);
 
-    if (event) await publish(event);
-    setFollowing(new Set(newContacts));
+    if (event) {
+      await publish(event);
+      setFollowing(new Set(newContacts));
+    }
   };
 
   const value: FollowingContext = {

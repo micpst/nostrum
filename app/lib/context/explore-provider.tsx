@@ -1,10 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 "use client";
 
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
-import { useRelay } from "@/app/lib/context/relay-provider";
 import { useNotes } from "@/app/lib/hooks/useNotes";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -22,15 +19,7 @@ type ExploreProviderProps = {
 export const ExploreContext = createContext<ExploreContext | null>(null);
 
 export default function ExploreProvider({ children }: ExploreProviderProps) {
-  const { relays } = useRelay();
-  const { notes, references, isLoading, init, loadMore } = useNotes({
-    initPageSize: 20,
-    pageSize: 10,
-  });
-
-  useEffect(() => {
-    void init();
-  }, [relays]);
+  const { notes, references, isLoading, loadMore } = useNotes();
 
   const value: ExploreContext = {
     notes,

@@ -1,16 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import cn from "clsx";
-import { useEffect, useMemo, useState } from "react";
 import NoteOption from "@/app/components/note/note-option";
-import type { Note } from "@/app/lib/types/note";
+import { useReactions } from "@/app/lib/context/reactions-provider";
 
-type TweetStatsProps = Pick<
-  Note,
-  "userLikes" | "userReposts" | "userReplies"
-> & {
+type TweetStatsProps = {
   reply?: boolean;
-  userId: string;
   isOwner: boolean;
   noteId: string;
   viewNote?: boolean;
@@ -19,50 +12,19 @@ type TweetStatsProps = Pick<
 
 function NoteStats({
   reply,
-  userId,
-  isOwner,
   noteId,
-  userLikes,
   viewNote,
-  userReposts,
-  userReplies: totalReplies,
   openModal,
 }: TweetStatsProps): JSX.Element {
-  const totalLikes = userLikes.length;
-  const totalReposts = userReposts.length;
+  const { reactions, like, unlike } = useReactions();
 
-  const [{ currentReplies, currentReposts, currentLikes }, setCurrentStats] =
-    useState({
-      currentReplies: totalReplies,
-      currentLikes: totalLikes,
-      currentReposts: totalReposts,
-    });
+  const noteIsLiked = reactions.has(noteId);
+  const noteIsReposted = false;
 
-  useEffect(() => {
-    setCurrentStats({
-      currentReplies: totalReplies,
-      currentLikes: totalLikes,
-      currentReposts: totalReposts,
-    });
-  }, [totalReplies, totalLikes, totalReposts]);
-
-  const replyMove = useMemo(
-    () => (totalReplies > currentReplies ? -25 : 25),
-    [totalReplies]
-  );
-
-  const likeMove = useMemo(
-    () => (totalLikes > currentLikes ? -25 : 25),
-    [totalLikes]
-  );
-
-  const tweetMove = useMemo(
-    () => (totalReposts > currentReposts ? -25 : 25),
-    [totalReposts]
-  );
-
-  const noteIsLiked = userLikes.includes(userId);
-  const noteIsReposted = userReposts.includes(userId);
+  const handleLike = async () => {
+    if (noteIsLiked) await unlike(noteId);
+    else await like(noteId);
+  };
 
   return (
     <div
@@ -76,7 +38,6 @@ function NoteStats({
         iconClassName="group-hover:bg-main-accent/10 group-active:bg-main-accent/20 group-hover:fill-main-accent
                        group-focus-visible:bg-main-accent/10 group-focus-visible:ring-main-accent/80 group-focus-visible:fill-main-accent"
         tip="Reply"
-        stats={currentReplies}
         iconName="ChatBubbleOvalLeftIcon"
         onClick={openModal}
         disabled={reply}
@@ -89,7 +50,6 @@ function NoteStats({
         iconClassName="group-hover:bg-accent-green/10 group-active:bg-accent-green/20 group-hover:fill-accent-green
                        group-focus-visible:bg-accent-green/10 group-focus-visible:ring-accent-green/80 group-focus-visible:fill-accent-green"
         tip={noteIsReposted ? "Undo Retweet" : "Retweet"}
-        stats={currentReposts}
         iconName="ArrowPathRoundedSquareIcon"
       />
       <NoteOption
@@ -100,8 +60,8 @@ function NoteStats({
         iconClassName="group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20 group-hover:fill-accent-pink
                        group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80 group-focus-visible:fill-accent-pink"
         tip={noteIsLiked ? "Unlike" : "Like"}
-        stats={currentLikes}
         iconName="HeartIcon"
+        onClick={handleLike}
       />
     </div>
   );

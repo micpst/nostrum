@@ -8,12 +8,12 @@ import { useUser } from "@/app/lib/context/user-provider";
 import { useNotes } from "@/app/lib/hooks/useNotes";
 
 function ProfilePage(): JSX.Element | undefined {
-  const { notes, isLoading, init, loadMore } = useNotes();
   const { user } = useUser();
-
-  const filter = {
-    authors: [user?.pubkey || ""],
-  };
+  const { notes, isLoading, loadMore } = useNotes({
+    filter: {
+      authors: [user?.pubkey || ""],
+    },
+  });
 
   const intObserver: any = useRef();
   const lastNoteRef = useCallback(
@@ -23,17 +23,13 @@ function ProfilePage(): JSX.Element | undefined {
       if (intObserver.current) intObserver.current.disconnect();
 
       intObserver.current = new IntersectionObserver((posts) => {
-        if (posts[0].isIntersecting) void loadMore(filter);
+        if (posts[0].isIntersecting) void loadMore();
       });
 
       if (note) intObserver.current.observe(note);
     },
     [isLoading]
   );
-
-  useEffect(() => {
-    void init(filter);
-  }, []);
 
   if (!user) return undefined;
 

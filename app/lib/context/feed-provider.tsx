@@ -6,7 +6,6 @@ import { createContext, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useFollowing } from "@/app/lib/context/following-provider";
-import { useRelay } from "@/app/lib/context/relay-provider";
 import { useNotes } from "@/app/lib/hooks/useNotes";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -26,22 +25,19 @@ export const FeedContext = createContext<FeedContext | null>(null);
 export default function FeedProvider({ children }: FeedProviderProps) {
   const { publicKey } = useAuth();
   const { following } = useFollowing();
-  const { relays } = useRelay();
-  const { notes, references, isLoading, init, loadMore, reset } = useNotes({
-    initPageSize: 20,
-    pageSize: 10,
+  const { notes, references, isLoading, loadMore, reset } = useNotes({
+    filter: { authors: Array.from(following) },
   });
 
   useEffect(() => {
-    if (publicKey) void init({ authors: Array.from(following) });
-    else reset();
-  }, [following, publicKey, relays]);
+    if (!publicKey) reset();
+  }, [publicKey]);
 
   const value: FeedContext = {
     notes,
     references,
     isLoading,
-    loadMore: () => loadMore({ authors: Array.from(following) }),
+    loadMore,
   };
 
   return <FeedContext.Provider value={value}>{children}</FeedContext.Provider>;
