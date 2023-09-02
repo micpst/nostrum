@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import Note from "@/app/components/note/note";
 import { useUser } from "@/app/lib/context/user-provider";
+import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 import { useNotes } from "@/app/lib/hooks/useNotes";
 
 function ProfilePage(): JSX.Element | undefined {
@@ -14,22 +14,7 @@ function ProfilePage(): JSX.Element | undefined {
       authors: [user?.pubkey || ""],
     },
   });
-
-  const intObserver: any = useRef();
-  const lastNoteRef = useCallback(
-    (note: any) => {
-      if (isLoading) return;
-
-      if (intObserver.current) intObserver.current.disconnect();
-
-      intObserver.current = new IntersectionObserver((posts) => {
-        if (posts[0].isIntersecting) void loadMore();
-      });
-
-      if (note) intObserver.current.observe(note);
-    },
-    [isLoading]
-  );
+  const lastNoteRef = useInfiniteScroll({ isLoading, loadMore });
 
   if (!user) return undefined;
 

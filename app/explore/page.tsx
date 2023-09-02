@@ -1,30 +1,15 @@
 "use client";
 
-import { useCallback, useRef } from "react";
 import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import { useExplore } from "@/app/lib/context/explore-provider";
+import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 
 function ExplorePage() {
   const { notes, isLoading, loadMore } = useExplore();
-
-  const intObserver: any = useRef();
-  const lastNoteRef = useCallback(
-    (note: any) => {
-      if (isLoading) return;
-
-      if (intObserver.current) intObserver.current.disconnect();
-
-      intObserver.current = new IntersectionObserver((posts) => {
-        if (posts[0].isIntersecting) void loadMore();
-      });
-
-      if (note) intObserver.current.observe(note);
-    },
-    [isLoading]
-  );
+  const lastNoteRef = useInfiniteScroll({ isLoading, loadMore });
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
