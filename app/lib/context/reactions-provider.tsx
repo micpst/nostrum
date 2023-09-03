@@ -66,17 +66,20 @@ export default function ReactionsProvider({
   };
 
   const unlike = async (event: RelayEvent): Promise<void> => {
-    console.log("unlike", event);
-    // if (!pubkey || !publicKey) return;
-    //
-    // const newContacts = Array.from(Reactions).filter(
-    //   (contact) => contact !== pubkey
-    // );
-    // const tags = newContacts.map((contact) => ["p", contact]);
-    // const event = await NostrService.createEvent(3, publicKey, "", tags);
-    //
-    // if (event) await publish(event);
-    // setReactions(new Set(newContacts));
+    const reactionId = reactions.get(event.id);
+    if (!publicKey || !reactionId) return;
+
+    const tags = [["e", reactionId]];
+    const deleteEvent = await NostrService.createEvent(5, publicKey, "", tags);
+
+    if (deleteEvent) {
+      await publish(deleteEvent);
+      setReactions((prev) => {
+        const newReactions = new Map(prev);
+        newReactions.delete(event.id);
+        return newReactions;
+      });
+    }
   };
 
   const value: ReactionsContext = {
