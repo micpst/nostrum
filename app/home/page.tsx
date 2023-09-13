@@ -4,13 +4,11 @@ import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useFeed } from "@/app/lib/context/feed-provider";
+import { useHome } from "@/app/lib/context/home-provider";
 import withAuth from "@/app/lib/hoc/with-auth";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 
 function HomePage() {
-  const { notes, isLoading, loadMore } = useFeed();
-  const lastNoteRef = useInfiniteScroll({ isLoading, loadMore });
+  const { notes, isLoading, loadMoreRef } = useHome();
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
@@ -21,7 +19,7 @@ function HomePage() {
         ) : (
           notes.map((note, i) =>
             i === notes.length - 5 ? (
-              <Note ref={lastNoteRef} key={note.id} event={note} />
+              <Note ref={loadMoreRef} key={note.id} event={note} />
             ) : (
               <Note key={note.id} event={note} />
             )

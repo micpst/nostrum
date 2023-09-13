@@ -15,8 +15,9 @@ function NoteStats({
   viewNote,
   openModal,
 }: TweetStatsProps): JSX.Element {
-  const { reactions, like, unlike } = useReactions();
+  const { reactions, isLoading, like, unlike } = useReactions();
 
+  const reactionLoading = isLoading.has(note.id);
   const noteIsLiked = reactions.has(note.id);
   const noteIsReposted = false;
 
@@ -61,6 +62,7 @@ function NoteStats({
         iconName="HeartIcon"
         solid={noteIsLiked}
         onClick={handleLike}
+        disabled={reactionLoading}
       />
     </div>
   );

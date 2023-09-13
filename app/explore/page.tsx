@@ -5,11 +5,9 @@ import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import { useExplore } from "@/app/lib/context/explore-provider";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 
 function ExplorePage() {
-  const { notes, isLoading, loadMore } = useExplore();
-  const lastNoteRef = useInfiniteScroll({ isLoading, loadMore });
+  const { notes, isLoading, loadMoreRef } = useExplore();
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
@@ -20,7 +18,7 @@ function ExplorePage() {
         ) : (
           notes.map((note, i) =>
             i === notes.length - 5 ? (
-              <Note ref={lastNoteRef} key={note.id} event={note} />
+              <Note ref={loadMoreRef} key={note.id} event={note} />
             ) : (
               <Note key={note.id} event={note} />
             )

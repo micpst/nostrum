@@ -21,7 +21,7 @@ function UserNpub({
 
   return (
     <Link
-      href={`u/${npub}`}
+      href={`/u/${npub}`}
       className={cn(
         "truncate text-light-secondary underline decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className,

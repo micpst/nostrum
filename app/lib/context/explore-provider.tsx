@@ -2,14 +2,13 @@
 
 import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
-import { useNotes } from "@/app/lib/hooks/useNotes";
+import { useFeed } from "@/app/lib/hooks/useFeed";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type ExploreContext = {
   notes: RelayEvent[];
-  references: Map<string, RelayEvent>;
   isLoading: boolean;
-  loadMore: () => Promise<void>;
+  loadMoreRef: (note: any) => void;
 };
 
 type ExploreProviderProps = {
@@ -19,13 +18,14 @@ type ExploreProviderProps = {
 export const ExploreContext = createContext<ExploreContext | null>(null);
 
 export default function ExploreProvider({ children }: ExploreProviderProps) {
-  const { notes, references, isLoading, loadMore } = useNotes();
+  const { notes, isLoading, loadMoreRef } = useFeed({
+    filter: { kinds: [1] },
+  });
 
   const value: ExploreContext = {
     notes,
-    references,
     isLoading,
-    loadMore,
+    loadMoreRef,
   };
 
   return (

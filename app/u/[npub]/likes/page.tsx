@@ -1,22 +1,36 @@
 "use client";
 
+import { nip25 } from "nostr-tools";
+import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import Note from "@/app/components/note/note";
 import { useUser } from "@/app/lib/context/user-provider";
+import { useFeed } from "@/app/lib/hooks/useFeed";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
-import { useNotes } from "@/app/lib/hooks/useNotes";
-import { useReactions } from "@/app/lib/context/reactions-provider";
 
 function LikesPage(): JSX.Element | undefined {
   const { user } = useUser();
-  const { reactions } = useReactions();
-  const { notes, isLoading, loadMore } = useNotes({
+
+  const {
+    newEvents: newReactions,
+    isLoading: isLoadingReactions,
+    loadMoreRef,
+  } = useInfiniteScroll({
+    filter: { kinds: [7], authors: [user?.pubkey || ""] },
+  });
+
+  const notesIds = newReactions
+    .map((event) => nip25.getReactedEventPointer(event)?.id)
+    .filter((eventId) => !!eventId) as string[];
+
+  const { notes, isLoading: isLoadingNotes } = useFeed({
     filter: {
-      ids: Array.from(reactions.keys()),
+      kinds: [1],
+      ids: notesIds,
     },
   });
-  const lastNoteRef = useInfiniteScroll({ isLoading, loadMore });
+
+  const isLoading = isLoadingReactions || isLoadingNotes;
 
   if (!user) return undefined;
 
@@ -27,7 +41,7 @@ function LikesPage(): JSX.Element | undefined {
       ) : (
         notes.map((note, i) =>
           i === notes.length - 5 ? (
-            <Note ref={lastNoteRef} key={note.id} event={note} />
+            <Note ref={loadMoreRef} key={note.id} event={note} />
           ) : (
             <Note key={note.id} event={note} />
           )

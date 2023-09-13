@@ -2,16 +2,18 @@
 
 "use client";
 
-import { nip19, nip25 } from "nostr-tools";
+import { nip25 } from "nostr-tools";
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import NostrService from "@/app/lib/services/nostr";
 import type { RelayEvent } from "@/app/lib/types/event";
+import { User } from "@/app/lib/types/user";
 
 type ReactionsContext = {
   reactions: Map<string, string>;
+  isLoading: Set<string>;
   fetchReactions: (eventIds: string[]) => Promise<void>;
   like: (event: RelayEvent) => Promise<void>;
   unlike: (event: RelayEvent) => Promise<void>;
@@ -28,25 +30,32 @@ export default function ReactionsProvider({
 }: ReactionsProviderProps) {
   const { publicKey } = useAuth();
   const { list, publish } = useRelay();
+
   const [reactions, setReactions] = useState<Map<string, string>>(new Map());
+  const [loading, setLoading] = useState<Set<string>>(new Set());
 
   const fetchReactions = async (notesIds: string[]): Promise<void> => {
-    if (publicKey === undefined) return;
+    const newNotesIds = notesIds.filter((id) => !reactions.has(id));
+
+    if (publicKey === undefined || newNotesIds.length === 0) return;
+
+    setLoading(new Set(newNotesIds));
 
     const events = await list({
       kinds: [7],
       authors: [publicKey],
-      "#e": notesIds,
+      "#e": newNotesIds,
     });
 
-    const reactions = events
+    const newReactions = events
       .map((event) => {
         const pointer = nip25.getReactedEventPointer(event);
         return [pointer?.id, event.id];
       })
       .filter(([pointerId, eventId]) => !!pointerId) as [string, string][];
 
-    setReactions((prev) => new Map([...prev, ...new Map(reactions)]));
+    setReactions((prev) => new Map([...prev, ...new Map(newReactions)]));
+    setLoading(new Set());
   };
 
   const like = async (event: RelayEvent): Promise<void> => {
@@ -84,6 +93,7 @@ export default function ReactionsProvider({
 
   const value: ReactionsContext = {
     reactions,
+    isLoading: loading,
     fetchReactions,
     like,
     unlike,

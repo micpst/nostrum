@@ -4,17 +4,13 @@ import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import Note from "@/app/components/note/note";
 import { useUser } from "@/app/lib/context/user-provider";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
-import { useNotes } from "@/app/lib/hooks/useNotes";
+import { useFeed } from "@/app/lib/hooks/useFeed";
 
 function ProfilePage(): JSX.Element | undefined {
   const { user } = useUser();
-  const { notes, isLoading, loadMore } = useNotes({
-    filter: {
-      authors: [user?.pubkey || ""],
-    },
+  const { notes, isLoading, loadMoreRef } = useFeed({
+    filter: { kinds: [1], authors: [user?.pubkey || ""] },
   });
-  const lastNoteRef = useInfiniteScroll({ isLoading, loadMore });
 
   if (!user) return undefined;
 
@@ -25,7 +21,7 @@ function ProfilePage(): JSX.Element | undefined {
       ) : (
         notes.map((note, i) =>
           i === notes.length - 5 ? (
-            <Note ref={lastNoteRef} key={note.id} event={note} />
+            <Note ref={loadMoreRef} key={note.id} event={note} />
           ) : (
             <Note key={note.id} event={note} />
           )

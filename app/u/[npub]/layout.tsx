@@ -39,24 +39,25 @@ function ProfileLayout({
 
   const shortNpub = shortenHash(params.npub, 10);
   const isOwner = publicKey === pubkey;
-  const profile = profiles.get(pubkey);
+  const user = profiles.get(pubkey);
+  const userLoading = isLoading.has(pubkey);
 
-  const coverData = profile?.banner
+  const coverData = user?.banner
     ? {
-        src: profile?.banner,
+        src: user?.banner,
         alt: "banner",
       }
     : undefined;
 
-  const profileData = profile?.picture ? { src: profile.picture } : {};
+  const userData = user?.picture ? { src: user.picture } : {};
 
   const value = {
-    user: profile,
-    isLoading,
+    user,
+    isLoading: userLoading,
   };
 
   useEffect(() => {
-    if (isPubkeyValid && !profiles.has(pubkey)) {
+    if (isPubkeyValid && !profiles.has(pubkey) && pubkey !== publicKey) {
       void addProfiles([pubkey]);
       return () => removeProfiles([pubkey]);
     }
@@ -69,7 +70,7 @@ function ProfileLayout({
           <UserHeader />
         </Header>
         <section>
-          {isLoading && !profile ? (
+          {!user || userLoading ? (
             <Loading className="mt-5" />
           ) : !isPubkeyValid ? (
             <>
@@ -94,7 +95,7 @@ function ProfileLayout({
               <UserHomeCover coverData={coverData} />
               <div className="relative flex flex-col gap-3 px-4 py-3">
                 <div className="flex justify-between">
-                  <UserHomeAvatar {...profileData} />
+                  <UserHomeAvatar {...userData} />
                   {isOwner ? (
                     <UserEditProfile />
                   ) : (
@@ -103,12 +104,12 @@ function ProfileLayout({
                     </div>
                   )}
                 </div>
-                {profile ? <UserDetails {...profile} /> : undefined}
+                {user ? <UserDetails {...user} /> : undefined}
               </div>
             </>
           )}
         </section>
-        {profile ? (
+        {user ? (
           <>
             <UserNav />
             {children}

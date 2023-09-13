@@ -11,7 +11,7 @@ import type { User } from "@/app/lib/types/user";
 
 type ProfileContext = {
   profiles: Map<string, User>;
-  isLoading: boolean;
+  isLoading: Set<string>;
   addProfiles: (pubkeys: string[]) => void;
   removeProfiles: (pubkeys: string[]) => void;
   setProfile: (profile: User) => void;
@@ -23,17 +23,27 @@ type ProfileProviderProps = {
 
 type ProfilesState = {
   profiles: Map<string, User>;
-  isLoading: boolean;
+  isLoading: Set<string>;
 };
 
 export const ProfileContext = createContext<ProfileContext | null>(null);
+
+const defaultProfile: User = {
+  pubkey: "",
+  name: "",
+  about: "",
+  picture: "",
+  banner: "",
+  nip05: "",
+  verified: false,
+};
 
 export default function ProfileProvider({ children }: ProfileProviderProps) {
   const { publicKey } = useAuth();
   const { relays, list } = useRelay();
   const [state, setState] = useState<ProfilesState>({
     profiles: new Map(),
-    isLoading: false,
+    isLoading: new Set(),
   });
 
   useEffect(() => {
@@ -47,35 +57,24 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
   }, [relays]);
 
   const addProfiles = async (pubkeys: string[]) => {
-    if (pubkeys.length === 0) return;
+    const authors = pubkeys.filter((pubkey) => !state.profiles.has(pubkey));
 
-    const filter = {
-      kinds: [0],
-      authors: pubkeys,
-    };
+    if (authors.length === 0) return;
 
     setState((prev) => ({
       ...prev,
-      isLoading: true,
+      isLoading: new Set(authors),
     }));
 
-    const defaultProfiles = pubkeys.map(
-      (pubkey) =>
-        [
-          pubkey,
-          {
-            pubkey,
-            name: "",
-            about: "",
-            picture: "",
-            banner: "",
-            nip05: "",
-            verified: false,
-          },
-        ] as [string, User]
+    const defaultProfiles = authors.map(
+      (pubkey) => [pubkey, { ...defaultProfile, pubkey }] as [string, User]
     );
 
-    const events = await list(filter);
+    const events = await list({
+      kinds: [0],
+      authors,
+    });
+
     const profiles = await Promise.all(
       events.map(async (event) => {
         const parsed = JSON.parse(event.content);
@@ -93,7 +92,7 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
 
     setState((prev) => ({
       profiles: new Map([...prev.profiles, ...defaultProfiles, ...profiles]),
-      isLoading: false,
+      isLoading: new Set(),
     }));
   };
 
@@ -115,7 +114,11 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
   };
 
   const removeProfiles = (pubkeys: string[]) => {
-    console.log("removeProfiles", pubkeys);
+    setState((prev) => {
+      const newProfiles = new Map(prev.profiles);
+      pubkeys.forEach((pubkey) => newProfiles.delete(pubkey));
+      return { ...prev, profiles: newProfiles };
+    });
   };
 
   const value: ProfileContext = {
