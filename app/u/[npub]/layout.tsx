@@ -70,26 +70,28 @@ function ProfileLayout({
           <UserHeader />
         </Header>
         <section>
-          {!user || userLoading ? (
-            <Loading className="mt-5" />
-          ) : !isPubkeyValid ? (
-            <>
-              <UserHomeCover />
-              <div className="flex flex-col gap-8">
-                <div className="relative flex flex-col gap-3 px-4 py-3">
-                  <UserHomeAvatar />
-                  <p className="text-xl font-bold">@{shortNpub}</p>
+          {!user ? (
+            userLoading ? (
+              <Loading className="mt-5" />
+            ) : (
+              <>
+                <UserHomeCover />
+                <div className="flex flex-col gap-8">
+                  <div className="relative flex flex-col gap-3 px-4 py-3">
+                    <UserHomeAvatar />
+                    <p className="text-xl font-bold">@{shortNpub}</p>
+                  </div>
+                  <div className="p-8 text-center">
+                    <p className="text-3xl font-bold">
+                      This account doesn’t exist
+                    </p>
+                    <p className="text-light-secondary">
+                      Try searching for another.
+                    </p>
+                  </div>
                 </div>
-                <div className="p-8 text-center">
-                  <p className="text-3xl font-bold">
-                    This account doesn’t exist
-                  </p>
-                  <p className="text-light-secondary">
-                    Try searching for another.
-                  </p>
-                </div>
-              </div>
-            </>
+              </>
+            )
           ) : (
             <>
               <UserHomeCover coverData={coverData} />
@@ -97,14 +99,14 @@ function ProfileLayout({
                 <div className="flex justify-between">
                   <UserHomeAvatar {...userData} />
                   {isOwner ? (
-                    <UserEditProfile />
+                    <UserEditProfile user={user} />
                   ) : (
                     <div className="flex gap-2 self-start">
                       <FollowButton userTargetPubkey={pubkey} />
                     </div>
                   )}
                 </div>
-                {user ? <UserDetails {...user} /> : undefined}
+                <UserDetails {...user} />
               </div>
             </>
           )}

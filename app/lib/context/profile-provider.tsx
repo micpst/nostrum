@@ -21,11 +21,6 @@ type ProfileProviderProps = {
   children: ReactNode;
 };
 
-type ProfilesState = {
-  profiles: Map<string, User>;
-  isLoading: Set<string>;
-};
-
 export const ProfileContext = createContext<ProfileContext | null>(null);
 
 const defaultProfile: User = {
@@ -41,88 +36,78 @@ const defaultProfile: User = {
 export default function ProfileProvider({ children }: ProfileProviderProps) {
   const { publicKey } = useAuth();
   const { relays, list } = useRelay();
-  const [state, setState] = useState<ProfilesState>({
-    profiles: new Map(),
-    isLoading: new Set(),
-  });
+
+  const [profiles, setProfiles] = useState<Map<string, User>>(new Map());
+  const [isLoading, setIsLoading] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (publicKey === undefined) return;
     void addProfiles([publicKey]);
     return () => removeProfiles([publicKey]);
-  }, [publicKey]);
-
-  useEffect(() => {
-    void addProfiles(Array.from(state.profiles.keys()));
-  }, [relays]);
+  }, [publicKey, relays]);
 
   const addProfiles = async (pubkeys: string[]) => {
-    const authors = pubkeys.filter((pubkey) => !state.profiles.has(pubkey));
+    const authors = pubkeys.filter(
+      (pubkey) => !profiles.has(pubkey) || !isLoading.has(pubkey)
+    );
 
     if (authors.length === 0) return;
 
-    setState((prev) => ({
-      ...prev,
-      isLoading: new Set(authors),
-    }));
-
-    const defaultProfiles = authors.map(
-      (pubkey) => [pubkey, { ...defaultProfile, pubkey }] as [string, User]
-    );
+    setIsLoading((prev) => new Set([...prev, ...authors]));
 
     const events = await list({
       kinds: [0],
       authors,
     });
 
-    const profiles = await Promise.all(
-      events.map(async (event) => {
-        const parsed = JSON.parse(event.content);
-        const profile = await nip05.queryProfile(parsed?.nip05 || "");
-        return [
-          event.pubkey,
-          {
-            ...parsed,
-            verified: profile?.pubkey === event.pubkey,
-            pubkey: event.pubkey,
-          },
-        ] as [string, User];
-      })
-    );
+    const profilesQuery = events.map(async (event) => {
+      const parsed = JSON.parse(event.content);
+      const pointer = await nip05.queryProfile(parsed?.nip05 || "");
+      return [
+        event.pubkey,
+        {
+          ...parsed,
+          verified: pointer?.pubkey === event.pubkey,
+          pubkey: event.pubkey,
+        },
+      ] as [string, User];
+    });
 
-    setState((prev) => ({
-      profiles: new Map([...prev.profiles, ...defaultProfiles, ...profiles]),
-      isLoading: new Set(),
-    }));
-  };
+    const newProfiles = await Promise.all(profilesQuery);
 
-  const setProfile = async (data: User): Promise<void> => {
-    const profile = await nip05.queryProfile(data.nip05 || "");
-    setState((prev) => ({
-      ...prev,
-      profiles: new Map([
-        ...prev.profiles,
-        [
-          data.pubkey,
-          {
-            ...data,
-            verified: profile?.pubkey === data.pubkey,
-          },
-        ],
-      ]),
-    }));
-  };
+    const defaults: [string, User][] = authors.map((pubkey) => [
+      pubkey,
+      { ...defaultProfile, pubkey },
+    ]);
 
-  const removeProfiles = (pubkeys: string[]) => {
-    setState((prev) => {
-      const newProfiles = new Map(prev.profiles);
-      pubkeys.forEach((pubkey) => newProfiles.delete(pubkey));
-      return { ...prev, profiles: newProfiles };
+    setProfiles((prev) => new Map([...prev, ...defaults, ...newProfiles]));
+    setIsLoading((prev) => {
+      const newLoading = new Set(prev);
+      authors.forEach((author) => newLoading.delete(author));
+      return newLoading;
     });
   };
 
+  const removeProfiles = (pubkeys: string[]) => {
+    setProfiles((prev) => {
+      const newProfiles = new Map(prev);
+      pubkeys.forEach((pubkey) => newProfiles.delete(pubkey));
+      return newProfiles;
+    });
+  };
+
+  const setProfile = async (data: User): Promise<void> => {
+    const pointer = await nip05.queryProfile(data.nip05 || "");
+    const newProfile: [string, User] = [
+      data.pubkey,
+      { ...data, verified: pointer?.pubkey === data.pubkey },
+    ];
+    setProfiles((prev) => new Map([...prev, newProfile]));
+  };
+
   const value: ProfileContext = {
-    ...state,
+    profiles,
+    isLoading,
     addProfiles,
     removeProfiles,
     setProfile,

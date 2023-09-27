@@ -32,14 +32,14 @@ export default function ReactionsProvider({
   const { list, publish } = useRelay();
 
   const [reactions, setReactions] = useState<Map<string, string>>(new Map());
-  const [loading, setLoading] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState<Set<string>>(new Set());
 
   const fetchReactions = async (notesIds: string[]): Promise<void> => {
     const newNotesIds = notesIds.filter((id) => !reactions.has(id));
 
     if (publicKey === undefined || newNotesIds.length === 0) return;
 
-    setLoading(new Set(newNotesIds));
+    setIsLoading(new Set(newNotesIds));
 
     const events = await list({
       kinds: [7],
@@ -55,7 +55,7 @@ export default function ReactionsProvider({
       .filter(([pointerId, eventId]) => !!pointerId) as [string, string][];
 
     setReactions((prev) => new Map([...prev, ...new Map(newReactions)]));
-    setLoading(new Set());
+    setIsLoading(new Set());
   };
 
   const like = async (event: RelayEvent): Promise<void> => {
@@ -93,7 +93,7 @@ export default function ReactionsProvider({
 
   const value: ReactionsContext = {
     reactions,
-    isLoading: loading,
+    isLoading,
     fetchReactions,
     like,
     unlike,
