@@ -39,7 +39,7 @@ export default function ReactionsProvider({
 
     if (publicKey === undefined || newNotesIds.length === 0) return;
 
-    setIsLoading(new Set(newNotesIds));
+    setIsLoading((prev) => new Set([...prev, ...newNotesIds]));
 
     const events = await list({
       kinds: [7],
@@ -55,7 +55,11 @@ export default function ReactionsProvider({
       .filter(([pointerId, eventId]) => !!pointerId) as [string, string][];
 
     setReactions((prev) => new Map([...prev, ...new Map(newReactions)]));
-    setIsLoading(new Set());
+    setIsLoading((prev) => {
+      const newLoading = new Set(prev);
+      newNotesIds.forEach((id) => newLoading.delete(id));
+      return newLoading;
+    });
   };
 
   const like = async (event: RelayEvent): Promise<void> => {

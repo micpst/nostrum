@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
-import { useEffect } from "react";
+import { useMount, useUnmount } from "react-use";
 import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
@@ -56,12 +56,15 @@ function ProfileLayout({
     isLoading: userLoading,
   };
 
-  useEffect(() => {
-    if (isPubkeyValid && !profiles.has(pubkey) && pubkey !== publicKey) {
-      void addProfiles([pubkey]);
-      return () => removeProfiles([pubkey]);
-    }
-  }, []);
+  useMount(() => {
+    if (!isPubkeyValid) return;
+    void addProfiles([pubkey]);
+  });
+
+  useUnmount(() => {
+    if (!isPubkeyValid) return;
+    removeProfiles([pubkey]);
+  });
 
   return (
     <UserProvider value={value}>

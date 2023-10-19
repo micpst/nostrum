@@ -1,6 +1,7 @@
 "use client";
 
 import { nip25 } from "nostr-tools";
+import React, { useMemo } from "react";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
@@ -8,7 +9,7 @@ import { useUser } from "@/app/lib/context/user-provider";
 import { useFeed } from "@/app/lib/hooks/useFeed";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 
-function LikesPage(): JSX.Element | undefined {
+function LikesPage(): React.JSX.Element | undefined {
   const { user } = useUser();
 
   const {
@@ -19,18 +20,22 @@ function LikesPage(): JSX.Element | undefined {
     filter: { kinds: [7], authors: [user?.pubkey || ""] },
   });
 
-  const notesIds = newReactions
-    .map((event) => nip25.getReactedEventPointer(event)?.id)
-    .filter((eventId) => !!eventId) as string[];
+  const notesIds = useMemo(
+    () =>
+      newReactions
+        .map((event) => nip25.getReactedEventPointer(event)?.id)
+        .filter((eventId) => !!eventId) as string[],
+    [newReactions]
+  );
 
-  const { notes, isLoading: isLoadingNotes } = useFeed({
+  const { notes, isLoading: isLoadingFeed } = useFeed({
     filter: {
       kinds: [1],
       ids: notesIds,
     },
   });
 
-  const isLoading = isLoadingReactions || isLoadingNotes;
+  const isLoading = isLoadingReactions || isLoadingFeed;
 
   if (!user) return undefined;
 
