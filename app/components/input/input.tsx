@@ -37,7 +37,7 @@ function Input({
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const { publicKey } = useAuth();
-  const { profiles, isLoading, addProfiles, removeProfiles } = useProfile();
+  const { profiles, isLoading } = useProfile();
   const { publish } = useRelay();
 
   if (!publicKey) return null;

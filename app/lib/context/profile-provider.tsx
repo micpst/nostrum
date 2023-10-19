@@ -5,20 +5,29 @@
 import { nip05 } from "nostr-tools";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import type { ReactNode } from "react";
+import {
+  addProfiles,
+  reloadProfiles,
+  removeProfiles,
+  updateProfiles,
+} from "@/app/lib/actions/profiles";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import profileReducer from "@/app/lib/reducers/profileReducer";
-import { groupEventsByPubkey, selectMostFrequentEvent } from "@/app/lib/utils";
-import type { ProfileState } from "@/app/lib/reducers/profileReducer";
+import profilesReducer from "@/app/lib/reducers/profilesReducer";
+import {
+  groupEventsByPubkey,
+  selectMostFrequentEvent,
+} from "@/app/lib/utils/events";
+import type { ProfileState } from "@/app/lib/reducers/profilesReducer";
 import type { User } from "@/app/lib/types/user";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type ProfileContext = {
   profiles: Map<string, User>;
   isLoading: Set<string>;
-  addProfiles: (pubkeys: string[]) => void;
-  removeProfiles: (pubkeys: string[]) => void;
-  setProfile: (profile: User) => void;
+  add: (pubkeys: string[]) => void;
+  remove: (pubkeys: string[]) => void;
+  set: (profile: User) => void;
 };
 
 type ProfileProviderProps = {
@@ -46,18 +55,17 @@ const initialState: ProfileState = {
 export default function ProfileProvider({ children }: ProfileProviderProps) {
   const { publicKey } = useAuth();
   const { relays, list } = useRelay();
-
-  const [state, dispatch] = useReducer(profileReducer, initialState);
+  const [state, dispatch] = useReducer(profilesReducer, initialState);
 
   useEffect(() => {
     if (publicKey === undefined) return;
-    void addProfiles([publicKey]);
-    return () => removeProfiles([publicKey]);
+    void add([publicKey]);
+    return () => remove([publicKey]);
   }, [publicKey]);
 
   useEffect(() => {
     if (publicKey === undefined) return;
-    void reloadProfiles([publicKey]);
+    void reload([publicKey]);
   }, [relays]);
 
   const listProfiles = async (authors: string[]): Promise<User[]> => {
@@ -97,9 +105,9 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     return Array.from(new Map([...defaultProfiles, ...newProfiles]).values());
   };
 
-  const addProfiles = async (pubkeys: string[]): Promise<void> => {
-    const action = { type: "ADD_PROFILES", pubkeys };
-    const { isLoading } = profileReducer(state, action);
+  const add = async (pubkeys: string[]): Promise<void> => {
+    const action = addProfiles(pubkeys);
+    const { isLoading } = profilesReducer(state, action);
     const authors = Array.from(isLoading);
 
     dispatch(action);
@@ -108,15 +116,12 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
 
     const profiles = await listProfiles(authors);
 
-    dispatch({
-      type: "UPDATE_PROFILES",
-      profiles,
-    });
+    dispatch(updateProfiles(profiles));
   };
 
-  const reloadProfiles = async (pubkeys: string[]): Promise<void> => {
-    const action = { type: "RELOAD_PROFILES", pubkeys };
-    const { isLoading } = profileReducer(state, action);
+  const reload = async (pubkeys: string[]): Promise<void> => {
+    const action = reloadProfiles(pubkeys);
+    const { isLoading } = profilesReducer(state, action);
     const authors = Array.from(isLoading);
 
     dispatch(action);
@@ -125,31 +130,25 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
 
     const profiles = await listProfiles(authors);
 
-    dispatch({
-      type: "UPDATE_PROFILES",
-      profiles,
-    });
+    dispatch(updateProfiles(profiles));
   };
 
-  const removeProfiles = (pubkeys: string[]): void => {
-    dispatch({ type: "REMOVE_PROFILES", pubkeys });
+  const remove = (pubkeys: string[]): void => {
+    dispatch(removeProfiles(pubkeys));
   };
 
-  const setProfile = async (data: User): Promise<void> => {
+  const set = async (data: User): Promise<void> => {
     const pointer = await nip05.queryProfile(data.nip05 || "");
     const newProfile = { ...data, verified: pointer?.pubkey === data.pubkey };
-    dispatch({
-      type: "UPDATE_PROFILES",
-      profiles: [newProfile],
-    });
+    dispatch(updateProfiles([newProfile]));
   };
 
   const value: ProfileContext = {
     profiles: state.profiles,
     isLoading: state.isLoading,
-    addProfiles,
-    removeProfiles,
-    setProfile,
+    add,
+    remove,
+    set,
   };
 
   return (

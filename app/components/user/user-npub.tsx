@@ -1,7 +1,7 @@
 import cn from "clsx";
 import Link from "next/link";
-import { shortenHash } from "@/app/lib/utils";
 import { nip19 } from "nostr-tools";
+import { shortenHash } from "@/app/lib/utils/common";
 
 type UserNpubProps = {
   pubkey: string;

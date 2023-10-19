@@ -9,7 +9,6 @@ import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import NostrService from "@/app/lib/services/nostr";
 import type { RelayEvent } from "@/app/lib/types/event";
-import { User } from "@/app/lib/types/user";
 
 type ReactionsContext = {
   reactions: Map<string, string>;

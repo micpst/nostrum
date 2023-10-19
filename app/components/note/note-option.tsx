@@ -1,7 +1,7 @@
 import cn from "clsx";
 
 import CustomIcon from "@/app/components/ui/icon";
-import { formatNumber } from "@/app/lib/date";
+import { formatNumber } from "@/app/lib/utils/date";
 import type { IconName } from "@/app/components/ui/icon";
 
 type NoteOptionProps = {

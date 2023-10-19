@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Placeholder from "@/app/components/common/placeholder";
 import { useAuth } from "@/app/lib/context/auth-provider";
-import { sleep } from "@/app/lib/utils";
+import { sleep } from "@/app/lib/utils/common";
 
 const Loader = ({ children }: any) => {
   const [pending, setPending] = useState<boolean>(true);

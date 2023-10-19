@@ -19,7 +19,7 @@ type UseFeedProps = {
 };
 
 export function useFeed(props: UseFeedProps): UseFeed {
-  const { addProfiles, removeProfiles } = useProfile();
+  const { add, remove } = useProfile();
   const { fetchReactions } = useReactions();
   const {
     events: notes,
@@ -31,13 +31,13 @@ export function useFeed(props: UseFeedProps): UseFeed {
   useEffect(() => {
     const pubkeys = Array.from(new Set(newNotes.map((note) => note.pubkey)));
     const ids = newNotes.map((note) => note.id);
-    void addProfiles(pubkeys);
+    void add(pubkeys);
     void fetchReactions(ids);
   }, [newNotes]);
 
   useUnmount(() => {
     const pubkeys = notes.map((note) => note.pubkey);
-    removeProfiles(pubkeys);
+    remove(pubkeys);
   });
 
   return {

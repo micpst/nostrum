@@ -1,18 +1,5 @@
 import type { RelayEvent } from "@/app/lib/types/event";
 
-export const shortenHash = (hash: string, length: number = 4): string => {
-  if (hash.length <= length * 2) {
-    return hash;
-  }
-  return (
-    hash.substring(0, length) + "..." + hash.substring(hash.length - length)
-  );
-};
-
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export function groupEventsByPubkey(
   events: RelayEvent[]
 ): Map<string, RelayEvent[]> {

@@ -1,7 +1,7 @@
 import { sanitize } from "dompurify";
 import { parseReferences } from "nostr-tools";
 import type { Event } from "nostr-tools";
-import { parseImages, parseLinks, parseTags } from "@/app/lib/parsers";
+import { parseImages, parseLinks, parseTags } from "@/app/lib/utils/parsers";
 import ImagePreview from "@/app/components/input/image-preview";
 
 type NoteContentProps = {

@@ -1,6 +1,6 @@
 import cn from "clsx";
 import Link from "next/link";
-import { formatDate } from "@/app/lib/date";
+import { formatDate } from "@/app/lib/utils/date";
 import type { Note } from "@/app/lib/types/note";
 
 type NoteDateProps = Pick<Note, "createdAt"> & {

@@ -33,7 +33,7 @@ export function useNotes({
   initPageSize = 20,
   pageSize = 10,
 }: UseNotesProps = {}): UseNotes {
-  const { addProfiles } = useProfile();
+  const { add } = useProfile();
   const { fetchReactions } = useReactions();
   const { relays, list, subscribe } = useRelay();
 
@@ -96,7 +96,7 @@ export function useNotes({
       ...referencedNotes.map((note) => note.id),
     ]);
 
-    await addProfiles(Array.from(authorPubkeys));
+    await add(Array.from(authorPubkeys));
     await fetchReactions(Array.from(noteIds));
 
     setState({
@@ -148,7 +148,7 @@ export function useNotes({
       ...referencedNotes.map((note) => note.id),
     ]);
 
-    await addProfiles(Array.from(authorPubkeys));
+    await add(Array.from(authorPubkeys));
     await fetchReactions(Array.from(noteIds));
 
     setState((prev) => ({

@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import UserProvider from "@/app/lib/context/user-provider";
-import { shortenHash } from "@/app/lib/utils";
+import { shortenHash } from "@/app/lib/utils/common";
 import Header from "@/app/components/common/header";
 import FollowButton from "@/app/components/ui/follow-button";
 import Loading from "@/app/components/ui/loading";
@@ -26,7 +26,7 @@ function ProfileLayout({
   children: ReactNode;
 }) {
   const { publicKey } = useAuth();
-  const { profiles, isLoading, addProfiles, removeProfiles } = useProfile();
+  const { profiles, isLoading, add, remove } = useProfile();
   const { back } = useRouter();
 
   let pubkey = "";
@@ -58,12 +58,12 @@ function ProfileLayout({
 
   useMount(() => {
     if (!isPubkeyValid) return;
-    void addProfiles([pubkey]);
+    void add([pubkey]);
   });
 
   useUnmount(() => {
     if (!isPubkeyValid) return;
-    removeProfiles([pubkey]);
+    remove([pubkey]);
   });
 
   return (

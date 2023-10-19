@@ -12,7 +12,7 @@ export type ProfileAction = {
   profiles?: User[];
 };
 
-export default function profileReducer(
+export default function profilesReducer(
   state: ProfileState,
   action: ProfileAction
 ): ProfileState {
