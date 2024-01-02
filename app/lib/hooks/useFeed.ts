@@ -1,6 +1,5 @@
+import { useDeepCompareEffect, useUnmount } from "react-use";
 import type { Filter } from "nostr-tools";
-import { useEffect } from "react";
-import { useUnmount } from "react-use";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
@@ -19,8 +18,9 @@ type UseFeedProps = {
 };
 
 export function useFeed(props: UseFeedProps): UseFeed {
-  const { add, remove } = useProfile();
+  const { add: addProfiles, remove: removeProfiles } = useProfile();
   const { fetchReactions } = useReactions();
+
   const {
     events: notes,
     newEvents: newNotes,
@@ -28,16 +28,19 @@ export function useFeed(props: UseFeedProps): UseFeed {
     loadMoreRef,
   } = useInfiniteScroll(props);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
+    if (newNotes.length === 0) return;
+
     const pubkeys = Array.from(new Set(newNotes.map((note) => note.pubkey)));
     const ids = newNotes.map((note) => note.id);
-    void add(pubkeys);
+
+    void addProfiles(pubkeys);
     void fetchReactions(ids);
   }, [newNotes]);
 
   useUnmount(() => {
     const pubkeys = notes.map((note) => note.pubkey);
-    remove(pubkeys);
+    removeProfiles(pubkeys);
   });
 
   return {

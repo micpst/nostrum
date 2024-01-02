@@ -1,6 +1,6 @@
-import type { Filter } from "nostr-tools";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useDeepCompareEffect } from "react-use";
+import type { Filter } from "nostr-tools";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -11,7 +11,7 @@ type UseEvents = {
 };
 
 export function useEvents(filter: Filter = {}): UseEvents {
-  const { relays, list } = useRelay();
+  const { list } = useRelay();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [allEvents, setAllEvents] = useState<Map<string, RelayEvent>>(
@@ -36,14 +36,11 @@ export function useEvents(filter: Filter = {}): UseEvents {
       setNewEvents(Array.from(newEvents.values()));
       setIsLoading(false);
     })();
-  }, [filter, relays]);
+  }, [filter]);
 
-  return useMemo<UseEvents>(
-    () => ({
-      events: Array.from(allEvents.values()),
-      newEvents,
-      isLoading,
-    }),
-    [allEvents, newEvents, isLoading]
-  );
+  return {
+    events: Array.from(allEvents.values()),
+    newEvents,
+    isLoading,
+  };
 }

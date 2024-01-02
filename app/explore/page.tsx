@@ -4,10 +4,12 @@ import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useExplore } from "@/app/lib/context/explore-provider";
+import { useFeed } from "@/app/lib/hooks/useFeed";
 
 function ExplorePage() {
-  const { notes, isLoading, loadMoreRef } = useExplore();
+  const { notes, isLoading, loadMoreRef } = useFeed({
+    filter: { kinds: [1] },
+  });
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">

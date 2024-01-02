@@ -4,11 +4,20 @@ import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useHome } from "@/app/lib/context/home-provider";
+import { useFollowing } from "@/app/lib/context/following-provider";
 import withAuth from "@/app/lib/hoc/with-auth";
+import { useFeed } from "@/app/lib/hooks/useFeed";
 
 function HomePage() {
-  const { notes, isLoading, loadMoreRef } = useHome();
+  const { following, isLoading: isLoadingFollowing } = useFollowing();
+  const {
+    notes,
+    isLoading: isLoadingFeed,
+    loadMoreRef,
+  } = useFeed({
+    filter: { kinds: [1], authors: Array.from(following) },
+  });
+  const isLoading = isLoadingFollowing || isLoadingFeed;
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">

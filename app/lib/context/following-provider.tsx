@@ -10,6 +10,7 @@ import NostrService from "@/app/lib/services/nostr";
 
 type FollowingContext = {
   following: Set<string>;
+  isLoading: boolean;
   follow: (pubkey: string) => Promise<void>;
   unfollow: (pubkey: string) => Promise<void>;
 };
@@ -25,6 +26,7 @@ export default function FollowingProvider({
 }: FollowingProviderProps) {
   const { publicKey } = useAuth();
   const { relays, list, publish } = useRelay();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [following, setFollowing] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -35,17 +37,23 @@ export default function FollowingProvider({
   const fetchFollowing = async (): Promise<void> => {
     if (publicKey === undefined) return;
 
+    setIsLoading(true);
+    setFollowing(new Set());
+
     const events = await list({
       kinds: [3],
       authors: [publicKey],
     });
 
-    const following = events
-      .flatMap((event) => event.tags)
-      .filter((tag) => tag[0] === "p")
-      .map((tag) => tag[1]);
+    const following = new Set(
+      events
+        .flatMap((event) => event.tags)
+        .filter((tag) => tag[0] === "p")
+        .map((tag) => tag[1])
+    );
 
-    setFollowing(new Set(following));
+    setFollowing(following);
+    setIsLoading(false);
   };
 
   const follow = async (pubkey: string): Promise<void> => {
@@ -78,6 +86,7 @@ export default function FollowingProvider({
 
   const value: FollowingContext = {
     following,
+    isLoading,
     follow,
     unfollow,
   };
