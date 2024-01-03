@@ -13,6 +13,7 @@ import UserNpub from "@/app/components/user/user-npub";
 import UserTooltip from "@/app/components/user/user-tooltip";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
+import { getUserName } from "@/app/lib/utils/common";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 export type NoteProps = {
@@ -51,9 +52,7 @@ const Note = forwardRef(
                 <UserTooltip>
                   {author && (
                     <UserName
-                      name={
-                        author.displayName || author.display_name || author.name
-                      }
+                      name={getUserName(author)}
                       pubkey={event.pubkey}
                       verified={author.verified}
                       className="text-light-primary"

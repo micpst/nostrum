@@ -4,6 +4,7 @@
 
 import { nip05 } from "nostr-tools";
 import { createContext, useContext, useEffect, useReducer } from "react";
+import { useDeepCompareEffect } from "react-use";
 import type { ReactNode } from "react";
 import {
   addProfiles,
@@ -19,8 +20,8 @@ import {
   selectMostFrequentEvent,
 } from "@/app/lib/utils/events";
 import type { ProfileState } from "@/app/lib/reducers/profilesReducer";
-import type { User } from "@/app/lib/types/user";
 import type { RelayEvent } from "@/app/lib/types/event";
+import type { User } from "@/app/lib/types/user";
 
 type ProfileContext = {
   profiles: Map<string, User>;
@@ -28,6 +29,7 @@ type ProfileContext = {
   add: (pubkeys: string[]) => void;
   remove: (pubkeys: string[]) => void;
   set: (profile: User) => void;
+  reload: (pubkeys: string[]) => void;
 };
 
 type ProfileProviderProps = {
@@ -63,10 +65,20 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     return () => remove([publicKey]);
   }, [publicKey]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (publicKey === undefined) return;
     void reload([publicKey]);
   }, [relays]);
+
+  useDeepCompareEffect(() => {
+    (async () => {
+      const pubkeys = Array.from(state.isLoading);
+      if (!pubkeys.length) return;
+
+      const profiles = await listProfiles(pubkeys);
+      dispatch(updateProfiles(profiles));
+    })();
+  }, [Array.from(state.isLoading)]);
 
   const listProfiles = async (authors: string[]): Promise<User[]> => {
     const events = await list({
@@ -105,32 +117,12 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     return Array.from(new Map([...defaultProfiles, ...newProfiles]).values());
   };
 
-  const add = async (pubkeys: string[]): Promise<void> => {
-    const action = addProfiles(pubkeys);
-    const { isLoading } = profilesReducer(state, action);
-    const authors = Array.from(isLoading);
-
-    dispatch(action);
-
-    if (!authors.length) return;
-
-    const profiles = await listProfiles(authors);
-
-    dispatch(updateProfiles(profiles));
+  const add = (pubkeys: string[]): void => {
+    dispatch(addProfiles(pubkeys));
   };
 
-  const reload = async (pubkeys: string[]): Promise<void> => {
-    const action = reloadProfiles(pubkeys);
-    const { isLoading } = profilesReducer(state, action);
-    const authors = Array.from(isLoading);
-
-    dispatch(action);
-
-    if (!authors.length) return;
-
-    const profiles = await listProfiles(authors);
-
-    dispatch(updateProfiles(profiles));
+  const reload = (pubkeys: string[]): void => {
+    dispatch(reloadProfiles(pubkeys));
   };
 
   const remove = (pubkeys: string[]): void => {
@@ -149,6 +141,7 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     add,
     remove,
     set,
+    reload,
   };
 
   return (
