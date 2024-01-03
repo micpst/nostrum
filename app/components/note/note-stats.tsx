@@ -1,6 +1,7 @@
 import cn from "clsx";
 import NoteOption from "@/app/components/note/note-option";
 import { useReactions } from "@/app/lib/context/reactions-provider";
+import { useReposts } from "@/app/lib/context/repost-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type TweetStatsProps = {
@@ -15,15 +16,33 @@ function NoteStats({
   viewNote,
   openModal,
 }: TweetStatsProps): JSX.Element {
-  const { reactions, isLoading, like, unlike } = useReactions();
+  const {
+    reactions,
+    isLoading: isLoadingReactions,
+    like,
+    unlike,
+  } = useReactions();
+  const {
+    reposts,
+    isLoading: isLoadingReposts,
+    repost,
+    unrepost,
+  } = useReposts();
 
-  const reactionLoading = isLoading.has(note.id);
+  const reactionLoading = isLoadingReactions.has(note.id);
   const noteIsLiked = reactions.has(note.id);
-  const noteIsReposted = false;
+
+  const repostLoading = isLoadingReposts.has(note.id);
+  const noteIsReposted = reposts.has(note.id);
 
   const handleLike = async () => {
     if (noteIsLiked) await unlike(note);
     else await like(note);
+  };
+
+  const handleRepost = async () => {
+    if (noteIsReposted) await unrepost(note);
+    else await repost(note);
   };
 
   return (
@@ -44,12 +63,15 @@ function NoteStats({
       <NoteOption
         className={cn(
           "hover:text-accent-green focus-visible:text-accent-green",
-          noteIsReposted && "text-accent-green [&>i>svg]:[stroke-width:2px]"
+          noteIsReposted && "text-accent-green [&>svg]:fill-accent-green"
         )}
         iconClassName="group-hover:bg-accent-green/10 group-active:bg-accent-green/20 group-hover:fill-accent-green
                        group-focus-visible:bg-accent-green/10 group-focus-visible:ring-accent-green/80 group-focus-visible:fill-accent-green"
-        tip={noteIsReposted ? "Undo Retweet" : "Retweet"}
+        tip={noteIsReposted ? "Undo Repost" : "Repost"}
         iconName="ArrowPathRoundedSquareIcon"
+        solid={noteIsReposted}
+        onClick={handleRepost}
+        disabled={repostLoading}
       />
       <NoteOption
         className={cn(

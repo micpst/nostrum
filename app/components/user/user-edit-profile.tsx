@@ -24,7 +24,7 @@ type UserEditProfileProps = {
 
 function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
-  const { setProfile } = useProfile();
+  const { set: setProfile } = useProfile();
   const { publish } = useRelay();
   const { about, name, picture, banner, nip05 } = user;
   const [editUserData, setEditUserData] = useState<EditableUserData>({

@@ -2,6 +2,7 @@ import { useDeepCompareEffect, useUnmount } from "react-use";
 import type { Filter } from "nostr-tools";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
+import { useReposts } from "@/app/lib/context/repost-provider";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -20,6 +21,7 @@ type UseFeedProps = {
 export function useFeed(props: UseFeedProps): UseFeed {
   const { add: addProfiles, remove: removeProfiles } = useProfile();
   const { fetchReactions } = useReactions();
+  const { fetchReposts } = useReposts();
 
   const {
     events: notes,
@@ -36,6 +38,7 @@ export function useFeed(props: UseFeedProps): UseFeed {
 
     void addProfiles(pubkeys);
     void fetchReactions(ids);
+    void fetchReposts(ids);
   }, [newNotes]);
 
   useUnmount(() => {
