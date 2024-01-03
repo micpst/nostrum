@@ -4,7 +4,7 @@ import Link from "next/link";
 import Loading from "@/app/components/ui/loading";
 import { useSuggestions } from "@/app/lib/context/suggestion-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
-import { UserCard } from "@/app/components/user/user-card";
+import UserCard from "@/app/components/user/user-card";
 import type { User } from "@/app/lib/types/user";
 
 function AsideSuggestions(): JSX.Element {
