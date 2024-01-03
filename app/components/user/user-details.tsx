@@ -1,6 +1,6 @@
 import { nip19 } from "nostr-tools";
 import UserName from "@/app/components/user/user-name";
-import { shortenHash } from "@/app/lib/utils";
+import { shortenHash } from "@/app/lib/utils/common";
 import type { User } from "@/app/lib/types/user";
 
 type UserDetailsProps = Pick<

@@ -2,12 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
-import { useEffect } from "react";
+import { useMount, useUnmount } from "react-use";
 import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import UserProvider from "@/app/lib/context/user-provider";
-import { shortenHash } from "@/app/lib/utils";
+import { shortenHash } from "@/app/lib/utils/common";
 import Header from "@/app/components/common/header";
 import FollowButton from "@/app/components/ui/follow-button";
 import Loading from "@/app/components/ui/loading";
@@ -26,7 +26,7 @@ function ProfileLayout({
   children: ReactNode;
 }) {
   const { publicKey } = useAuth();
-  const { profiles, isLoading, addProfiles, removeProfiles } = useProfile();
+  const { profiles, isLoading, add, remove } = useProfile();
   const { back } = useRouter();
 
   let pubkey = "";
@@ -39,28 +39,32 @@ function ProfileLayout({
 
   const shortNpub = shortenHash(params.npub, 10);
   const isOwner = publicKey === pubkey;
-  const profile = profiles.get(pubkey);
+  const user = profiles.get(pubkey);
+  const userLoading = isLoading.has(pubkey);
 
-  const coverData = profile?.banner
+  const coverData = user?.banner
     ? {
-        src: profile?.banner,
+        src: user?.banner,
         alt: "banner",
       }
     : undefined;
 
-  const profileData = profile?.picture ? { src: profile.picture } : {};
+  const userData = user?.picture ? { src: user.picture } : {};
 
   const value = {
-    user: profile,
-    isLoading,
+    user,
+    isLoading: userLoading,
   };
 
-  useEffect(() => {
-    if (isPubkeyValid && !profiles.has(pubkey)) {
-      void addProfiles([pubkey]);
-      return () => removeProfiles([pubkey]);
-    }
-  }, []);
+  useMount(() => {
+    if (!isPubkeyValid) return;
+    void add([pubkey]);
+  });
+
+  useUnmount(() => {
+    if (!isPubkeyValid) return;
+    remove([pubkey]);
+  });
 
   return (
     <UserProvider value={value}>
@@ -69,46 +73,48 @@ function ProfileLayout({
           <UserHeader />
         </Header>
         <section>
-          {isLoading && !profile ? (
-            <Loading className="mt-5" />
-          ) : !isPubkeyValid ? (
-            <>
-              <UserHomeCover />
-              <div className="flex flex-col gap-8">
-                <div className="relative flex flex-col gap-3 px-4 py-3">
-                  <UserHomeAvatar />
-                  <p className="text-xl font-bold">@{shortNpub}</p>
+          {!user ? (
+            userLoading ? (
+              <Loading className="mt-5" />
+            ) : (
+              <>
+                <UserHomeCover />
+                <div className="flex flex-col gap-8">
+                  <div className="relative flex flex-col gap-3 px-4 py-3">
+                    <UserHomeAvatar />
+                    <p className="text-xl font-bold">@{shortNpub}</p>
+                  </div>
+                  <div className="p-8 text-center">
+                    <p className="text-3xl font-bold">
+                      This account doesn’t exist
+                    </p>
+                    <p className="text-light-secondary">
+                      Try searching for another.
+                    </p>
+                  </div>
                 </div>
-                <div className="p-8 text-center">
-                  <p className="text-3xl font-bold">
-                    This account doesn’t exist
-                  </p>
-                  <p className="text-light-secondary">
-                    Try searching for another.
-                  </p>
-                </div>
-              </div>
-            </>
+              </>
+            )
           ) : (
             <>
               <UserHomeCover coverData={coverData} />
               <div className="relative flex flex-col gap-3 px-4 py-3">
                 <div className="flex justify-between">
-                  <UserHomeAvatar {...profileData} />
+                  <UserHomeAvatar {...userData} />
                   {isOwner ? (
-                    <UserEditProfile />
+                    <UserEditProfile user={user} />
                   ) : (
                     <div className="flex gap-2 self-start">
                       <FollowButton userTargetPubkey={pubkey} />
                     </div>
                   )}
                 </div>
-                {profile ? <UserDetails {...profile} /> : undefined}
+                <UserDetails {...user} />
               </div>
             </>
           )}
         </section>
-        {profile ? (
+        {user ? (
           <>
             <UserNav />
             {children}

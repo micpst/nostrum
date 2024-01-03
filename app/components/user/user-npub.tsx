@@ -1,7 +1,7 @@
 import cn from "clsx";
 import Link from "next/link";
-import { shortenHash } from "@/app/lib/utils";
 import { nip19 } from "nostr-tools";
+import { shortenHash } from "@/app/lib/utils/common";
 
 type UserNpubProps = {
   pubkey: string;
@@ -21,7 +21,7 @@ function UserNpub({
 
   return (
     <Link
-      href={`u/${npub}`}
+      href={`/u/${npub}`}
       className={cn(
         "truncate text-light-secondary underline decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className,

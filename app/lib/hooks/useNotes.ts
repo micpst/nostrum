@@ -1,10 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import { useState } from "react";
+import { useDeepCompareEffect } from "react-use";
 import { parseReferences } from "nostr-tools";
 import type { Filter } from "nostr-tools";
 import type { EventPointer } from "nostr-tools/lib/nip19";
 import { useProfile } from "@/app/lib/context/profile-provider";
+import { useReactions } from "@/app/lib/context/reactions-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -12,12 +12,12 @@ type UseNotes = {
   notes: RelayEvent[];
   references: Map<string, RelayEvent>;
   isLoading: boolean;
-  init: (filter?: Filter) => Promise<void>;
-  loadMore: (filter?: Filter) => Promise<void>;
+  loadMore: () => Promise<void>;
   reset: () => void;
 };
 
 type UseNotesProps = {
+  filter?: Filter;
   initPageSize?: number;
   pageSize?: number;
 };
@@ -29,17 +29,23 @@ type State = {
 };
 
 export function useNotes({
+  filter = {},
   initPageSize = 20,
   pageSize = 10,
 }: UseNotesProps = {}): UseNotes {
-  const { addProfiles, isLoading } = useProfile();
-  const { list, subscribe } = useRelay();
+  const { add } = useProfile();
+  const { fetchReactions } = useReactions();
+  const { relays, list, subscribe } = useRelay();
 
   const [state, setState] = useState<State>({
     notes: new Map(),
     references: new Map(),
     isLoading: false,
   });
+
+  useDeepCompareEffect(() => {
+    void init();
+  }, [initPageSize, filter, relays]);
 
   const reset = (): void => {
     setState({
@@ -49,7 +55,7 @@ export function useNotes({
     });
   };
 
-  const init = async (filter?: Filter): Promise<void> => {
+  const init = async (): Promise<void> => {
     setState({
       notes: new Map(),
       references: new Map(),
@@ -81,11 +87,17 @@ export function useNotes({
           })
         : [];
 
-    const pubkeys = new Set([
-      ...Array.from(newNotes.values()).map((note) => note.pubkey),
+    const authorPubkeys = new Set([
+      ...newNotes.map((note) => note.pubkey),
       ...referencedNotes.map((note) => note.pubkey),
     ]);
-    await addProfiles(Array.from(pubkeys));
+    const noteIds = new Set([
+      ...newNotes.map((note) => note.id),
+      ...referencedNotes.map((note) => note.id),
+    ]);
+
+    await add(Array.from(authorPubkeys));
+    await fetchReactions(Array.from(noteIds));
 
     setState({
       notes: new Map(newNotes.map((event) => [event.id, event])),
@@ -94,7 +106,7 @@ export function useNotes({
     });
   };
 
-  const loadMore = async (filter?: Filter): Promise<void> => {
+  const loadMore = async (): Promise<void> => {
     setState((prev) => ({ ...prev, isLoading: true }));
 
     const events = await list({
@@ -127,11 +139,17 @@ export function useNotes({
           })
         : [];
 
-    const pubkeys = new Set([
+    const authorPubkeys = new Set([
       ...Array.from(newNotes.values()).map((note) => note.pubkey),
       ...referencedNotes.map((note) => note.pubkey),
     ]);
-    await addProfiles(Array.from(pubkeys));
+    const noteIds = new Set([
+      ...newNotes.map((note) => note.id),
+      ...referencedNotes.map((note) => note.id),
+    ]);
+
+    await add(Array.from(authorPubkeys));
+    await fetchReactions(Array.from(noteIds));
 
     setState((prev) => ({
       notes: new Map([
@@ -149,8 +167,7 @@ export function useNotes({
   return {
     notes: Array.from(state.notes.values()),
     references: state.references,
-    isLoading: state.isLoading || isLoading,
-    init,
+    isLoading: state.isLoading,
     loadMore,
     reset,
   };

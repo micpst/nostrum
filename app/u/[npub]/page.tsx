@@ -1,39 +1,40 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import Note from "@/app/components/note/note";
+import { useReposts } from "@/app/lib/context/repost-provider";
 import { useUser } from "@/app/lib/context/user-provider";
-import { useNotes } from "@/app/lib/hooks/useNotes";
+import { useFeed } from "@/app/lib/hooks/useFeed";
+import { combineNotes } from "@/app/lib/utils/notes";
 
 function ProfilePage(): JSX.Element | undefined {
-  const { notes, isLoading, init, loadMore } = useNotes();
   const { user } = useUser();
-
-  const filter = {
-    authors: [user?.pubkey || ""],
-  };
-
-  const intObserver: any = useRef();
-  const lastNoteRef = useCallback(
-    (note: any) => {
-      if (isLoading) return;
-
-      if (intObserver.current) intObserver.current.disconnect();
-
-      intObserver.current = new IntersectionObserver((posts) => {
-        if (posts[0].isIntersecting) void loadMore(filter);
-      });
-
-      if (note) intObserver.current.observe(note);
+  const { reposts, isLoading: isLoadingReposts } = useReposts();
+  const {
+    notes: userNotes,
+    isLoading: isLoadingUserNotes,
+    loadMoreRef: loadMoreUserNotesRef,
+  } = useFeed({
+    filter: {
+      kinds: [1],
+      authors: [user?.pubkey || ""],
     },
-    [isLoading]
-  );
+  });
+  const {
+    notes: userRepostedNotes,
+    isLoading: isLoadingUserRepostedNotes,
+    loadMoreRef: loadMoreUserRepostedNotesRef,
+  } = useFeed({
+    filter: {
+      kinds: [1],
+      ids: [...reposts.keys()],
+    },
+  });
 
-  useEffect(() => {
-    void init(filter);
-  }, []);
+  const isLoading = isLoadingUserNotes || isLoadingUserRepostedNotes;
+  const loadMoreRef = loadMoreUserNotesRef || loadMoreUserRepostedNotesRef;
+  const notes = combineNotes(userNotes, userRepostedNotes);
 
   if (!user) return undefined;
 
@@ -44,7 +45,7 @@ function ProfilePage(): JSX.Element | undefined {
       ) : (
         notes.map((note, i) =>
           i === notes.length - 5 ? (
-            <Note ref={lastNoteRef} key={note.id} event={note} />
+            <Note ref={loadMoreRef} key={note.id} event={note} />
           ) : (
             <Note key={note.id} event={note} />
           )

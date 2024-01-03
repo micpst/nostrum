@@ -1,68 +1,49 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import cn from "clsx";
-import { useEffect, useMemo, useState } from "react";
 import NoteOption from "@/app/components/note/note-option";
-import type { Note } from "@/app/lib/types/note";
+import { useReactions } from "@/app/lib/context/reactions-provider";
+import { useReposts } from "@/app/lib/context/repost-provider";
+import type { RelayEvent } from "@/app/lib/types/event";
 
-type TweetStatsProps = Pick<
-  Note,
-  "userLikes" | "userReposts" | "userReplies"
-> & {
-  reply?: boolean;
-  userId: string;
+type TweetStatsProps = {
   isOwner: boolean;
-  noteId: string;
+  note: RelayEvent;
   viewNote?: boolean;
   openModal?: () => void;
 };
 
 function NoteStats({
-  reply,
-  userId,
-  isOwner,
-  noteId,
-  userLikes,
+  note,
   viewNote,
-  userReposts,
-  userReplies: totalReplies,
   openModal,
 }: TweetStatsProps): JSX.Element {
-  const totalLikes = userLikes.length;
-  const totalReposts = userReposts.length;
+  const {
+    reactions,
+    isLoading: isLoadingReactions,
+    like,
+    unlike,
+  } = useReactions();
+  const {
+    reposts,
+    isLoading: isLoadingReposts,
+    repost,
+    unrepost,
+  } = useReposts();
 
-  const [{ currentReplies, currentReposts, currentLikes }, setCurrentStats] =
-    useState({
-      currentReplies: totalReplies,
-      currentLikes: totalLikes,
-      currentReposts: totalReposts,
-    });
+  const reactionLoading = isLoadingReactions.has(note.id);
+  const noteIsLiked = reactions.has(note.id);
 
-  useEffect(() => {
-    setCurrentStats({
-      currentReplies: totalReplies,
-      currentLikes: totalLikes,
-      currentReposts: totalReposts,
-    });
-  }, [totalReplies, totalLikes, totalReposts]);
+  const repostLoading = isLoadingReposts.has(note.id);
+  const noteIsReposted = reposts.has(note.id);
 
-  const replyMove = useMemo(
-    () => (totalReplies > currentReplies ? -25 : 25),
-    [totalReplies]
-  );
+  const handleLike = async () => {
+    if (noteIsLiked) await unlike(note);
+    else await like(note);
+  };
 
-  const likeMove = useMemo(
-    () => (totalLikes > currentLikes ? -25 : 25),
-    [totalLikes]
-  );
-
-  const tweetMove = useMemo(
-    () => (totalReposts > currentReposts ? -25 : 25),
-    [totalReposts]
-  );
-
-  const noteIsLiked = userLikes.includes(userId);
-  const noteIsReposted = userReposts.includes(userId);
+  const handleRepost = async () => {
+    if (noteIsReposted) await unrepost(note);
+    else await repost(note);
+  };
 
   return (
     <div
@@ -76,32 +57,34 @@ function NoteStats({
         iconClassName="group-hover:bg-main-accent/10 group-active:bg-main-accent/20 group-hover:fill-main-accent
                        group-focus-visible:bg-main-accent/10 group-focus-visible:ring-main-accent/80 group-focus-visible:fill-main-accent"
         tip="Reply"
-        stats={currentReplies}
         iconName="ChatBubbleOvalLeftIcon"
         onClick={openModal}
-        disabled={reply}
       />
       <NoteOption
         className={cn(
           "hover:text-accent-green focus-visible:text-accent-green",
-          noteIsReposted && "text-accent-green [&>i>svg]:[stroke-width:2px]"
+          noteIsReposted && "text-accent-green [&>svg]:fill-accent-green"
         )}
         iconClassName="group-hover:bg-accent-green/10 group-active:bg-accent-green/20 group-hover:fill-accent-green
                        group-focus-visible:bg-accent-green/10 group-focus-visible:ring-accent-green/80 group-focus-visible:fill-accent-green"
-        tip={noteIsReposted ? "Undo Retweet" : "Retweet"}
-        stats={currentReposts}
+        tip={noteIsReposted ? "Undo Repost" : "Repost"}
         iconName="ArrowPathRoundedSquareIcon"
+        solid={noteIsReposted}
+        onClick={handleRepost}
+        disabled={repostLoading}
       />
       <NoteOption
         className={cn(
           "hover:text-accent-pink focus-visible:text-accent-pink",
-          noteIsLiked && "text-accent-pink [&>i>svg]:fill-accent-pink"
+          noteIsLiked && "text-accent-pink [&>svg]:fill-accent-pink"
         )}
         iconClassName="group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20 group-hover:fill-accent-pink
                        group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80 group-focus-visible:fill-accent-pink"
         tip={noteIsLiked ? "Unlike" : "Like"}
-        stats={currentLikes}
         iconName="HeartIcon"
+        solid={noteIsLiked}
+        onClick={handleLike}
+        disabled={reactionLoading}
       />
     </div>
   );

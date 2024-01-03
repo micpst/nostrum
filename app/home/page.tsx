@@ -1,31 +1,23 @@
 "use client";
 
-import { useCallback, useRef } from "react";
 import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useFeed } from "@/app/lib/context/feed-provider";
+import { useFollowing } from "@/app/lib/context/following-provider";
 import withAuth from "@/app/lib/hoc/with-auth";
+import { useFeed } from "@/app/lib/hooks/useFeed";
 
 function HomePage() {
-  const { notes, isLoading, loadMore } = useFeed();
-
-  const intObserver: any = useRef();
-  const lastNoteRef = useCallback(
-    (note: any) => {
-      if (isLoading) return;
-
-      if (intObserver.current) intObserver.current.disconnect();
-
-      intObserver.current = new IntersectionObserver((posts) => {
-        if (posts[0].isIntersecting) void loadMore();
-      });
-
-      if (note) intObserver.current.observe(note);
-    },
-    [isLoading]
-  );
+  const { following, isLoading: isLoadingFollowing } = useFollowing();
+  const {
+    notes,
+    isLoading: isLoadingFeed,
+    loadMoreRef,
+  } = useFeed({
+    filter: { kinds: [1], authors: Array.from(following) },
+  });
+  const isLoading = isLoadingFollowing || isLoadingFeed;
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
@@ -36,7 +28,7 @@ function HomePage() {
         ) : (
           notes.map((note, i) =>
             i === notes.length - 5 ? (
-              <Note ref={lastNoteRef} key={note.id} event={note} />
+              <Note ref={loadMoreRef} key={note.id} event={note} />
             ) : (
               <Note key={note.id} event={note} />
             )

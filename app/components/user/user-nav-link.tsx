@@ -1,4 +1,3 @@
-// import { useRouter } from "next/router";
 import Link from "next/link";
 import cn from "clsx";
 import { usePathname } from "next/navigation";
@@ -6,11 +5,12 @@ import type { NavLink } from "@/app/components/user/user-nav";
 
 function UserNavLink({ linkName, href }: NavLink): JSX.Element {
   const pathname = usePathname();
-  const isActive = pathname.split("/")[2] ?? "" === href;
+  const [, , npub, path = ""] = pathname.split("/");
+  const isActive = path === href;
 
   return (
     <Link
-      href={href}
+      href={`/u/${npub}/${href}`}
       scroll={false}
       className="hover-animation main-tab dark-bg-tab flex flex-1 justify-center hover:bg-light-primary/10"
     >

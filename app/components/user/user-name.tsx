@@ -25,7 +25,7 @@ function UserName({
 
   return (
     <OuterTag
-      href={pubkey ? `u/${nip19.npubEncode(pubkey)}` : ""}
+      href={pubkey ? `/u/${nip19.npubEncode(pubkey)}` : ""}
       className={cn(
         "flex items-center gap-1 truncate font-bold decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className,

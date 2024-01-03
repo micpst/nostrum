@@ -1,7 +1,6 @@
 import Button from "@/app/components/ui/button";
 import { useModal } from "@/app/lib/hooks/useModal";
 import type { EditableData, User } from "@/app/lib/types/user";
-import { useUser } from "@/app/lib/context/user-provider";
 import { useState } from "react";
 import type { EditableUserData } from "@/app/lib/types/user";
 import cn from "clsx";
@@ -13,21 +12,21 @@ import { useRelay } from "@/app/lib/context/relay-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import NostrService from "@/app/lib/services/nostr";
-import { Kind } from "nostr-tools";
+
 type RequiredInputFieldProps = Omit<InputFieldProps, "handleChange"> & {
   inputId: EditableData;
 };
 
 type UserEditProfileProps = {
+  user: User;
   hide?: boolean;
 };
 
-function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
+function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
-  const { setProfile } = useProfile();
+  const { set: setProfile } = useProfile();
   const { publish } = useRelay();
-  const { user } = useUser();
-  const { about, name, picture, banner, nip05 } = user as User;
+  const { about, name, picture, banner, nip05 } = user;
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     about,
     name,

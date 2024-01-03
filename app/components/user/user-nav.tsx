@@ -6,7 +6,10 @@ export type NavLink = {
   linkName: string;
 };
 
-const navLinks: Readonly<NavLink[]> = [{ linkName: "Notes", href: "#" }];
+const navLinks: Readonly<NavLink[]> = [
+  { linkName: "Notes", href: "" },
+  { linkName: "Likes", href: "likes" },
+];
 
 function UserNav(): JSX.Element {
   return (

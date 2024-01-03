@@ -27,6 +27,7 @@ const Note = forwardRef(
 
     const npub = nip19.npubEncode(event.pubkey);
     const author = profiles.get(event.pubkey);
+    const isOwner = publicKey === event.pubkey;
 
     return (
       <article
@@ -68,14 +69,7 @@ const Note = forwardRef(
             </div>
             <NoteContent event={event} />
             <div className="mt-3 flex flex-col gap-2">
-              <NoteStats
-                userId={event.pubkey}
-                isOwner={false}
-                noteId={event.id}
-                userLikes={[]}
-                userReplies={0}
-                userReposts={[]}
-              />
+              <NoteStats isOwner={isOwner} note={event} />
             </div>
           </div>
         </div>
