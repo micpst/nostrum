@@ -1,18 +1,21 @@
 "use client";
 
 import cn from "clsx";
+import Link from "next/link";
 import { nip19 } from "nostr-tools";
 import { forwardRef } from "react";
 import NoteContent from "@/app/components/note/note-content";
 import NoteDate from "@/app/components/note/note-date";
 import NoteRelays from "@/app/components/note/note-relays";
 import NoteStats from "@/app/components/note/note-stats";
+import NoteStatus from "@/app/components/note/note-status";
 import UserAvatar from "@/app/components/user/user-avatar";
 import UserName from "@/app/components/user/user-name";
 import UserNpub from "@/app/components/user/user-npub";
 import UserTooltip from "@/app/components/user/user-tooltip";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
+import { useReposts } from "@/app/lib/context/repost-provider";
 import { getUserName } from "@/app/lib/utils/common";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -25,10 +28,12 @@ const Note = forwardRef(
   ({ event, parentNote, ...rest }: NoteProps, ref: any) => {
     const { publicKey } = useAuth();
     const { profiles } = useProfile();
+    const { reposts } = useReposts();
 
     const npub = nip19.npubEncode(event.pubkey);
     const author = profiles.get(event.pubkey);
     const isOwner = publicKey === event.pubkey;
+    const isNoteReposted = reposts.has(event.id);
 
     return (
       <article
@@ -41,6 +46,16 @@ const Note = forwardRef(
         ref={ref}
       >
         <div className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1">
+          {isNoteReposted && (
+            <NoteStatus>
+              <Link
+                href={`/u/${npub}`}
+                className="custom-underline truncate text-sm font-bold"
+              >
+                You reposted
+              </Link>
+            </NoteStatus>
+          )}
           <div className="flex flex-col items-center gap-2">
             <UserTooltip>
               <UserAvatar src={author?.picture} pubkey={event.pubkey} />
