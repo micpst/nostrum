@@ -1,6 +1,6 @@
 import { relayInit, verifySignature } from "nostr-tools";
 import type { Event, Filter, Relay, UnsignedEvent } from "nostr-tools";
-import { RELAYS } from "@/app/lib/constants";
+import { DEFAULT_RELAYS } from "@/app/lib/constants";
 import { RelayEvent } from "@/app/lib/types/event";
 
 type NostrService = {
@@ -59,8 +59,8 @@ function getRelays(): Relay[] {
   const urls = window.localStorage.getItem("relays");
 
   if (urls === null) {
-    window.localStorage.setItem("relays", JSON.stringify(RELAYS));
-    return RELAYS.map((url: string) => relayInit(url));
+    window.localStorage.setItem("relays", JSON.stringify(DEFAULT_RELAYS));
+    return DEFAULT_RELAYS.map((url: string) => relayInit(url));
   }
 
   try {
@@ -84,7 +84,7 @@ function setRelays(relays: Relay[]): void {
 
 function resetRelays(): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem("relays", JSON.stringify(RELAYS));
+  window.localStorage.setItem("relays", JSON.stringify(DEFAULT_RELAYS));
 }
 
 async function listEvents(

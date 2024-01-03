@@ -6,7 +6,7 @@ import { relayInit } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Event, Filter, Relay } from "nostr-tools";
 import type { ReactNode } from "react";
-import { RELAYS } from "@/app/lib/constants";
+import { DEFAULT_RELAYS } from "@/app/lib/constants";
 import NostrService from "@/app/lib/services/nostr";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -49,7 +49,7 @@ export default function RelayProvider({ children }: RelayProviderProps) {
 
   const resetRelays = (): void => {
     NostrService.resetRelays();
-    setRelays(new Map(RELAYS.map((url) => [url, relayInit(url)])));
+    setRelays(new Map(DEFAULT_RELAYS.map((url) => [url, relayInit(url)])));
   };
 
   const addRelay = (url: string): void => {

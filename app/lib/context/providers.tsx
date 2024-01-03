@@ -7,6 +7,7 @@ import ProfileProvider from "@/app/lib/context/profile-provider";
 import ReactionsProvider from "@/app/lib/context/reactions-provider";
 import RelayProvider from "@/app/lib/context/relay-provider";
 import RepostProvider from "@/app/lib/context/repost-provider";
+import SuggestionProvider from "@/app/lib/context/suggestion-provider";
 
 function Providers({ children }: { children: ReactNode }) {
   return (
@@ -15,7 +16,9 @@ function Providers({ children }: { children: ReactNode }) {
         <ProfileProvider>
           <FollowingProvider>
             <ReactionsProvider>
-              <RepostProvider>{children}</RepostProvider>
+              <RepostProvider>
+                <SuggestionProvider>{children}</SuggestionProvider>
+              </RepostProvider>
             </ReactionsProvider>
           </FollowingProvider>
         </ProfileProvider>

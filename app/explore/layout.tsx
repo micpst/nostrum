@@ -15,9 +15,7 @@ function ExploreLayout({ children }: { children: ReactNode }) {
     <>
       {children}
       <Aside>
-        <AsideSearchbar />
         <AsideLogin />
-        <AsideTrends />
         <AsideSuggestions />
       </Aside>
     </>

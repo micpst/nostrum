@@ -29,6 +29,7 @@ type ProfileContext = {
   add: (pubkeys: string[]) => void;
   remove: (pubkeys: string[]) => void;
   set: (profile: User) => void;
+  reload: (pubkeys: string[]) => void;
 };
 
 type ProfileProviderProps = {
@@ -64,7 +65,7 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     return () => remove([publicKey]);
   }, [publicKey]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (publicKey === undefined) return;
     void reload([publicKey]);
   }, [relays]);
@@ -140,6 +141,7 @@ export default function ProfileProvider({ children }: ProfileProviderProps) {
     add,
     remove,
     set,
+    reload,
   };
 
   return (
