@@ -21,6 +21,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.10.0'
+          cache: 'yarn'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install packages
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn
 
       - name: Run linter
         run: yarn lint
@@ -51,6 +68,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Build application
+      - name: Install packages
         if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn
+
+      - name: Build application
         run: yarn build
