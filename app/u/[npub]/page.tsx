@@ -21,6 +21,7 @@ function ProfilePage(): JSX.Element | undefined {
       authors: [user?.pubkey || ""],
     },
   });
+
   const {
     notes: userRepostedNotes,
     isLoading: isLoadingUserRepostedNotes,
@@ -45,9 +46,14 @@ function ProfilePage(): JSX.Element | undefined {
       ) : (
         notes.map((note, i) =>
           i === notes.length - 5 ? (
-            <Note ref={loadMoreRef} key={note.id} event={note} />
+            <Note
+              ref={loadMoreRef}
+              key={note.id}
+              parentNote={note.parent}
+              event={note}
+            />
           ) : (
-            <Note key={note.id} event={note} />
+            <Note key={note.id} parentNote={note.parent} event={note} />
           )
         )
       )}

@@ -1,5 +1,6 @@
 import cn from "clsx";
 import NoteOption from "@/app/components/note/note-option";
+import { useAuth } from "@/app/lib/context/auth-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
 import { useReposts } from "@/app/lib/context/repost-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
@@ -16,6 +17,7 @@ function NoteStats({
   viewNote,
   openModal,
 }: TweetStatsProps): JSX.Element {
+  const { publicKey } = useAuth();
   const {
     reactions,
     isLoading: isLoadingReactions,
@@ -35,12 +37,19 @@ function NoteStats({
   const repostLoading = isLoadingReposts.has(note.id);
   const noteIsReposted = reposts.has(note.id);
 
-  const handleLike = async () => {
+  const handleReply = (e: any): void => {
+    e.stopPropagation();
+    if (openModal) openModal();
+  };
+
+  const handleLike = async (e: any) => {
+    e.stopPropagation();
     if (noteIsLiked) await unlike(note);
     else await like(note);
   };
 
-  const handleRepost = async () => {
+  const handleRepost = async (e: any) => {
+    e.stopPropagation();
     if (noteIsReposted) await unrepost(note);
     else await repost(note);
   };
@@ -58,7 +67,8 @@ function NoteStats({
                        group-focus-visible:bg-main-accent/10 group-focus-visible:ring-main-accent/80 group-focus-visible:fill-main-accent"
         tip="Reply"
         iconName="ChatBubbleOvalLeftIcon"
-        onClick={openModal}
+        onClick={handleReply}
+        disabled={!publicKey}
       />
       <NoteOption
         className={cn(
@@ -71,7 +81,7 @@ function NoteStats({
         iconName="ArrowPathRoundedSquareIcon"
         solid={noteIsReposted}
         onClick={handleRepost}
-        disabled={repostLoading}
+        disabled={!publicKey || repostLoading}
       />
       <NoteOption
         className={cn(
@@ -84,7 +94,7 @@ function NoteStats({
         iconName="HeartIcon"
         solid={noteIsLiked}
         onClick={handleLike}
-        disabled={reactionLoading}
+        disabled={!publicKey || reactionLoading}
       />
     </div>
   );

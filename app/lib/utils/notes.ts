@@ -1,6 +1,6 @@
-import type { RelayEvent } from "@/app/lib/types/event";
+import type { NoteEvent } from "@/app/lib/types/event";
 
-export function combineNotes(...notes: RelayEvent[][]): RelayEvent[] {
+export function combineNotes(...notes: NoteEvent[][]): NoteEvent[] {
   const combinedNotes = new Map(
     notes
       .reduce((acc, val) => acc.concat(val), [])

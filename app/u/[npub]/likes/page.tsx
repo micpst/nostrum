@@ -6,18 +6,20 @@ import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import { useUser } from "@/app/lib/context/user-provider";
-import { useFeed } from "@/app/lib/hooks/useFeed";
+import { useEvents } from "@/app/lib/hooks/useEvents";
+import { useEventsWithParents } from "@/app/lib/hooks/useEventsWithParents";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
+import { useNotesData } from "@/app/lib/hooks/useNotesData";
 
 function LikesPage(): React.JSX.Element | undefined {
   const { user } = useUser();
 
   const {
-    newEvents: newReactions,
-    isLoading: isLoadingReactions,
+    state: { newEvents: newReactions, isLoading: isLoadingReactions },
     loadMoreRef,
   } = useInfiniteScroll({
     filter: { kinds: [7], authors: [user?.pubkey || ""] },
+    loadHook: useEvents,
   });
 
   const notesIds = useMemo(
@@ -28,12 +30,16 @@ function LikesPage(): React.JSX.Element | undefined {
     [newReactions]
   );
 
-  const { notes, isLoading: isLoadingFeed } = useFeed({
-    filter: {
-      kinds: [1],
-      ids: notesIds,
-    },
+  const {
+    events: notes,
+    newEvents: newNotes,
+    isLoading: isLoadingFeed,
+  } = useEventsWithParents({
+    kinds: [1],
+    ids: notesIds,
   });
+
+  useNotesData({ notes, newNotes });
 
   const isLoading = isLoadingReactions || isLoadingFeed;
 
@@ -46,9 +52,14 @@ function LikesPage(): React.JSX.Element | undefined {
       ) : (
         notes.map((note, i) =>
           i === notes.length - 5 ? (
-            <Note ref={loadMoreRef} key={note.id} event={note} />
+            <Note
+              ref={loadMoreRef}
+              key={note.id}
+              parentNote={note.parent}
+              event={note}
+            />
           ) : (
-            <Note key={note.id} event={note} />
+            <Note key={note.id} parentNote={note.parent} event={note} />
           )
         )
       )}

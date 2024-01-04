@@ -7,10 +7,7 @@ import Loading from "@/app/components/ui/loading";
 import { useFeed } from "@/app/lib/hooks/useFeed";
 
 function ExplorePage() {
-  const { notes, isLoading, loadMoreRef } = useFeed({
-    filter: { kinds: [1] },
-  });
-
+  const { notes, isLoading, loadMoreRef } = useFeed({ filter: { kinds: [1] } });
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
       <Header title="Explore" />
@@ -20,9 +17,14 @@ function ExplorePage() {
         ) : (
           notes.map((note, i) =>
             i === notes.length - 5 ? (
-              <Note ref={loadMoreRef} key={note.id} event={note} />
+              <Note
+                ref={loadMoreRef}
+                key={note.id}
+                parentNote={note.parent}
+                event={note}
+              />
             ) : (
-              <Note key={note.id} event={note} />
+              <Note key={note.id} parentNote={note.parent} event={note} />
             )
           )
         )}

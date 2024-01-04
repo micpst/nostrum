@@ -22,6 +22,7 @@ function UserNpub({
   return (
     <Link
       href={`/u/${npub}`}
+      onClick={(e) => e.stopPropagation()}
       className={cn(
         "truncate text-light-secondary underline decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className,

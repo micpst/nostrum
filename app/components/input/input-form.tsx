@@ -2,20 +2,22 @@ import TextArea from "react-textarea-autosize";
 import type { ReactNode, RefObject, ChangeEvent } from "react";
 
 type InputFormProps = {
+  reply?: boolean;
+  replyModal?: boolean;
   children?: ReactNode;
   inputRef: RefObject<HTMLTextAreaElement>;
   inputValue: string;
-
   handleChange: ({
     target: { value },
   }: ChangeEvent<HTMLTextAreaElement>) => void;
 };
 
 function InputForm({
+  reply,
+  replyModal,
   children,
   inputRef,
   inputValue,
-
   handleChange,
 }: InputFormProps): JSX.Element {
   return (
@@ -26,7 +28,9 @@ function InputForm({
             className="w-full min-w-0 resize-none bg-transparent text-xl outline-none
                        placeholder:text-light-secondary"
             value={inputValue}
-            placeholder="What's happening?"
+            placeholder={
+              reply || replyModal ? "Your reply" : "What's happening?"
+            }
             minRows={3}
             maxRows={15}
             onChange={handleChange}

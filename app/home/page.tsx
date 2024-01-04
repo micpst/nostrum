@@ -12,12 +12,11 @@ function HomePage() {
   const { following, isLoading: isLoadingFollowing } = useFollowing();
   const {
     notes,
-    isLoading: isLoadingFeed,
+    isLoading: isLoadingNotes,
     loadMoreRef,
-  } = useFeed({
-    filter: { kinds: [1], authors: Array.from(following) },
-  });
-  const isLoading = isLoadingFollowing || isLoadingFeed;
+  } = useFeed({ filter: { kinds: [1], authors: Array.from(following) } });
+
+  const isLoading = isLoadingFollowing || isLoadingNotes;
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
@@ -28,9 +27,14 @@ function HomePage() {
         ) : (
           notes.map((note, i) =>
             i === notes.length - 5 ? (
-              <Note ref={loadMoreRef} key={note.id} event={note} />
+              <Note
+                ref={loadMoreRef}
+                key={note.id}
+                parentNote={note.parent}
+                event={note}
+              />
             ) : (
-              <Note key={note.id} event={note} />
+              <Note key={note.id} parentNote={note.parent} event={note} />
             )
           )
         )}
