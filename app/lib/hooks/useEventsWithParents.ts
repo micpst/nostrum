@@ -5,13 +5,15 @@ import { useRelay } from "@/app/lib/context/relay-provider";
 import { groupEventsByParent } from "@/app/lib/utils/events";
 import type { NoteEvent } from "@/app/lib/types/event";
 
-type UseNotes = {
+type UseEventsWithParents = {
   events: NoteEvent[];
   newEvents: NoteEvent[];
   isLoading: boolean;
 };
 
-export function useNotes(filter: Filter = {}): UseNotes {
+export function useEventsWithParents(
+  filter: Filter = {}
+): UseEventsWithParents {
   const { list } = useRelay();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);

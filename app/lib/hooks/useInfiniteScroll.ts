@@ -1,24 +1,28 @@
 import { useCallback, useRef, useState } from "react";
 import { useDeepCompareEffect } from "react-use";
 import type { Filter } from "nostr-tools";
-import { useNotes } from "@/app/lib/hooks/useNotes";
-import type { NoteEvent } from "@/app/lib/types/event";
+
+type HookState = {
+  events: any[];
+  newEvents: any[];
+  isLoading: boolean;
+};
 
 type UseInfiniteScrollProps = {
   filter: Filter;
+  loadHook: (filter: Filter) => HookState;
   initPageSize?: number;
   pageSize?: number;
 };
 
 type UseInfiniteScroll = {
-  events: NoteEvent[];
-  newEvents: NoteEvent[];
-  isLoading: boolean;
+  state: HookState;
   loadMoreRef: (note: any) => void;
 };
 
 export function useInfiniteScroll({
   filter,
+  loadHook,
   initPageSize = 20,
   pageSize = 10,
 }: UseInfiniteScrollProps): UseInfiniteScroll {
@@ -26,7 +30,7 @@ export function useInfiniteScroll({
     ...filter,
     limit: initPageSize,
   });
-  const { events, newEvents, isLoading } = useNotes(_filter);
+  const state = loadHook(_filter);
 
   useDeepCompareEffect(() => {
     setFilter((prev) => ({
@@ -41,13 +45,16 @@ export function useInfiniteScroll({
     setFilter((prev) => ({
       ...prev,
       limit: pageSize,
-      until: events.length > 0 ? events.slice(-1)[0].created_at : undefined,
+      until:
+        state.events.length > 0
+          ? state.events.slice(-1)[0].created_at
+          : undefined,
     }));
-  }, [events, pageSize]);
+  }, [state.events, pageSize]);
 
   const loadMoreRef = useCallback(
     (element: any): void => {
-      if (isLoading) return;
+      if (state.isLoading) return;
 
       if (intObserver.current) intObserver.current.disconnect();
 
@@ -57,13 +64,11 @@ export function useInfiniteScroll({
 
       if (element) intObserver.current.observe(element);
     },
-    [isLoading, loadMore]
+    [state.isLoading, loadMore]
   );
 
   return {
-    events,
-    newEvents,
-    isLoading,
+    state,
     loadMoreRef,
   };
 }

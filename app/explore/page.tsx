@@ -7,10 +7,7 @@ import Loading from "@/app/components/ui/loading";
 import { useFeed } from "@/app/lib/hooks/useFeed";
 
 function ExplorePage() {
-  const { notes, isLoading, loadMoreRef } = useFeed({
-    filter: { kinds: [1] },
-  });
-
+  const { notes, isLoading, loadMoreRef } = useFeed({ filter: { kinds: [1] } });
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
       <Header title="Explore" />

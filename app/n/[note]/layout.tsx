@@ -2,13 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
-import { useDeepCompareEffect } from "react-use";
 import type { ReactNode } from "react";
-import { useProfile } from "@/app/lib/context/profile-provider";
-import ThreadProvider from "@/app/lib/context/thread-provider";
 import Header from "@/app/components/common/header";
 import Loading from "@/app/components/ui/loading";
+import ThreadProvider from "@/app/lib/context/thread-provider";
 import { useEvents } from "@/app/lib/hooks/useEvents";
+import { useNotesData } from "@/app/lib/hooks/useNotesData";
 
 function NoteLayout({
   params,
@@ -17,30 +16,28 @@ function NoteLayout({
   params: { note: string };
   children: ReactNode;
 }) {
-  let note = "";
+  let noteId = "";
   let isNoteValid = true;
   try {
-    note = nip19.decode(params.note).data.toString();
+    noteId = nip19.decode(params.note).data.toString();
   } catch (e) {
     isNoteValid = false;
   }
 
   const { back } = useRouter();
-  const { add: addProfiles, remove: removeProfiles } = useProfile();
-  const { newEvents, isLoading } = useEvents({
+  const {
+    events: notes,
+    newEvents: newNotes,
+    isLoading,
+  } = useEvents({
     kinds: [1],
-    ids: [note],
+    ids: [noteId],
+    limit: 1,
   });
 
-  const root = newEvents[0];
+  useNotesData({ notes, newNotes });
 
-  useDeepCompareEffect(() => {
-    if (root) {
-      addProfiles([root.pubkey]);
-      return () => removeProfiles([root.pubkey]);
-    }
-  }, [root]);
-
+  const root = notes[0];
   const value = {
     root,
     isLoading,

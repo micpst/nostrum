@@ -21,6 +21,7 @@ function ProfilePage(): JSX.Element | undefined {
       authors: [user?.pubkey || ""],
     },
   });
+
   const {
     notes: userRepostedNotes,
     isLoading: isLoadingUserRepostedNotes,

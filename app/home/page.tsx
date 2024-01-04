@@ -12,12 +12,11 @@ function HomePage() {
   const { following, isLoading: isLoadingFollowing } = useFollowing();
   const {
     notes,
-    isLoading: isLoadingFeed,
+    isLoading: isLoadingNotes,
     loadMoreRef,
-  } = useFeed({
-    filter: { kinds: [1], authors: Array.from(following) },
-  });
-  const isLoading = isLoadingFollowing || isLoadingFeed;
+  } = useFeed({ filter: { kinds: [1], authors: Array.from(following) } });
+
+  const isLoading = isLoadingFollowing || isLoadingNotes;
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">
