@@ -1,5 +1,6 @@
 import cn from "clsx";
 import NoteOption from "@/app/components/note/note-option";
+import { useAuth } from "@/app/lib/context/auth-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
 import { useReposts } from "@/app/lib/context/repost-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
@@ -16,6 +17,7 @@ function NoteStats({
   viewNote,
   openModal,
 }: TweetStatsProps): JSX.Element {
+  const { publicKey } = useAuth();
   const {
     reactions,
     isLoading: isLoadingReactions,
@@ -59,6 +61,7 @@ function NoteStats({
         tip="Reply"
         iconName="ChatBubbleOvalLeftIcon"
         onClick={openModal}
+        disabled={!publicKey}
       />
       <NoteOption
         className={cn(
@@ -71,7 +74,7 @@ function NoteStats({
         iconName="ArrowPathRoundedSquareIcon"
         solid={noteIsReposted}
         onClick={handleRepost}
-        disabled={repostLoading}
+        disabled={!publicKey || repostLoading}
       />
       <NoteOption
         className={cn(
@@ -84,7 +87,7 @@ function NoteStats({
         iconName="HeartIcon"
         solid={noteIsLiked}
         onClick={handleLike}
-        disabled={reactionLoading}
+        disabled={!publicKey || reactionLoading}
       />
     </div>
   );
