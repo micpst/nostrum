@@ -19,6 +19,7 @@ function UserAvatar({
   const CustomTag = pubkey ? Link : "div";
   return (
     <CustomTag
+      onClick={(e) => e.stopPropagation()}
       href={pubkey ? `/u/${nip19.npubEncode(pubkey)}` : ""}
       className={cn(
         "blur-picture flex self-start transition hover:brightness-75 hover:duration-200",

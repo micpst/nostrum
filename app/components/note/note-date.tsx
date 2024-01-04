@@ -19,6 +19,7 @@ function NoteDate({
       <div className="group relative">
         <Link
           href={noteLink}
+          onClick={(e) => e.stopPropagation()}
           className={cn(
             "custom-underline peer whitespace-nowrap",
             viewNote && "text-light-secondary"

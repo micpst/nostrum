@@ -17,7 +17,7 @@ import UserTooltip from "@/app/components/user/user-tooltip";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import { useReposts } from "@/app/lib/context/repost-provider";
-import { getUserName } from "@/app/lib/utils/common";
+import { getUserName, shortenHash } from "@/app/lib/utils/common";
 import type { RelayEvent } from "@/app/lib/types/event";
 import Modal from "@/app/components/modal/modal";
 import { useModal } from "@/app/lib/hooks/useModal";
@@ -40,6 +40,7 @@ const Note = forwardRef(
     const npub = nip19.npubEncode(event.pubkey);
     const note = nip19.noteEncode(event.id);
     const author = profiles.get(event.pubkey);
+    const shortNpub = shortenHash(npub, 4);
     const authorUsername = author ? getUserName(author) : "";
     const isOwner = publicKey === event.pubkey;
     const isNoteReposted = reposts.has(event.id);
@@ -70,6 +71,7 @@ const Note = forwardRef(
                 <NoteStatus>
                   <Link
                     href={`/u/${npub}`}
+                    onClick={(e) => e.stopPropagation()}
                     className="custom-underline truncate text-sm font-bold"
                   >
                     You reposted
@@ -114,9 +116,10 @@ const Note = forwardRef(
                 Replying to{" "}
                 <Link
                   href={`/u/${npub}`}
-                  className="custom-underline text-main-accent"
+                  onClick={(e) => e.stopPropagation()}
+                  className="custom-underline text-main-accent truncate"
                 >
-                  @{authorUsername}
+                  @{authorUsername || shortNpub}
                 </Link>
               </p>
             )}

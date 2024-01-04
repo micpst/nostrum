@@ -37,12 +37,19 @@ function NoteStats({
   const repostLoading = isLoadingReposts.has(note.id);
   const noteIsReposted = reposts.has(note.id);
 
-  const handleLike = async () => {
+  const handleReply = (e: any): void => {
+    e.stopPropagation();
+    if (openModal) openModal();
+  };
+
+  const handleLike = async (e: any) => {
+    e.stopPropagation();
     if (noteIsLiked) await unlike(note);
     else await like(note);
   };
 
-  const handleRepost = async () => {
+  const handleRepost = async (e: any) => {
+    e.stopPropagation();
     if (noteIsReposted) await unrepost(note);
     else await repost(note);
   };
@@ -60,7 +67,7 @@ function NoteStats({
                        group-focus-visible:bg-main-accent/10 group-focus-visible:ring-main-accent/80 group-focus-visible:fill-main-accent"
         tip="Reply"
         iconName="ChatBubbleOvalLeftIcon"
-        onClick={openModal}
+        onClick={handleReply}
         disabled={!publicKey}
       />
       <NoteOption
