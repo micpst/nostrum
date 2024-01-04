@@ -1,174 +1,98 @@
 import { useState } from "react";
 import { useDeepCompareEffect } from "react-use";
-import { parseReferences } from "nostr-tools";
 import type { Filter } from "nostr-tools";
-import type { EventPointer } from "nostr-tools/lib/nip19";
-import { useProfile } from "@/app/lib/context/profile-provider";
-import { useReactions } from "@/app/lib/context/reactions-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import type { RelayEvent } from "@/app/lib/types/event";
+import { groupEventsByParent } from "@/app/lib/utils/events";
+import type { NoteEvent } from "@/app/lib/types/event";
 
 type UseNotes = {
-  notes: RelayEvent[];
-  references: Map<string, RelayEvent>;
-  isLoading: boolean;
-  loadMore: () => Promise<void>;
-  reset: () => void;
-};
-
-type UseNotesProps = {
-  filter?: Filter;
-  initPageSize?: number;
-  pageSize?: number;
-};
-
-type State = {
-  notes: Map<string, RelayEvent>;
-  references: Map<string, RelayEvent>;
+  events: NoteEvent[];
+  newEvents: NoteEvent[];
   isLoading: boolean;
 };
 
-export function useNotes({
-  filter = {},
-  initPageSize = 20,
-  pageSize = 10,
-}: UseNotesProps = {}): UseNotes {
-  const { add } = useProfile();
-  const { fetchReactions } = useReactions();
-  const { relays, list, subscribe } = useRelay();
+export function useNotes(filter: Filter = {}): UseNotes {
+  const { list } = useRelay();
 
-  const [state, setState] = useState<State>({
-    notes: new Map(),
-    references: new Map(),
-    isLoading: false,
-  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [allEvents, setAllEvents] = useState<Map<string, NoteEvent>>(new Map());
+  const [newEvents, setNewEvents] = useState<NoteEvent[]>([]);
 
   useDeepCompareEffect(() => {
-    void init();
-  }, [initPageSize, filter, relays]);
+    (async (): Promise<void> => {
+      setIsLoading(true);
 
-  const reset = (): void => {
-    setState({
-      notes: new Map(),
-      references: new Map(),
-      isLoading: false,
-    });
-  };
+      const events = await list(filter);
+      const newEvents = new Map(
+        events
+          .filter((event) => !allEvents.has(event.id))
+          .map((event) => [event.id, event as NoteEvent])
+      );
 
-  const init = async (): Promise<void> => {
-    setState({
-      notes: new Map(),
-      references: new Map(),
-      isLoading: true,
-    });
+      const newEventsByParent = groupEventsByParent(
+        Array.from(newEvents.values())
+      );
+      Array.from(newEventsByParent.keys()).forEach(
+        (parent) =>
+          parent && allEvents.has(parent) && newEventsByParent.delete(parent)
+      );
+      const parentsIds = Array.from(newEventsByParent.keys()).filter(
+        (id) => id
+      ) as string[];
 
-    const events = await list({
-      kinds: [1],
-      limit: initPageSize,
-      ...filter,
-    });
+      const parentEvents = await list({
+        kinds: [1],
+        ids: parentsIds,
+      });
+      const newParentEvents = new Map(
+        parentEvents.map((event) => [
+          event.id,
+          { ...event, parent: true } as NoteEvent,
+        ])
+      );
 
-    const newNotes = events
-      .sort((a, b) => b.created_at - a.created_at)
-      .slice(0, initPageSize);
+      const childToParent: Map<string, string | undefined> = new Map();
 
-    const referencesIds = newNotes.flatMap(
-      (note: RelayEvent) =>
-        parseReferences(note)
-          .map(({ event }: { event?: EventPointer }) => event && event.id)
-          .filter((eventId?: string) => eventId) as string[]
-    );
+      Array.from(newEventsByParent).forEach(([parent, events]) => {
+        if (events.length > 1 && parent) {
+          events = events.sort((a, b) => b.created_at - a.created_at);
+          events = events.slice(0, 1);
+        }
+        events.forEach((event) => {
+          childToParent.set(event.id, parent);
+        });
+      });
 
-    const referencedNotes =
-      referencesIds.length > 0
-        ? await list({
-            kinds: [1],
-            ids: referencesIds,
-          })
-        : [];
+      const childToParentSorted = new Map(
+        [...childToParent.entries()].sort(
+          (a, b) =>
+            (newEvents.get(b[0]) as NoteEvent).created_at -
+            (newEvents.get(a[0]) as NoteEvent).created_at
+        )
+      );
 
-    const authorPubkeys = new Set([
-      ...newNotes.map((note) => note.pubkey),
-      ...referencedNotes.map((note) => note.pubkey),
-    ]);
-    const noteIds = new Set([
-      ...newNotes.map((note) => note.id),
-      ...referencedNotes.map((note) => note.id),
-    ]);
+      const selectedEvents = Array.from(childToParentSorted).flatMap(
+        ([child, parent]) =>
+          parent && newParentEvents.has(parent)
+            ? [newParentEvents.get(parent), newEvents.get(child)]
+            : [newEvents.get(child)]
+      ) as NoteEvent[];
 
-    await add(Array.from(authorPubkeys));
-    await fetchReactions(Array.from(noteIds));
-
-    setState({
-      notes: new Map(newNotes.map((event) => [event.id, event])),
-      references: new Map(referencedNotes.map((event) => [event.id, event])),
-      isLoading: false,
-    });
-  };
-
-  const loadMore = async (): Promise<void> => {
-    setState((prev) => ({ ...prev, isLoading: true }));
-
-    const events = await list({
-      kinds: [1],
-      limit: pageSize,
-      until:
-        state.notes.size > 0
-          ? Array.from(state.notes.values()).slice(-1)[0].created_at
-          : undefined,
-      ...filter,
-    });
-
-    const newNotes = events
-      .filter((event) => !state.notes.has(event.id))
-      .sort((a, b) => b.created_at - a.created_at)
-      .slice(0, pageSize);
-
-    const referencesIds = newNotes.flatMap(
-      (note: RelayEvent) =>
-        parseReferences(note)
-          .map(({ event }: { event?: EventPointer }) => event && event.id)
-          .filter((eventId?: string) => eventId) as string[]
-    );
-
-    const referencedNotes =
-      referencesIds.length > 0
-        ? await list({
-            kinds: [1],
-            ids: referencesIds,
-          })
-        : [];
-
-    const authorPubkeys = new Set([
-      ...Array.from(newNotes.values()).map((note) => note.pubkey),
-      ...referencedNotes.map((note) => note.pubkey),
-    ]);
-    const noteIds = new Set([
-      ...newNotes.map((note) => note.id),
-      ...referencedNotes.map((note) => note.id),
-    ]);
-
-    await add(Array.from(authorPubkeys));
-    await fetchReactions(Array.from(noteIds));
-
-    setState((prev) => ({
-      notes: new Map([
-        ...prev.notes,
-        ...new Map(newNotes.map((event) => [event.id, event])),
-      ]),
-      references: new Map([
-        ...prev.references,
-        ...new Map(referencedNotes.map((event) => [event.id, event])),
-      ]),
-      isLoading: false,
-    }));
-  };
+      setAllEvents(
+        (prev) =>
+          new Map([
+            ...prev,
+            ...new Map(selectedEvents.map((event) => [event.id, event])),
+          ])
+      );
+      setNewEvents(Array.from(selectedEvents.values()));
+      setIsLoading(false);
+    })();
+  }, [filter]);
 
   return {
-    notes: Array.from(state.notes.values()),
-    references: state.references,
-    isLoading: state.isLoading,
-    loadMore,
-    reset,
+    events: Array.from(allEvents.values()),
+    newEvents,
+    isLoading,
   };
 }

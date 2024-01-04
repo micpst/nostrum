@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useDeepCompareEffect } from "react-use";
 import type { Filter } from "nostr-tools";
-import { useEvents } from "@/app/lib/hooks/useEvents";
+import { useNotes } from "@/app/lib/hooks/useNotes";
 import type { NoteEvent } from "@/app/lib/types/event";
 
 type UseInfiniteScrollProps = {
@@ -26,7 +26,7 @@ export function useInfiniteScroll({
     ...filter,
     limit: initPageSize,
   });
-  const { events, newEvents, isLoading } = useEvents(_filter);
+  const { events, newEvents, isLoading } = useNotes(_filter);
 
   useDeepCompareEffect(() => {
     setFilter((prev) => ({

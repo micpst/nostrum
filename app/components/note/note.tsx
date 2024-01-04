@@ -2,6 +2,7 @@
 
 import cn from "clsx";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
 import { forwardRef } from "react";
 import NoteContent from "@/app/components/note/note-content";
@@ -29,8 +30,10 @@ const Note = forwardRef(
     const { publicKey } = useAuth();
     const { profiles } = useProfile();
     const { reposts } = useReposts();
+    const { push } = useRouter();
 
     const npub = nip19.npubEncode(event.pubkey);
+    const note = nip19.noteEncode(event.id);
     const author = profiles.get(event.pubkey);
     const isOwner = publicKey === event.pubkey;
     const isNoteReposted = reposts.has(event.id);
@@ -44,6 +47,7 @@ const Note = forwardRef(
         )}
         {...rest}
         ref={ref}
+        onClick={() => push(`/n/${note}`)}
       >
         <div className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1">
           {isNoteReposted && (
