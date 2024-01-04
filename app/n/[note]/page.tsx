@@ -1,7 +1,6 @@
 "use client";
 
 import Note from "@/app/components/note/note";
-import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import { useThread } from "@/app/lib/context/thread-provider";
 import { useEvents } from "@/app/lib/hooks/useEvents";

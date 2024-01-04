@@ -1,15 +1,17 @@
-import { useRef } from "react";
 import { motion } from "framer-motion";
-
 import { variants } from "./input";
 import Button from "@/app/components/ui/button";
 
 type InputOptionsProps = {
+  modal?: boolean;
+  reply?: boolean;
   inputLength: number;
   isValidTweet: boolean;
 };
 
 function InputOptions({
+  modal,
+  reply,
   inputLength,
   isValidTweet,
 }: InputOptionsProps): JSX.Element {
@@ -35,7 +37,7 @@ function InputOptions({
                      enabled:active:bg-main-accent/75"
           disabled={!isValidTweet}
         >
-          Publish
+          {reply ? "Reply" : "Publish"}
         </Button>
       </div>
     </motion.div>
