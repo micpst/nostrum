@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { useDeepCompareEffect } from "react-use";
 import type { Filter } from "nostr-tools";
 import { useEvents } from "@/app/lib/hooks/useEvents";
-import type { RelayEvent } from "@/app/lib/types/event";
+import type { NoteEvent } from "@/app/lib/types/event";
 
 type UseInfiniteScrollProps = {
   filter: Filter;
@@ -11,8 +11,8 @@ type UseInfiniteScrollProps = {
 };
 
 type UseInfiniteScroll = {
-  events: RelayEvent[];
-  newEvents: RelayEvent[];
+  events: NoteEvent[];
+  newEvents: NoteEvent[];
   isLoading: boolean;
   loadMoreRef: (note: any) => void;
 };

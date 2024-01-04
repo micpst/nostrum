@@ -4,10 +4,10 @@ import { useProfile } from "@/app/lib/context/profile-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
 import { useReposts } from "@/app/lib/context/repost-provider";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
-import type { RelayEvent } from "@/app/lib/types/event";
+import type { NoteEvent } from "@/app/lib/types/event";
 
 type UseFeed = {
-  notes: RelayEvent[];
+  notes: NoteEvent[];
   isLoading: boolean;
   loadMoreRef: (note: any) => void;
 };

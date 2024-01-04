@@ -1,5 +1,23 @@
 import type { RelayEvent } from "@/app/lib/types/event";
 
+const getTagValues = (name: string, tags: string[][]): string | undefined => {
+  const [itemTag] = tags.filter((tag: string[]) => tag[0] === name);
+  const [, item] = itemTag || [, undefined];
+  return item;
+};
+
+export function groupEventsByParent(
+  events: RelayEvent[]
+): Map<string | undefined, RelayEvent[]> {
+  return events.reduce((acc, event) => {
+    const parent = getTagValues("e", event.tags);
+    const pubkeyEvents = acc.get(parent);
+    if (!pubkeyEvents?.length) acc.set(parent, [event]);
+    else pubkeyEvents.push(event);
+    return acc;
+  }, new Map());
+}
+
 export function groupEventsByPubkey(
   events: RelayEvent[]
 ): Map<string, RelayEvent[]> {

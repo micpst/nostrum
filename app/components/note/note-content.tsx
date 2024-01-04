@@ -18,14 +18,14 @@ function NoteContent({ event }: NoteContentProps): JSX.Element {
 
   references.forEach((reference) => {
     let { text, profile, event, address } = reference;
-    let augmentedReference = profile
-      ? `<strong>@test</strong>`
-      : //   : event
-        //   ? `<em>${eventsCache[event.id].content.slice(0, 5)}</em>`
-        //   : address
-        //   ? `<a href="${text}">[link]</a>`
-        text;
-    augmentedContent.replaceAll(text, augmentedReference);
+    // let augmentedReference = profile
+    //   ? `<strong>@test</strong>`
+    //   : event
+    //   ? `<em>${eventsCache[event.id].content.slice(0, 5)}</em>`
+    //   : address
+    //   ? `<a href="${text}">[link]</a>`
+    //   : text;
+    augmentedContent.replaceAll(text, "");
   });
 
   images.forEach((image) => {

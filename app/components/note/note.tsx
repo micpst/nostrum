@@ -60,6 +60,9 @@ const Note = forwardRef(
             <UserTooltip>
               <UserAvatar src={author?.picture} pubkey={event.pubkey} />
             </UserTooltip>
+            {parentNote ? (
+              <i className="hover-animation h-full w-0.5 bg-light-line-reply dark:bg-dark-line-reply" />
+            ) : null}
           </div>
           <div className="flex min-w-0 flex-col">
             <div className="flex justify-between gap-2 text-light-secondary">
