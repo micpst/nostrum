@@ -4,10 +4,10 @@
 
 import { nip25 } from "nostr-tools";
 import { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import NostrService from "@/app/lib/services/nostr";
+import type { ProviderProps } from "@/app/lib/context/providers";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type ReactionsContext = {
@@ -18,15 +18,9 @@ type ReactionsContext = {
   unlike: (event: RelayEvent) => Promise<void>;
 };
 
-type ReactionsProviderProps = {
-  children: ReactNode;
-};
-
 export const ReactionsContext = createContext<ReactionsContext | null>(null);
 
-export default function ReactionsProvider({
-  children,
-}: ReactionsProviderProps) {
+export default function ReactionsProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
   const { list, publish } = useRelay();
 

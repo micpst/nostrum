@@ -3,10 +3,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import NostrService from "@/app/lib/services/nostr";
+import type { ProviderProps } from "@/app/lib/context/providers";
 
 type FollowingContext = {
   following: Set<string>;
@@ -15,15 +15,9 @@ type FollowingContext = {
   unfollow: (pubkey: string) => Promise<void>;
 };
 
-type FollowingProviderProps = {
-  children: ReactNode;
-};
-
 export const FollowingContext = createContext<FollowingContext | null>(null);
 
-export default function FollowingProvider({
-  children,
-}: FollowingProviderProps) {
+export default function FollowingProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
   const { relays, list, publish } = useRelay();
   const [isLoading, setIsLoading] = useState<boolean>(false);

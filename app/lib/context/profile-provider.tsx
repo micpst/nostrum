@@ -5,7 +5,6 @@
 import { nip05 } from "nostr-tools";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { useDeepCompareEffect } from "react-use";
-import type { ReactNode } from "react";
 import {
   addProfiles,
   reloadProfiles,
@@ -19,6 +18,7 @@ import {
   groupEventsByPubkey,
   selectMostFrequentEvent,
 } from "@/app/lib/utils/events";
+import type { ProviderProps } from "@/app/lib/context/providers";
 import type { ProfileState } from "@/app/lib/reducers/profilesReducer";
 import type { RelayEvent } from "@/app/lib/types/event";
 import type { User } from "@/app/lib/types/user";
@@ -30,10 +30,6 @@ type ProfileContext = {
   remove: (pubkeys: string[]) => void;
   set: (profile: User) => void;
   reload: (pubkeys: string[]) => void;
-};
-
-type ProfileProviderProps = {
-  children: ReactNode;
 };
 
 export const ProfileContext = createContext<ProfileContext | null>(null);
@@ -54,7 +50,7 @@ const initialState: ProfileState = {
   isLoading: new Set(),
 };
 
-export default function ProfileProvider({ children }: ProfileProviderProps) {
+export default function ProfileProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
   const { relays, list } = useRelay();
   const [state, dispatch] = useReducer(profilesReducer, initialState);

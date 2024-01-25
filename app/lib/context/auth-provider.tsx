@@ -1,26 +1,20 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import { useLocalStorage } from "@/app/lib/hooks/useLocalStorage";
+import type { ProviderProps } from "@/app/lib/context/providers";
 
 type AuthContext = {
   isConnected: boolean;
   isLoading: boolean;
-  publicKey: string | undefined;
+  publicKey?: string;
   login: () => void;
   logout: () => void;
 };
 
-type AuthProviderProps = {
-  children: ReactNode;
-};
-
 export const AuthContext = createContext<AuthContext | null>(null);
 
-export default function AuthProvider({
-  children,
-}: AuthProviderProps): JSX.Element {
+export default function AuthProvider({ children }: ProviderProps) {
   const [isConnected, setIsConnected] = useLocalStorage<boolean>(
     "connected",
     false

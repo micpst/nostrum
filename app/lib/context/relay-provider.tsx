@@ -5,9 +5,9 @@
 import { relayInit } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Event, Filter, Relay } from "nostr-tools";
-import type { ReactNode } from "react";
 import { DEFAULT_RELAYS } from "@/app/lib/constants";
 import NostrService from "@/app/lib/services/nostr";
+import type { ProviderProps } from "@/app/lib/context/providers";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type RelayContext = {
@@ -20,13 +20,9 @@ type RelayContext = {
   subscribe: (filter: Filter, onEvent: (event: RelayEvent) => void) => void;
 };
 
-type RelayProviderProps = {
-  children: ReactNode;
-};
-
 export const RelayContext = createContext<RelayContext | null>(null);
 
-export default function RelayProvider({ children }: RelayProviderProps) {
+export default function RelayProvider({ children }: ProviderProps) {
   const [relays, setRelays] = useState<Map<string, Relay>>(() => {
     const relays = NostrService.getRelays();
     return new Map(relays.map((r) => [r.url, r]));
