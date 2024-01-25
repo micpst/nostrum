@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 "use client";
 
 import { relayInit } from "nostr-tools";

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -7,7 +8,7 @@ import type { ProviderProps } from "@/app/lib/context/providers";
 type AuthContext = {
   isConnected: boolean;
   isLoading: boolean;
-  publicKey?: string;
+  publicKey: string | null;
   login: () => void;
   logout: () => void;
 };
@@ -20,7 +21,7 @@ export default function AuthProvider({ children }: ProviderProps) {
     false
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
 
   useEffect(() => {
     if (window.nostr === undefined) {
@@ -56,7 +57,7 @@ export default function AuthProvider({ children }: ProviderProps) {
 
   const logout = (): void => {
     setIsConnected(false);
-    setPublicKey(undefined);
+    setPublicKey(null);
   };
 
   const value: AuthContext = {
