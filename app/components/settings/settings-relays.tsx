@@ -9,10 +9,10 @@ function SettingsRelays() {
   return (
     <>
       <RelayInput />
-      {relays.map((relay, i) => (
+      {Array.from(relays.keys()).map((relay, i) => (
         <Relay key={i} url={relay} />
       ))}
-      {relays.length === 0 && (
+      {relays.size === 0 && (
         <div className="flex items-center justify-center mt-6 text-light-secondary">
           No relays added yet
         </div>

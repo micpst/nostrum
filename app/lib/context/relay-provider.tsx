@@ -11,7 +11,7 @@ import type { ProviderProps } from "@/app/lib/context/providers";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type RelayContext = {
-  relays: string[];
+  relays: Map<string, Relay>;
   addRelay: (url: string) => void;
   list: (filter: Filter) => Promise<RelayEvent[]>;
   publish: (event: Event) => Promise<RelayEvent>;
@@ -91,7 +91,7 @@ export default function RelayProvider({ children }: ProviderProps) {
   };
 
   const value: RelayContext = {
-    relays: Array.from(relays.keys()),
+    relays,
     addRelay,
     list,
     publish,
