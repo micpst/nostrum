@@ -9,7 +9,7 @@ type NostrService = {
     pubkey: string,
     content?: string,
     tags?: string[][]
-  ) => Promise<Event | undefined>;
+  ) => Promise<Event>;
   getRelays: () => Relay[];
   listEvents: (relays: Relay[], filter: Filter) => Promise<RelayEvent[]>;
   publishEvent: (
@@ -19,7 +19,6 @@ type NostrService = {
   ) => Promise<RelayEvent>;
   resetRelays: () => void;
   setRelays: (relays: Relay[]) => void;
-  signEvent: (event: UnsignedEvent) => Promise<Event | undefined>;
   subscribeEvents: (
     relays: Relay[],
     filter: Filter,
@@ -32,25 +31,19 @@ async function createEvent(
   pubkey: string,
   content: string = "",
   tags: string[][] = []
-): Promise<Event | undefined> {
-  const event = await signEvent({
+): Promise<Event> {
+  const event = await window.nostr?.signEvent({
     kind,
     pubkey,
     content,
     tags,
     created_at: Math.floor(Date.now() / 1000),
   });
-  return event && verifySignature(event) ? event : undefined;
-}
 
-async function signEvent(event: UnsignedEvent): Promise<Event | undefined> {
-  let signedEvent: Event | undefined;
-  try {
-    signedEvent = await window.nostr?.signEvent(event);
-  } catch (err: any) {
-    console.error("signing event failed");
-  }
-  return signedEvent;
+  if (event === undefined) throw new Error("failed to sign event");
+  if (!verifySignature(event)) throw new Error("failed to verify event");
+
+  return event;
 }
 
 function getRelays(): Relay[] {
@@ -155,7 +148,6 @@ const NostrService: NostrService = {
   resetRelays,
   setRelays,
   subscribeEvents,
-  signEvent,
 };
 
 export default NostrService;

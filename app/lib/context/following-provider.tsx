@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import NostrService from "@/app/lib/services/nostr";
+import followingService from "@/app/lib/services/followingService";
 import type { ProviderProps } from "@/app/lib/context/providers";
 
 type FollowingContext = {
@@ -19,63 +18,56 @@ export const FollowingContext = createContext<FollowingContext | null>(null);
 
 export default function FollowingProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
-  const { relays, list, publish } = useRelay();
+  const { relays } = useRelay();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [following, setFollowing] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (publicKey === undefined) setFollowing(new Set());
+    if (!publicKey) setFollowing(new Set());
     else void fetchFollowing();
   }, [publicKey, relays]);
 
   const fetchFollowing = async (): Promise<void> => {
-    if (publicKey === undefined) return;
+    if (!publicKey) return;
 
     setIsLoading(true);
     setFollowing(new Set());
 
-    const events = await list({
-      kinds: [3],
-      authors: [publicKey],
+    const following = await followingService.listFollowingAsync({
+      relays: Array.from(relays.values()),
+      pubkey: publicKey,
     });
 
-    const following = new Set(
-      events
-        .flatMap((event) => event.tags)
-        .filter((tag) => tag[0] === "p")
-        .map((tag) => tag[1])
-    );
-
-    setFollowing(following);
+    setFollowing(new Set(following));
     setIsLoading(false);
   };
 
   const follow = async (pubkey: string): Promise<void> => {
     if (!pubkey || !publicKey) return;
 
-    const newContacts = [...following, pubkey];
-    const tags = newContacts.map((contact) => ["p", contact]);
-    const event = await NostrService.createEvent(3, publicKey, "", tags);
+    const newFollowing = [...following, pubkey];
+    await followingService.publishFollowingAsync({
+      relays: Array.from(relays.values()),
+      pubkey: publicKey,
+      followings: newFollowing,
+    });
 
-    if (event) {
-      await publish(event);
-      setFollowing(new Set(newContacts));
-    }
+    setFollowing(new Set(newFollowing));
   };
 
   const unfollow = async (pubkey: string): Promise<void> => {
     if (!pubkey || !publicKey) return;
 
-    const newContacts = Array.from(following).filter(
-      (contact) => contact !== pubkey
+    const newFollowing = Array.from(following).filter(
+      (following) => following !== pubkey
     );
-    const tags = newContacts.map((contact) => ["p", contact]);
-    const event = await NostrService.createEvent(3, publicKey, "", tags);
+    await followingService.publishFollowingAsync({
+      relays: Array.from(relays.values()),
+      pubkey: publicKey,
+      followings: newFollowing,
+    });
 
-    if (event) {
-      await publish(event);
-      setFollowing(new Set(newContacts));
-    }
+    setFollowing(new Set(newFollowing));
   };
 
   const value: FollowingContext = {
