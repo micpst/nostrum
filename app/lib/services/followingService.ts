@@ -1,5 +1,5 @@
 import type { Relay } from "nostr-tools";
-import nostrService from "@/app/lib/services/nostr";
+import nostrService from "@/app/lib/services/nostrService";
 
 export type ListRequest = {
   relays: Relay[];

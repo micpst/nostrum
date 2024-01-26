@@ -1,6 +1,6 @@
 import { nip05 } from "nostr-tools";
 import type { Relay } from "nostr-tools";
-import NostrService from "@/app/lib/services/nostr";
+import nostrService from "@/app/lib/services/nostrService";
 import {
   groupEventsByPubkey,
   selectMostFrequentEvent,
@@ -31,7 +31,7 @@ async function listProfilesAsync({
   relays,
   pubkeys,
 }: Request): Promise<User[]> {
-  const events = await NostrService.listEvents(relays, {
+  const events = await nostrService.listEvents(relays, {
     kinds: [0],
     authors: pubkeys,
   });

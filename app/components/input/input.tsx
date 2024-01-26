@@ -9,7 +9,7 @@ import { User } from "@/app/lib/types/user";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import InputForm from "@/app/components/input/input-form";
 import InputOptions from "@/app/components/input/input-options";
-import NostrService from "@/app/lib/services/nostr";
+import NostrService from "@/app/lib/services/nostrService";
 import { useRelay } from "@/app/lib/context/relay-provider";
 
 type InputProps = {

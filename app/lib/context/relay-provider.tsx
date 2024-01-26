@@ -5,7 +5,7 @@ import { relayInit } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Event, Filter, Relay } from "nostr-tools";
 import { DEFAULT_RELAYS } from "@/app/lib/constants";
-import NostrService from "@/app/lib/services/nostr";
+import nostrService from "@/app/lib/services/nostrService";
 import type { ProviderProps } from "@/app/lib/context/providers";
 import type { RelayEvent } from "@/app/lib/types/event";
 
@@ -23,7 +23,7 @@ export const RelayContext = createContext<RelayContext | null>(null);
 
 export default function RelayProvider({ children }: ProviderProps) {
   const [relays, setRelays] = useState<Map<string, Relay>>(() => {
-    const relays = NostrService.getRelays();
+    const relays = nostrService.getRelays();
     return new Map(relays.map((r) => [r.url, r]));
   });
 
@@ -43,7 +43,7 @@ export default function RelayProvider({ children }: ProviderProps) {
   }, [relays]);
 
   const resetRelays = (): void => {
-    NostrService.resetRelays();
+    nostrService.resetRelays();
     setRelays(new Map(DEFAULT_RELAYS.map((url) => [url, relayInit(url)])));
   };
 
@@ -54,7 +54,7 @@ export default function RelayProvider({ children }: ProviderProps) {
     const relay = relayInit(trimmedUrl);
 
     setRelays((prev) => {
-      NostrService.setRelays([...prev.values(), relay]);
+      nostrService.setRelays([...prev.values(), relay]);
       return new Map([...prev, [relay.url, relay]]);
     });
   };
@@ -66,14 +66,14 @@ export default function RelayProvider({ children }: ProviderProps) {
     relay.close();
     setRelays((prev) => {
       prev.delete(url);
-      NostrService.setRelays(Array.from(prev.values()));
+      nostrService.setRelays(Array.from(prev.values()));
       return new Map(prev);
     });
   };
 
   const publish = async (event: Event): Promise<RelayEvent> => {
     const selectedRelays = Array.from(relays.values());
-    return NostrService.publishEvent(selectedRelays, event);
+    return nostrService.publishEvent(selectedRelays, event);
   };
 
   const subscribe = (
@@ -81,12 +81,12 @@ export default function RelayProvider({ children }: ProviderProps) {
     onEvent: (event: RelayEvent) => void
   ): void => {
     const selectedRelays = Array.from(relays.values());
-    NostrService.subscribeEvents(selectedRelays, filter, onEvent);
+    nostrService.subscribeEvents(selectedRelays, filter, onEvent);
   };
 
   const list = async (filter: Filter): Promise<RelayEvent[]> => {
     const selectedRelays = Array.from(relays.values());
-    return NostrService.listEvents(selectedRelays, filter);
+    return nostrService.listEvents(selectedRelays, filter);
   };
 
   const value: RelayContext = {

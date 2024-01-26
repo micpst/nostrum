@@ -11,7 +11,7 @@ import { InputField } from "@/app/components/input/input-field";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import type { ChangeEvent, KeyboardEvent } from "react";
-import NostrService from "@/app/lib/services/nostr";
+import NostrService from "@/app/lib/services/nostrService";
 
 type RequiredInputFieldProps = Omit<InputFieldProps, "handleChange"> & {
   inputId: EditableData;

@@ -6,7 +6,7 @@ import { nip25 } from "nostr-tools";
 import { createContext, useContext, useState } from "react";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import NostrService from "@/app/lib/services/nostr";
+import NostrService from "@/app/lib/services/nostrService";
 import type { ProviderProps } from "@/app/lib/context/providers";
 import type { RelayEvent } from "@/app/lib/types/event";
 
