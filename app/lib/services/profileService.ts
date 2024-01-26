@@ -6,15 +6,22 @@ import {
   selectMostFrequentEvent,
 } from "@/app/lib/utils/events";
 import type { RelayEvent } from "@/app/lib/types/event";
-import type { User } from "@/app/lib/types/user";
+import type { EditableUserData, User } from "@/app/lib/types/user";
 
-export type Request = {
+export type ListProfilesRequest = {
   relays: Relay[];
-  pubkeys: string[];
+  profilesPubkeys: string[];
 };
 
-interface ProfilesService {
-  listProfilesAsync(request: Request): Promise<User[]>;
+export type PublishProfileRequest = {
+  relays: Relay[];
+  authorPubkey: string;
+  profileData: EditableUserData;
+};
+
+interface ProfileService {
+  listProfilesAsync(request: ListProfilesRequest): Promise<User[]>;
+  publishProfileAsync(request: PublishProfileRequest): Promise<RelayEvent>;
 }
 
 const defaultProfile: User = {
@@ -29,11 +36,11 @@ const defaultProfile: User = {
 
 async function listProfilesAsync({
   relays,
-  pubkeys,
-}: Request): Promise<User[]> {
+  profilesPubkeys,
+}: ListProfilesRequest): Promise<User[]> {
   const events = await nostrService.listEvents(relays, {
     kinds: [0],
-    authors: pubkeys,
+    authors: profilesPubkeys,
   });
 
   const groupedEvents = groupEventsByPubkey(events);
@@ -59,7 +66,7 @@ async function listProfilesAsync({
 
   const newProfiles = await Promise.all(profilesQuery);
 
-  const defaultProfiles = pubkeys.map((pubkey) => [
+  const defaultProfiles = profilesPubkeys.map((pubkey) => [
     pubkey,
     { ...defaultProfile, pubkey },
   ]) as [string, User][];
@@ -67,8 +74,19 @@ async function listProfilesAsync({
   return Array.from(new Map([...defaultProfiles, ...newProfiles]).values());
 }
 
-const ProfilesService: ProfilesService = {
+async function publishProfileAsync({
+  relays,
+  authorPubkey,
+  profileData,
+}: PublishProfileRequest): Promise<RelayEvent> {
+  const content = JSON.stringify(profileData);
+  const event = await nostrService.createEvent(0, authorPubkey, content);
+  return await nostrService.publishEvent(relays, event);
+}
+
+const ProfileService: ProfileService = {
   listProfilesAsync,
+  publishProfileAsync,
 };
 
-export default ProfilesService;
+export default ProfileService;

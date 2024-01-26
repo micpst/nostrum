@@ -9,7 +9,7 @@ import {
   addProfilesAsync,
   reloadProfilesAsync,
   removeProfiles,
-  updateProfiles,
+  updateProfileAsync,
 } from "@/app/lib/actions/profilesActions";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
@@ -19,14 +19,14 @@ import type {
   ProfileAction,
   ProfileState,
 } from "@/app/lib/reducers/profilesReducer";
-import type { User } from "@/app/lib/types/user";
+import type { EditableUserData, User } from "@/app/lib/types/user";
 
 type ProfileContext = {
   profiles: Map<string, User>;
   isLoading: Set<string>;
   add: (pubkeys: string[]) => void;
   remove: (pubkeys: string[]) => void;
-  set: (profile: User) => void;
+  set: (profile: EditableUserData) => void;
   reload: (pubkeys: string[]) => void;
 };
 
@@ -61,17 +61,22 @@ export default function ProfileProvider({ children }: ProviderProps) {
     }
   }, [relays]);
 
-  const set = async (data: User): Promise<void> => {
-    const pointer = await nip05.queryProfile(data.nip05 || "");
-    const newProfile = { ...data, verified: pointer?.pubkey === data.pubkey };
-    dispatch(updateProfiles([newProfile]));
+  const set = (data: EditableUserData) => {
+    if (!publicKey) return;
+    dispatch(
+      updateProfileAsync({
+        relays: Array.from(relays.values()),
+        authorPubkey: publicKey,
+        profileData: data,
+      })
+    );
   };
 
   const add = (pubkeys: string[]): void => {
     dispatch(
       addProfilesAsync({
         relays: Array.from(relays.values()),
-        pubkeys,
+        profilesPubkeys: pubkeys,
       })
     );
   };
@@ -80,7 +85,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
     dispatch(
       reloadProfilesAsync({
         relays: Array.from(relays.values()),
-        pubkeys,
+        profilesPubkeys: pubkeys,
       })
     );
   };
