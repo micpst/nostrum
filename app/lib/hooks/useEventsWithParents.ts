@@ -1,3 +1,4 @@
+import noteService from "@/app/lib/services/noteService";
 import { useState } from "react";
 import { useDeepCompareEffect } from "react-use";
 import type { Filter } from "nostr-tools";
@@ -14,7 +15,7 @@ type UseEventsWithParents = {
 export function useEventsWithParents(
   filter: Filter = {}
 ): UseEventsWithParents {
-  const { list } = useRelay();
+  const { relays } = useRelay();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [allEvents, setAllEvents] = useState<Map<string, NoteEvent>>(new Map());
@@ -24,7 +25,10 @@ export function useEventsWithParents(
     (async (): Promise<void> => {
       setIsLoading(true);
 
-      const events = await list(filter);
+      const events = await noteService.listNotesAsync({
+        relays: Array.from(relays.values()),
+        filter,
+      });
       const newEvents = new Map(
         events
           .filter((event) => !allEvents.has(event.id))
@@ -42,9 +46,9 @@ export function useEventsWithParents(
         (id) => id
       ) as string[];
 
-      const parentEvents = await list({
-        kinds: [1],
-        ids: parentsIds,
+      const parentEvents = await noteService.listNotesAsync({
+        relays: Array.from(relays.values()),
+        filter: { ids: parentsIds },
       });
       const newParentEvents = new Map(
         parentEvents.map((event) => [

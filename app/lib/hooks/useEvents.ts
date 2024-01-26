@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDeepCompareEffect } from "react-use";
 import type { Filter } from "nostr-tools";
 import { useRelay } from "@/app/lib/context/relay-provider";
+import noteService from "@/app/lib/services/noteService";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 type UseEvents = {
@@ -11,7 +12,7 @@ type UseEvents = {
 };
 
 export function useEvents(filter: Filter = {}): UseEvents {
-  const { list } = useRelay();
+  const { relays } = useRelay();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [allEvents, setAllEvents] = useState<Map<string, RelayEvent>>(
@@ -23,7 +24,10 @@ export function useEvents(filter: Filter = {}): UseEvents {
     (async (): Promise<void> => {
       setIsLoading(true);
 
-      const events = await list(filter);
+      const events = await noteService.listNotesAsync({
+        relays: Array.from(relays.values()),
+        filter,
+      });
       const newEvents = new Map(
         events
           .filter((event) => !allEvents.has(event.id))

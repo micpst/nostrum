@@ -1,34 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 "use client";
 
 import { relayInit } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Event, Filter, Relay } from "nostr-tools";
-import type { ReactNode } from "react";
+import type { Relay } from "nostr-tools";
 import { DEFAULT_RELAYS } from "@/app/lib/constants";
-import NostrService from "@/app/lib/services/nostr";
-import type { RelayEvent } from "@/app/lib/types/event";
+import relayService from "@/app/lib/services/relayService";
+import type { ProviderProps } from "@/app/lib/context/providers";
 
 type RelayContext = {
-  relays: string[];
+  relays: Map<string, Relay>;
   addRelay: (url: string) => void;
-  list: (filter: Filter) => Promise<RelayEvent[]>;
-  publish: (event: Event) => Promise<RelayEvent>;
   removeRelay: (url: string) => void;
   resetRelays: () => void;
-  subscribe: (filter: Filter, onEvent: (event: RelayEvent) => void) => void;
-};
-
-type RelayProviderProps = {
-  children: ReactNode;
 };
 
 export const RelayContext = createContext<RelayContext | null>(null);
 
-export default function RelayProvider({ children }: RelayProviderProps) {
+export default function RelayProvider({ children }: ProviderProps) {
   const [relays, setRelays] = useState<Map<string, Relay>>(() => {
-    const relays = NostrService.getRelays();
+    const relays = relayService.getRelaysLocal();
     return new Map(relays.map((r) => [r.url, r]));
   });
 
@@ -48,7 +39,7 @@ export default function RelayProvider({ children }: RelayProviderProps) {
   }, [relays]);
 
   const resetRelays = (): void => {
-    NostrService.resetRelays();
+    relayService.resetRelaysLocal();
     setRelays(new Map(DEFAULT_RELAYS.map((url) => [url, relayInit(url)])));
   };
 
@@ -59,7 +50,7 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     const relay = relayInit(trimmedUrl);
 
     setRelays((prev) => {
-      NostrService.setRelays([...prev.values(), relay]);
+      relayService.setRelaysLocal([...prev.values(), relay]);
       return new Map([...prev, [relay.url, relay]]);
     });
   };
@@ -71,37 +62,16 @@ export default function RelayProvider({ children }: RelayProviderProps) {
     relay.close();
     setRelays((prev) => {
       prev.delete(url);
-      NostrService.setRelays(Array.from(prev.values()));
+      relayService.setRelaysLocal(Array.from(prev.values()));
       return new Map(prev);
     });
   };
 
-  const publish = async (event: Event): Promise<RelayEvent> => {
-    const selectedRelays = Array.from(relays.values());
-    return NostrService.publishEvent(selectedRelays, event);
-  };
-
-  const subscribe = (
-    filter: Filter,
-    onEvent: (event: RelayEvent) => void
-  ): void => {
-    const selectedRelays = Array.from(relays.values());
-    NostrService.subscribeEvents(selectedRelays, filter, onEvent);
-  };
-
-  const list = async (filter: Filter): Promise<RelayEvent[]> => {
-    const selectedRelays = Array.from(relays.values());
-    return NostrService.listEvents(selectedRelays, filter);
-  };
-
   const value: RelayContext = {
-    relays: Array.from(relays.keys()),
+    relays,
     addRelay,
-    list,
-    publish,
     removeRelay,
     resetRelays,
-    subscribe,
   };
 
   return (

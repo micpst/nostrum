@@ -5,7 +5,7 @@ import Button from "@/app/components/ui/button";
 type EditProfileModalProps = {
   children: ReactNode;
   closeModal: () => void;
-  updateData: () => Promise<void>;
+  updateData: () => void;
 };
 
 export function EditProfileModal({

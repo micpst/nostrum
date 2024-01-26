@@ -3,26 +3,20 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
-import { useProfile } from "@/app/lib/context/profile-provider";
-import { DEFAULT_FOLLOWINGS } from "@/app/lib/constants";
 import { useDeepCompareEffect } from "react-use";
+import { DEFAULT_FOLLOWINGS } from "@/app/lib/constants";
+import { useProfile } from "@/app/lib/context/profile-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
+import type { ProviderProps } from "@/app/lib/context/providers";
 
 type SuggestionContext = {
   suggestions: string[];
   isLoading: boolean;
 };
 
-type SuggestionProviderProps = {
-  children: ReactNode;
-};
-
 export const SuggestionContext = createContext<SuggestionContext | null>(null);
 
-export default function SuggestionProvider({
-  children,
-}: SuggestionProviderProps) {
+export default function SuggestionProvider({ children }: ProviderProps) {
   const { relays } = useRelay();
   const { add, remove, reload } = useProfile();
 

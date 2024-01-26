@@ -11,7 +11,7 @@ import { InputField } from "@/app/components/input/input-field";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import type { ChangeEvent, KeyboardEvent } from "react";
-import NostrService from "@/app/lib/services/nostr";
+import NostrService from "@/app/lib/services/nostrService";
 
 type RequiredInputFieldProps = Omit<InputFieldProps, "handleChange"> & {
   inputId: EditableData;
@@ -25,7 +25,6 @@ type UserEditProfileProps = {
 function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
   const { set: setProfile } = useProfile();
-  const { publish } = useRelay();
   const { about, name, picture, banner, nip05 } = user;
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     about,
@@ -81,11 +80,11 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
     ctrlKey,
   }: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     if (ctrlKey && key === "Enter") {
-      void updateData();
+      updateData();
     }
   };
 
-  const updateData = async (): Promise<void> => {
+  const updateData = (): void => {
     if (!user) return;
 
     const trimmedKeys: Readonly<EditableData[]> = [
@@ -100,17 +99,7 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
       {} as EditableUserData
     );
 
-    const content = JSON.stringify(newUserData);
-    const event = await NostrService.createEvent(0, user.pubkey, content);
-
-    if (event) {
-      await publish(event);
-      setProfile({
-        pubkey: user.pubkey,
-        ...newUserData,
-      } as User);
-    }
-
+    setProfile(newUserData);
     closeModal();
   };
 

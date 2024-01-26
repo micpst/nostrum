@@ -1,32 +1,27 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import { useLocalStorage } from "@/app/lib/hooks/useLocalStorage";
+import type { ProviderProps } from "@/app/lib/context/providers";
 
 type AuthContext = {
   isConnected: boolean;
   isLoading: boolean;
-  publicKey: string | undefined;
+  publicKey: string | null;
   login: () => void;
   logout: () => void;
 };
 
-type AuthProviderProps = {
-  children: ReactNode;
-};
-
 export const AuthContext = createContext<AuthContext | null>(null);
 
-export default function AuthProvider({
-  children,
-}: AuthProviderProps): JSX.Element {
+export default function AuthProvider({ children }: ProviderProps) {
   const [isConnected, setIsConnected] = useLocalStorage<boolean>(
     "connected",
     false
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
 
   useEffect(() => {
     if (window.nostr === undefined) {
@@ -62,7 +57,7 @@ export default function AuthProvider({
 
   const logout = (): void => {
     setIsConnected(false);
-    setPublicKey(undefined);
+    setPublicKey(null);
   };
 
   const value: AuthContext = {
