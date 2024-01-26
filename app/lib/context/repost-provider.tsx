@@ -33,7 +33,7 @@ export default function RepostProvider({ children }: ProviderProps) {
 
     const newReposts = await repostService.listRepostsAsync({
       relays: Array.from(relays.values()),
-      authorPubkey: publicKey,
+      pubkey: publicKey,
       eventsIds: newNotesIds,
     });
 
@@ -50,7 +50,7 @@ export default function RepostProvider({ children }: ProviderProps) {
 
     const repostEvent = await repostService.createRepostAsync({
       relays: Array.from(relays.values()),
-      authorPubkey: publicKey,
+      pubkey: publicKey,
       eventToRepost: event,
     });
 
@@ -63,7 +63,7 @@ export default function RepostProvider({ children }: ProviderProps) {
 
     await repostService.deleteRepostAsync({
       relays: Array.from(relays.values()),
-      authorPubkey: publicKey,
+      pubkey: publicKey,
       repostId,
     });
 

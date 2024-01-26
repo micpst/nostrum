@@ -5,19 +5,19 @@ import type { RelayEvent } from "@/app/lib/types/event";
 
 export type ListRepostsRequest = {
   relays: Relay[];
-  authorPubkey: string;
+  pubkey: string;
   eventsIds: string[];
 };
 
 export type CreateRepostRequest = {
   relays: Relay[];
-  authorPubkey: string;
+  pubkey: string;
   eventToRepost: Event;
 };
 
 export type DeleteRepostRequest = {
   relays: Relay[];
-  authorPubkey: string;
+  pubkey: string;
   repostId: string;
 };
 
@@ -29,12 +29,12 @@ interface RepostService {
 
 async function listRepostsAsync({
   relays,
-  authorPubkey,
+  pubkey,
   eventsIds,
 }: ListRepostsRequest): Promise<[string, string][]> {
   const events = await nostrService.listEvents(relays, {
     kinds: [6],
-    authors: [authorPubkey],
+    authors: [pubkey],
     "#e": eventsIds,
   });
   return events
@@ -47,7 +47,7 @@ async function listRepostsAsync({
 
 async function createRepostAsync({
   relays,
-  authorPubkey,
+  pubkey,
   eventToRepost,
 }: CreateRepostRequest): Promise<RelayEvent> {
   const tags = eventToRepost.tags.filter(
@@ -58,7 +58,7 @@ async function createRepostAsync({
 
   const repostEvent = await nostrService.createEvent(
     6,
-    authorPubkey,
+    pubkey,
     eventToRepost.content,
     tags
   );
@@ -67,11 +67,11 @@ async function createRepostAsync({
 
 async function deleteRepostAsync({
   relays,
-  authorPubkey,
+  pubkey,
   repostId,
 }: DeleteRepostRequest): Promise<RelayEvent> {
   const tags = [["e", repostId]];
-  const deleteEvent = await nostrService.createEvent(5, authorPubkey, "", tags);
+  const deleteEvent = await nostrService.createEvent(5, pubkey, "", tags);
   return await nostrService.publishEvent(relays, deleteEvent);
 }
 
