@@ -1,26 +1,27 @@
 import type { Relay } from "nostr-tools";
 import nostrService from "@/app/lib/services/nostrService";
+import type { RelayEvent } from "@/app/lib/types/event";
 
-export type ListRequest = {
+export type ListFollowingRequest = {
   relays: Relay[];
   pubkey: string;
 };
 
-export type PublishRequest = {
+export type PublishFollowingRequest = {
   relays: Relay[];
   pubkey: string;
   followings: string[];
 };
 
 interface FollowingService {
-  listFollowingAsync(request: ListRequest): Promise<string[]>;
-  publishFollowingAsync(request: PublishRequest): Promise<void>;
+  listFollowingAsync(request: ListFollowingRequest): Promise<string[]>;
+  publishFollowingAsync(request: PublishFollowingRequest): Promise<RelayEvent>;
 }
 
 async function listFollowingAsync({
   relays,
   pubkey,
-}: ListRequest): Promise<string[]> {
+}: ListFollowingRequest): Promise<string[]> {
   const events = await nostrService.listEvents(relays, {
     kinds: [3],
     authors: [pubkey],
@@ -35,10 +36,10 @@ async function publishFollowingAsync({
   relays,
   pubkey,
   followings,
-}: PublishRequest): Promise<void> {
+}: PublishFollowingRequest): Promise<RelayEvent> {
   const tags = followings.map((following) => ["p", following]);
   const event = await nostrService.createEvent(3, pubkey, "", tags);
-  await nostrService.publishEvent(relays, event);
+  return await nostrService.publishEvent(relays, event);
 }
 
 const FollowingsService: FollowingService = {
