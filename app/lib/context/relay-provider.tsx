@@ -3,21 +3,16 @@
 
 import { relayInit } from "nostr-tools";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Event, Filter, Relay } from "nostr-tools";
+import type { Relay } from "nostr-tools";
 import { DEFAULT_RELAYS } from "@/app/lib/constants";
-import nostrService from "@/app/lib/services/nostrService";
 import relayService from "@/app/lib/services/relayService";
 import type { ProviderProps } from "@/app/lib/context/providers";
-import type { RelayEvent } from "@/app/lib/types/event";
 
 type RelayContext = {
   relays: Map<string, Relay>;
   addRelay: (url: string) => void;
-  list: (filter: Filter) => Promise<RelayEvent[]>;
-  publish: (event: Event) => Promise<RelayEvent>;
   removeRelay: (url: string) => void;
   resetRelays: () => void;
-  subscribe: (filter: Filter, onEvent: (event: RelayEvent) => void) => void;
 };
 
 export const RelayContext = createContext<RelayContext | null>(null);
@@ -72,32 +67,11 @@ export default function RelayProvider({ children }: ProviderProps) {
     });
   };
 
-  const publish = async (event: Event): Promise<RelayEvent> => {
-    const selectedRelays = Array.from(relays.values());
-    return nostrService.publishEvent(selectedRelays, event);
-  };
-
-  const subscribe = (
-    filter: Filter,
-    onEvent: (event: RelayEvent) => void
-  ): void => {
-    const selectedRelays = Array.from(relays.values());
-    nostrService.subscribeEvents(selectedRelays, filter, onEvent);
-  };
-
-  const list = async (filter: Filter): Promise<RelayEvent[]> => {
-    const selectedRelays = Array.from(relays.values());
-    return nostrService.listEvents(selectedRelays, filter);
-  };
-
   const value: RelayContext = {
     relays,
     addRelay,
-    list,
-    publish,
     removeRelay,
     resetRelays,
-    subscribe,
   };
 
   return (

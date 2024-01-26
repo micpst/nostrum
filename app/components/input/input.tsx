@@ -1,16 +1,16 @@
 import cn from "clsx";
 import { motion } from "framer-motion";
 import React, { useState, useRef } from "react";
-import type { ReactNode, FormEvent, ChangeEvent } from "react";
 import type { Variants } from "framer-motion";
-import UserAvatar from "@/app/components/user/user-avatar";
-import { useAuth } from "@/app/lib/context/auth-provider";
-import { User } from "@/app/lib/types/user";
-import { useProfile } from "@/app/lib/context/profile-provider";
+import type { ReactNode, FormEvent, ChangeEvent } from "react";
 import InputForm from "@/app/components/input/input-form";
 import InputOptions from "@/app/components/input/input-options";
-import NostrService from "@/app/lib/services/nostrService";
+import UserAvatar from "@/app/components/user/user-avatar";
+import { useAuth } from "@/app/lib/context/auth-provider";
+import { useProfile } from "@/app/lib/context/profile-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
+import noteService from "@/app/lib/services/noteService";
+import type { User } from "@/app/lib/types/user";
 
 type InputProps = {
   modal?: boolean;
@@ -44,7 +44,7 @@ function Input({
 
   const { publicKey } = useAuth();
   const { profiles, isLoading } = useProfile();
-  const { publish } = useRelay();
+  const { relays } = useRelay();
 
   if (!publicKey) return null;
 
@@ -59,18 +59,24 @@ function Input({
 
     inputRef.current?.blur();
 
-    const tags = isReplying && parentId ? [["e", parentId]] : [];
-    const event = await NostrService.createEvent(
-      1,
-      user.pubkey,
-      inputValue.trim(),
-      tags
-    );
+    const content = inputValue.trim();
 
-    if (event) {
-      await publish(event);
-      closeModal();
+    if (isReplying && parentId) {
+      await noteService.createNoteReplyAsync({
+        relays: Array.from(relays.values()),
+        pubkey: publicKey,
+        content,
+        parentId,
+      });
+    } else {
+      await noteService.createNoteAsync({
+        relays: Array.from(relays.values()),
+        pubkey: publicKey,
+        content,
+      });
     }
+
+    closeModal();
   };
 
   const discardNote = (): void => {
