@@ -1,13 +1,14 @@
-import profilesService, {
-  PublishProfileRequest,
-} from "@/app/lib/services/profileService";
+import { nip05 } from "nostr-tools";
+import profilesService from "@/app/lib/services/profileService";
 import type {
   ProfileAction,
   ProfileState,
 } from "@/app/lib/reducers/profilesReducer";
-import type { ListProfilesRequest } from "@/app/lib/services/profileService";
+import type {
+  ListProfilesRequest,
+  PublishProfileRequest,
+} from "@/app/lib/services/profileService";
 import type { User } from "@/app/lib/types/user";
-import { nip05 } from "nostr-tools";
 
 function addProfiles(pubkeys: string[]): ProfileAction {
   return {
@@ -39,19 +40,19 @@ export function updateProfiles(profiles: User[]): ProfileAction {
 
 export function addProfilesAsync({
   relays,
-  profilesPubkeys,
+  pubkeys,
 }: ListProfilesRequest): (dispatch: any, getState: () => ProfileState) => void {
   return async (dispatch, getState) => {
     const prevLoading = new Set(getState().isLoading);
 
-    dispatch(addProfiles(profilesPubkeys));
+    dispatch(addProfiles(pubkeys));
 
     const newPubkeys = Array.from(getState().isLoading).filter(
       (pubkey) => !prevLoading.has(pubkey)
     );
     const profiles = await profilesService.listProfilesAsync({
       relays,
-      profilesPubkeys: newPubkeys,
+      pubkeys: newPubkeys,
     });
 
     dispatch(updateProfiles(profiles));
@@ -60,26 +61,26 @@ export function addProfilesAsync({
 
 export function updateProfileAsync({
   relays,
-  authorPubkey,
-  profileData,
+  pubkey,
+  data,
 }: PublishProfileRequest): (
   dispatch: any,
   getState: () => ProfileState
 ) => void {
   return async (dispatch, getState) => {
-    const pointer = await nip05.queryProfile(profileData.nip05 || "");
-    const newProfile = {
-      ...profileData,
-      verified: pointer?.pubkey === authorPubkey,
+    const pointer = await nip05.queryProfile(data.nip05 || "");
+    const extendedData = {
+      ...data,
+      verified: pointer?.pubkey === pubkey,
     };
 
     await profilesService.publishProfileAsync({
       relays,
-      authorPubkey,
-      profileData: newProfile,
+      pubkey,
+      data: extendedData,
     });
 
-    dispatch(updateProfiles([{ ...newProfile, pubkey: authorPubkey }]));
+    dispatch(updateProfiles([{ ...extendedData, pubkey }]));
   };
 }
 
@@ -87,7 +88,7 @@ export function reloadProfilesAsync(
   request: ListProfilesRequest
 ): (dispatch: any, getState: () => ProfileState) => void {
   return async (dispatch, getState) => {
-    dispatch(reloadProfiles(request.profilesPubkeys));
+    dispatch(reloadProfiles(request.pubkeys));
     const profiles = await profilesService.listProfilesAsync(request);
     dispatch(updateProfiles(profiles));
   };

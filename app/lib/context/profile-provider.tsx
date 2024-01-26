@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { nip05 } from "nostr-tools";
 import { createContext, useContext, useEffect } from "react";
 import { thunk } from "redux-thunk";
 import { createReducer, useDeepCompareEffect } from "react-use";
@@ -61,13 +60,13 @@ export default function ProfileProvider({ children }: ProviderProps) {
     }
   }, [relays]);
 
-  const set = (data: EditableUserData) => {
+  const set = (data: EditableUserData): void => {
     if (!publicKey) return;
     dispatch(
       updateProfileAsync({
         relays: Array.from(relays.values()),
-        authorPubkey: publicKey,
-        profileData: data,
+        pubkey: publicKey,
+        data,
       })
     );
   };
@@ -76,7 +75,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
     dispatch(
       addProfilesAsync({
         relays: Array.from(relays.values()),
-        profilesPubkeys: pubkeys,
+        pubkeys,
       })
     );
   };
@@ -85,7 +84,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
     dispatch(
       reloadProfilesAsync({
         relays: Array.from(relays.values()),
-        profilesPubkeys: pubkeys,
+        pubkeys,
       })
     );
   };

@@ -10,13 +10,13 @@ import type { EditableUserData, User } from "@/app/lib/types/user";
 
 export type ListProfilesRequest = {
   relays: Relay[];
-  profilesPubkeys: string[];
+  pubkeys: string[];
 };
 
 export type PublishProfileRequest = {
   relays: Relay[];
-  authorPubkey: string;
-  profileData: EditableUserData;
+  pubkey: string;
+  data: EditableUserData;
 };
 
 interface ProfileService {
@@ -36,11 +36,11 @@ const defaultProfile: User = {
 
 async function listProfilesAsync({
   relays,
-  profilesPubkeys,
+  pubkeys,
 }: ListProfilesRequest): Promise<User[]> {
   const events = await nostrService.listEvents(relays, {
     kinds: [0],
-    authors: profilesPubkeys,
+    authors: pubkeys,
   });
 
   const groupedEvents = groupEventsByPubkey(events);
@@ -66,7 +66,7 @@ async function listProfilesAsync({
 
   const newProfiles = await Promise.all(profilesQuery);
 
-  const defaultProfiles = profilesPubkeys.map((pubkey) => [
+  const defaultProfiles = pubkeys.map((pubkey) => [
     pubkey,
     { ...defaultProfile, pubkey },
   ]) as [string, User][];
@@ -76,11 +76,11 @@ async function listProfilesAsync({
 
 async function publishProfileAsync({
   relays,
-  authorPubkey,
-  profileData,
+  pubkey,
+  data,
 }: PublishProfileRequest): Promise<RelayEvent> {
-  const content = JSON.stringify(profileData);
-  const event = await nostrService.createEvent(0, authorPubkey, content);
+  const content = JSON.stringify(data);
+  const event = await nostrService.createEvent(0, pubkey, content);
   return await nostrService.publishEvent(relays, event);
 }
 
