@@ -31,7 +31,6 @@ export default function FollowingProvider({ children }: ProviderProps) {
     if (!publicKey) return;
 
     setIsLoading(true);
-    setFollowing(new Set());
 
     const following = await followingService.listFollowingAsync({
       relays: Array.from(relays.values()),
