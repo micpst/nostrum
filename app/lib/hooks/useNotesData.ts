@@ -26,7 +26,7 @@ export function useNotesData({ notes, newNotes }: UseNotesData): void {
   }, [newNotes]);
 
   useUnmount(() => {
-    const pubkeys = notes.map((note) => note.pubkey);
+    const pubkeys = Array.from(new Set(notes.map((note) => note.pubkey)));
     removeProfiles(pubkeys);
   });
 }
