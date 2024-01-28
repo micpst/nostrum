@@ -31,10 +31,10 @@ export default function ReactionsProvider({ children }: ProviderProps) {
 
     setIsLoading((prev) => new Set([...prev, ...newNotesIds]));
 
-    const newReactions = await reactionService.listReactionsAsync({
+    const newReactions = await reactionService.listNotesReactionsAsync({
       relays: Array.from(relays.values()),
       pubkey: publicKey,
-      eventsIds: newNotesIds,
+      notesIds: newNotesIds,
     });
 
     setReactions((prev) => new Map([...prev, ...new Map(newReactions)]));
@@ -45,20 +45,20 @@ export default function ReactionsProvider({ children }: ProviderProps) {
     });
   };
 
-  const like = async (event: RelayEvent): Promise<void> => {
+  const like = async (note: RelayEvent): Promise<void> => {
     if (!publicKey) return;
 
     const likeEvent = await reactionService.createReactionAsync({
       relays: Array.from(relays.values()),
       pubkey: publicKey,
-      eventToReact: event,
+      noteToReact: note,
     });
 
-    setReactions((prev) => new Map([...prev, [event.id, likeEvent.id]]));
+    setReactions((prev) => new Map([...prev, [note.id, likeEvent.id]]));
   };
 
-  const unlike = async (event: RelayEvent): Promise<void> => {
-    const reactionId = reactions.get(event.id);
+  const unlike = async (note: RelayEvent): Promise<void> => {
+    const reactionId = reactions.get(note.id);
     if (!publicKey || !reactionId) return;
 
     await reactionService.deleteReactionAsync({
@@ -69,7 +69,7 @@ export default function ReactionsProvider({ children }: ProviderProps) {
 
     setReactions((prev) => {
       const newReactions = new Map(prev);
-      newReactions.delete(event.id);
+      newReactions.delete(note.id);
       return newReactions;
     });
   };
