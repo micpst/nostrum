@@ -1,6 +1,7 @@
 import { nip05 } from "nostr-tools";
 import type { Relay } from "nostr-tools";
 import nostrService from "@/app/lib/services/nostrService";
+import { validateProfileContent } from "@/app/lib/utils/common";
 import {
   groupEventsByPubkey,
   selectMostFrequentEvent,
@@ -43,35 +44,31 @@ async function listProfilesAsync({
     authors: pubkeys,
   });
 
-  const groupedEvents = groupEventsByPubkey(events);
+  const groupedEvents = groupEventsByPubkey(
+    events.filter((event) => validateProfileContent(event.content))
+  );
 
-  const selectedEvents = Array.from(groupedEvents.values())
-    .filter((eventsForPubkey) => eventsForPubkey.length)
-    .map((eventsForPubkey) =>
-      selectMostFrequentEvent(eventsForPubkey)
-    ) as RelayEvent[];
+  const selectedEvents = Array.from(groupedEvents.values()).map(
+    (eventsForPubkey) => selectMostFrequentEvent(eventsForPubkey)
+  ) as RelayEvent[];
 
-  const profilesQuery = selectedEvents.map(async (event) => {
-    const parsed = JSON.parse(event.content);
-    const pointer = await nip05.queryProfile(parsed?.nip05 || "");
-    return [
-      event.pubkey,
-      {
-        ...parsed,
+  const newProfiles = await Promise.all(
+    selectedEvents.map(async (event) => {
+      const data = JSON.parse(event.content);
+      const pointer = await nip05.queryProfile(data?.nip05 || "");
+      return {
+        ...data,
         verified: pointer?.pubkey === event.pubkey,
         pubkey: event.pubkey,
-      },
-    ] as [string, User];
-  });
+      };
+    })
+  );
 
-  const newProfiles = await Promise.all(profilesQuery);
-
-  const defaultProfiles = pubkeys.map((pubkey) => [
+  return pubkeys.map((pubkey) => ({
+    ...defaultProfile,
+    ...newProfiles.find((profile) => profile.pubkey === pubkey),
     pubkey,
-    { ...defaultProfile, pubkey },
-  ]) as [string, User][];
-
-  return Array.from(new Map([...defaultProfiles, ...newProfiles]).values());
+  }));
 }
 
 async function publishProfileAsync({

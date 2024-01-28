@@ -6,4 +6,6 @@ export type RelayEvent = Event & {
 
 export type NoteEvent = RelayEvent & {
   parent: boolean;
+  likedAt?: number;
+  repostedAt?: number;
 };

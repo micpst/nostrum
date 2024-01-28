@@ -17,6 +17,15 @@ export function getUserName(user: User): string {
   return user.displayName || user.display_name || user.name || "";
 }
 
+export function validateProfileContent(content: string): boolean {
+  try {
+    JSON.parse(content);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export const findMostFrequent = (
   items: string[],
   numItems: number = 3

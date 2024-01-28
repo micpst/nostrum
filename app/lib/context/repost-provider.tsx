@@ -31,10 +31,10 @@ export default function RepostProvider({ children }: ProviderProps) {
 
     setIsLoading((prev) => new Set([...prev, ...newNotesIds]));
 
-    const newReposts = await repostService.listRepostsAsync({
+    const newReposts = await repostService.listNotesRepostsAsync({
       relays: Array.from(relays.values()),
       pubkey: publicKey,
-      eventsIds: newNotesIds,
+      notesIds: newNotesIds,
     });
 
     setReposts((prev) => new Map([...prev, ...new Map(newReposts)]));
@@ -45,20 +45,20 @@ export default function RepostProvider({ children }: ProviderProps) {
     });
   };
 
-  const repost = async (event: RelayEvent): Promise<void> => {
+  const repost = async (note: RelayEvent): Promise<void> => {
     if (!publicKey) return;
 
     const repostEvent = await repostService.createRepostAsync({
       relays: Array.from(relays.values()),
       pubkey: publicKey,
-      eventToRepost: event,
+      noteToRepost: note,
     });
 
-    setReposts((prev) => new Map([...prev, [event.id, repostEvent.id]]));
+    setReposts((prev) => new Map([...prev, [note.id, repostEvent.id]]));
   };
 
-  const unrepost = async (event: RelayEvent): Promise<void> => {
-    const repostId = reposts.get(event.id);
+  const unrepost = async (note: RelayEvent): Promise<void> => {
+    const repostId = reposts.get(note.id);
     if (!publicKey || !repostId) return;
 
     await repostService.deleteRepostAsync({
@@ -69,7 +69,7 @@ export default function RepostProvider({ children }: ProviderProps) {
 
     setReposts((prev) => {
       const newRepost = new Map(prev);
-      newRepost.delete(event.id);
+      newRepost.delete(note.id);
       return newRepost;
     });
   };
