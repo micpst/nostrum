@@ -23,7 +23,8 @@ export function useHomeFeed(): UseHomeFeed {
         relays: Array.from(relays.values()),
         pubkeys: Array.from(following.values()),
         limit: 20,
-        until: lastNote?.created_at,
+        until:
+          lastNote?.repostedAt || lastNote?.likedAt || lastNote?.created_at,
       });
     },
     [relays, following]

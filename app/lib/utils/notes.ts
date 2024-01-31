@@ -6,7 +6,8 @@ export function combineNotes(...notes: NoteEvent[][]): NoteEvent[] {
       .reduce((acc, val) => acc.concat(val), [])
       .sort(
         (a, b) =>
-          (b.repostedAt || b.created_at) - (a.repostedAt || a.created_at)
+          (b.repostedAt || b.likedAt || b.created_at) -
+          (a.repostedAt || a.likedAt || a.created_at)
       )
       .map((event) => [event.id, event])
   );

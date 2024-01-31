@@ -86,10 +86,35 @@ async function listHomeNotesAsync({
   limit,
   until,
 }: ListHomeNotesRequest): Promise<NoteEvent[]> {
-  return await listNotesAsync({
+  const usersRepostedNotes = await Promise.all(
+    pubkeys.map(async (pubkey) =>
+      listUserRepostedNotesAsync({
+        relays,
+        pubkey,
+        limit,
+        until,
+      })
+    )
+  );
+  const usersLikedNotes = await Promise.all(
+    pubkeys.map(async (pubkey) =>
+      listUserLikedNotesAsync({
+        relays,
+        pubkey,
+        limit,
+        until,
+      })
+    )
+  );
+  const usersNotes = await listNotesAsync({
     relays,
     filter: { authors: pubkeys, limit, until },
   });
+  return combineNotes(
+    usersRepostedNotes.flat(),
+    usersLikedNotes.flat(),
+    usersNotes
+  ).slice(0, limit);
 }
 
 async function listExploreNotesAsync({
