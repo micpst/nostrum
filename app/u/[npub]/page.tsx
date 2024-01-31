@@ -31,7 +31,7 @@ function ProfilePage(): JSX.Element {
           )
         )
       )}
-      {isLoading ? <Loading className="my-5" /> : undefined}
+      {isLoading ? <Loading className="my-5" /> : null}
     </section>
   );
 }

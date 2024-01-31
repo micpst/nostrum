@@ -18,6 +18,19 @@ export type ListUserNotesRequest = {
   until?: number;
 };
 
+export type ListHomeNotesRequest = {
+  relays: Relay[];
+  pubkeys: string[];
+  limit?: number;
+  until?: number;
+};
+
+export type ListExploreNotesRequest = {
+  relays: Relay[];
+  limit?: number;
+  until?: number;
+};
+
 export type CreateNoteRequest = {
   relays: Relay[];
   pubkey: string;
@@ -34,6 +47,8 @@ export type CreateNoteReplyRequest = {
 interface NoteService {
   listNotesAsync(request: ListNotesRequest): Promise<NoteEvent[]>;
   listRootNotesAsync(request: ListNotesRequest): Promise<NoteEvent[]>;
+  listExploreNotesAsync(request: ListExploreNotesRequest): Promise<NoteEvent[]>;
+  listHomeNotesAsync(request: ListHomeNotesRequest): Promise<NoteEvent[]>;
   listUserNotesAsync(request: ListUserNotesRequest): Promise<NoteEvent[]>;
   listUserLikedNotesAsync(request: ListUserNotesRequest): Promise<NoteEvent[]>;
   listUserRepostedNotesAsync(
@@ -62,6 +77,29 @@ async function listRootNotesAsync({
   return await listNotesAsync({
     relays,
     filter,
+  });
+}
+
+async function listHomeNotesAsync({
+  relays,
+  pubkeys,
+  limit,
+  until,
+}: ListHomeNotesRequest): Promise<NoteEvent[]> {
+  return await listNotesAsync({
+    relays,
+    filter: { authors: pubkeys, limit, until },
+  });
+}
+
+async function listExploreNotesAsync({
+  relays,
+  limit,
+  until,
+}: ListExploreNotesRequest): Promise<NoteEvent[]> {
+  return await listNotesAsync({
+    relays,
+    filter: { limit, until },
   });
 }
 
@@ -165,6 +203,8 @@ async function createNoteReplyAsync({
 const NoteService: NoteService = {
   listNotesAsync,
   listRootNotesAsync,
+  listExploreNotesAsync,
+  listHomeNotesAsync,
   listUserNotesAsync,
   listUserLikedNotesAsync,
   listUserRepostedNotesAsync,

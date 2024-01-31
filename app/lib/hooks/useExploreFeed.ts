@@ -3,30 +3,26 @@ import { useRelay } from "@/app/lib/context/relay-provider";
 import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScrollTemp";
 import noteService from "@/app/lib/services/noteService";
 import type { NoteEvent } from "@/app/lib/types/event";
-import type { User } from "@/app/lib/types/user";
 
-type UseUserFeed = {
+type UseExploreFeed = {
   notes: NoteEvent[];
   isLoading: boolean;
   loadMoreRef: (note: any) => void;
 };
 
-export function useUserFeed(user?: User): UseUserFeed {
+export function useExploreFeed(): UseExploreFeed {
   const { relays } = useRelay();
 
-  const loadUserFeed = useCallback(
+  const loadExploreFeed = useCallback(
     async (lastNote?: NoteEvent): Promise<NoteEvent[]> => {
-      if (!user) return [];
-
-      return await noteService.listUserNotesAsync({
+      return await noteService.listExploreNotesAsync({
         relays: Array.from(relays.values()),
-        pubkey: user.pubkey,
         limit: 20,
-        until: lastNote?.repostedAt || lastNote?.created_at,
+        until: lastNote?.created_at,
       });
     },
-    [relays, user]
+    [relays]
   );
 
-  return useInfiniteScroll(loadUserFeed);
+  return useInfiniteScroll(loadExploreFeed);
 }

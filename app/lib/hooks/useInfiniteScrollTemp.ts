@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMount } from "react-use";
 import type { NoteEvent } from "../types/event";
 import { useNotesData } from "./useNotesData";
@@ -20,9 +20,21 @@ export function useInfiniteScroll(
 
   useNotesData(notes);
 
-  useMount(() => {
-    void loadMore();
-  });
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      setReachedLimit(false);
+
+      const newNotes = await loadNextPage();
+      if (newNotes.length === 0) {
+        setReachedLimit(true);
+      } else {
+        setNotes(newNotes);
+      }
+
+      setIsLoading(false);
+    })();
+  }, [loadNextPage]);
 
   const loadMore = useCallback(async (): Promise<void> => {
     setIsLoading(true);

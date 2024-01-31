@@ -1,22 +1,15 @@
 "use client";
 
+import type { JSX } from "react";
 import Header from "@/app/components/common/header";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useFollowing } from "@/app/lib/context/following-provider";
 import withAuth from "@/app/lib/hoc/with-auth";
-import { useFeed } from "@/app/lib/hooks/useFeed";
+import { useHomeFeed } from "@/app/lib/hooks/useHomeFeed";
 
-function HomePage() {
-  const { following, isLoading: isLoadingFollowing } = useFollowing();
-  const {
-    notes,
-    isLoading: isLoadingNotes,
-    loadMoreRef,
-  } = useFeed({ filter: { kinds: [1], authors: Array.from(following) } });
-
-  const isLoading = isLoadingFollowing || isLoadingNotes;
+function HomePage(): JSX.Element {
+  const { notes, isLoading, loadMoreRef } = useHomeFeed();
 
   return (
     <div className="w-full max-w-[40rem] border-x border-light-border">

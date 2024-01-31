@@ -51,16 +51,14 @@ function NoteLayout({
           isLoading ? (
             <Loading className="mt-5" />
           ) : (
-            <>
-              <div className="flex flex-col gap-8">
-                <div className="p-8 text-center">
-                  <p className="text-3xl font-bold">This note doesn’t exist</p>
-                  <p className="text-light-secondary">
-                    Try searching for another.
-                  </p>
-                </div>
+            <div className="flex flex-col gap-8">
+              <div className="p-8 text-center">
+                <p className="text-3xl font-bold">This note doesn’t exist</p>
+                <p className="text-light-secondary">
+                  Try searching for another.
+                </p>
               </div>
-            </>
+            </div>
           )
         ) : (
           <ThreadProvider value={value}>{children}</ThreadProvider>
