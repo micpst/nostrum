@@ -54,15 +54,17 @@ export function useInfiniteScroll({
 
   const loadMoreRef = useCallback(
     (element: any): void => {
-      if (state.isLoading) return;
-
-      if (intObserver.current) intObserver.current.disconnect();
-
-      intObserver.current = new IntersectionObserver((elements) => {
-        if (elements[0].isIntersecting) void loadMore();
+      if (intObserver.current) {
+        intObserver.current.disconnect();
+      }
+      intObserver.current = new IntersectionObserver(async (elements) => {
+        if (elements[0].isIntersecting && !state.isLoading) {
+          await loadMore();
+        }
       });
-
-      if (element) intObserver.current.observe(element);
+      if (element) {
+        intObserver.current.observe(element);
+      }
     },
     [state.isLoading, loadMore]
   );

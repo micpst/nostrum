@@ -23,12 +23,12 @@ export default function profilesReducer(
       const refCounter = new Map(state.refCounter);
       const isLoading = new Set(state.isLoading);
 
-      action.pubkeys.forEach((pubkey) =>
-        refCounter.set(pubkey, (refCounter.get(pubkey) || 0) + 1)
-      );
-      action.pubkeys.forEach(
-        (pubkey) => refCounter.get(pubkey) == 1 && isLoading.add(pubkey)
-      );
+      action.pubkeys.forEach((pubkey) => {
+        if (!refCounter.has(pubkey)) {
+          isLoading.add(pubkey);
+        }
+        refCounter.set(pubkey, (refCounter.get(pubkey) || 0) + 1);
+      });
 
       return {
         ...state,
@@ -42,10 +42,10 @@ export default function profilesReducer(
       const isLoading = new Set(state.isLoading);
       const profiles = new Map(state.profiles);
 
-      action.profiles.forEach((profile) => isLoading.delete(profile.pubkey));
-      action.profiles.forEach((profile) =>
-        profiles.set(profile.pubkey, profile)
-      );
+      action.profiles.forEach((profile) => {
+        isLoading.delete(profile.pubkey);
+        profiles.set(profile.pubkey, profile);
+      });
 
       return {
         ...state,
@@ -59,19 +59,13 @@ export default function profilesReducer(
       const refCounter = new Map(state.refCounter);
       const profiles = new Map(state.profiles);
 
-      const pubkeysToDecrement = action.pubkeys.filter(
-        (pubkey) => (refCounter.get(pubkey) || 0) > 1
-      );
-      const pubkeysToRemove = action.pubkeys.filter(
-        (pubkey) => (refCounter.get(pubkey) || 2) <= 1
-      );
-
-      pubkeysToDecrement.forEach((pubkey) =>
-        refCounter.set(pubkey, (refCounter.get(pubkey) || 0) - 1)
-      );
-      pubkeysToRemove.forEach((pubkey) => {
-        refCounter.delete(pubkey);
-        profiles.delete(pubkey);
+      action.pubkeys.forEach((pubkey) => {
+        if ((refCounter.get(pubkey) || 0) <= 1) {
+          refCounter.delete(pubkey);
+          profiles.delete(pubkey);
+        } else {
+          refCounter.set(pubkey, (refCounter.get(pubkey) || 0) - 1);
+        }
       });
 
       return {
