@@ -172,6 +172,7 @@ async function listUserLikedNotesAsync({
   });
   return likedNotes.map((note) => ({
     ...note,
+    likedBy: userReactionsMap.get(note.id)?.pubkey as string,
     likedAt: userReactionsMap.get(note.id)?.created_at as number,
   }));
 }
@@ -201,6 +202,7 @@ async function listUserRepostedNotesAsync({
   });
   return repostedNotes.map((note) => ({
     ...note,
+    repostedBy: userRepostsMap.get(note.id)?.pubkey as string,
     repostedAt: userRepostsMap.get(note.id)?.created_at as number,
   }));
 }
