@@ -1,49 +1,17 @@
 "use client";
 
-import { nip25 } from "nostr-tools";
-import React, { useMemo } from "react";
+import type { JSX } from "react";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
 import { useUser } from "@/app/lib/context/user-provider";
-import { useEvents } from "@/app/lib/hooks/useEvents";
-import { useEventsWithParents } from "@/app/lib/hooks/useEventsWithParents";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
-import { useNotesData } from "@/app/lib/hooks/useNotesData";
+import { useUserLikesFeed } from "@/app/lib/hooks/useUserLikesFeed";
 
-function LikesPage(): React.JSX.Element | undefined {
+function LikesPage(): JSX.Element {
   const { user } = useUser();
+  const { notes, isLoading, loadMoreRef } = useUserLikesFeed(user);
 
-  const {
-    state: { newEvents: newReactions, isLoading: isLoadingReactions },
-    loadMoreRef,
-  } = useInfiniteScroll({
-    filter: { kinds: [7], authors: [user?.pubkey || ""] },
-    loadHook: useEvents,
-  });
-
-  const notesIds = useMemo(
-    () =>
-      newReactions
-        .map((event) => nip25.getReactedEventPointer(event)?.id)
-        .filter((eventId) => !!eventId) as string[],
-    [newReactions]
-  );
-
-  const {
-    events: notes,
-    newEvents: newNotes,
-    isLoading: isLoadingFeed,
-  } = useEventsWithParents({
-    kinds: [1],
-    ids: notesIds,
-  });
-
-  useNotesData({ notes, newNotes });
-
-  const isLoading = isLoadingReactions || isLoadingFeed;
-
-  if (!user) return undefined;
+  if (!user) return <></>;
 
   return (
     <section>

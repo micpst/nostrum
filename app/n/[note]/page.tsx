@@ -11,14 +11,14 @@ function NotePage(): JSX.Element | undefined {
   const { root } = useThread();
 
   const {
-    state: { events: notes, newEvents: newNotes, isLoading },
+    state: { events: notes, isLoading },
     loadMoreRef,
   } = useInfiniteScroll({
     filter: { kinds: [1], "#e": [root?.id || ""] },
     loadHook: useEvents,
   });
 
-  useNotesData({ notes, newNotes });
+  useNotesData(notes);
 
   if (!root) return undefined;
 

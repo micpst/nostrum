@@ -18,14 +18,14 @@ type UseFeedProps = {
 
 export function useFeed(props: UseFeedProps): UseFeed {
   const {
-    state: { events: notes, newEvents: newNotes, isLoading },
+    state: { events: notes, isLoading },
     loadMoreRef,
   } = useInfiniteScroll({
     ...props,
     loadHook: useEventsWithParents,
   });
 
-  useNotesData({ notes, newNotes });
+  useNotesData(notes);
 
   return {
     notes,

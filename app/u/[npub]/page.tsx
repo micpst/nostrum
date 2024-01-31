@@ -1,43 +1,17 @@
 "use client";
 
+import type { JSX } from "react";
 import Note from "@/app/components/note/note";
 import Error from "@/app/components/ui/error";
 import Loading from "@/app/components/ui/loading";
-import { useReposts } from "@/app/lib/context/repost-provider";
 import { useUser } from "@/app/lib/context/user-provider";
-import { useFeed } from "@/app/lib/hooks/useFeed";
-import { combineNotes } from "@/app/lib/utils/notes";
+import { useUserFeed } from "@/app/lib/hooks/useUserFeed";
 
-function ProfilePage(): JSX.Element | undefined {
+function ProfilePage(): JSX.Element {
   const { user } = useUser();
-  const { reposts, isLoading: isLoadingReposts } = useReposts();
-  const {
-    notes: userNotes,
-    isLoading: isLoadingUserNotes,
-    loadMoreRef: loadMoreUserNotesRef,
-  } = useFeed({
-    filter: {
-      kinds: [1],
-      authors: [user?.pubkey || ""],
-    },
-  });
+  const { notes, isLoading, loadMoreRef } = useUserFeed(user);
 
-  const {
-    notes: userRepostedNotes,
-    isLoading: isLoadingUserRepostedNotes,
-    loadMoreRef: loadMoreUserRepostedNotesRef,
-  } = useFeed({
-    filter: {
-      kinds: [1],
-      ids: [...reposts.keys()],
-    },
-  });
-
-  const isLoading = isLoadingUserNotes || isLoadingUserRepostedNotes;
-  const loadMoreRef = loadMoreUserNotesRef || loadMoreUserRepostedNotesRef;
-  const notes = combineNotes(userNotes, userRepostedNotes);
-
-  if (!user) return undefined;
+  if (!user) return <></>;
 
   return (
     <section>

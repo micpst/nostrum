@@ -59,19 +59,13 @@ export default function profilesReducer(
       const refCounter = new Map(state.refCounter);
       const profiles = new Map(state.profiles);
 
-      const pubkeysToDecrement = action.pubkeys.filter(
-        (pubkey) => (refCounter.get(pubkey) || 0) > 1
-      );
-      const pubkeysToRemove = action.pubkeys.filter(
-        (pubkey) => (refCounter.get(pubkey) || 2) <= 1
-      );
-
-      pubkeysToDecrement.forEach((pubkey) =>
-        refCounter.set(pubkey, (refCounter.get(pubkey) || 0) - 1)
-      );
-      pubkeysToRemove.forEach((pubkey) => {
-        refCounter.delete(pubkey);
-        profiles.delete(pubkey);
+      action.pubkeys.forEach((pubkey) => {
+        if (refCounter.get(pubkey) == 1) {
+          refCounter.delete(pubkey);
+          profiles.delete(pubkey);
+        } else {
+          refCounter.set(pubkey, (refCounter.get(pubkey) || 0) - 1);
+        }
       });
 
       return {

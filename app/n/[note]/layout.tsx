@@ -35,7 +35,7 @@ function NoteLayout({
     limit: 1,
   });
 
-  useNotesData({ notes, newNotes });
+  useNotesData(notes);
 
   const root = notes[0];
   const value = {
