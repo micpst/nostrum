@@ -1,10 +1,14 @@
 import type { RelayEvent } from "@/app/lib/types/event";
 
-const getTagValues = (name: string, tags: string[][]): string | undefined => {
-  const [itemTag] = tags.filter((tag: string[]) => tag[0] === name);
-  const [, item] = itemTag || [, undefined];
+export const getTagValues = (name: string, tags: string[][]): string | null => {
+  const itemTag = tags.filter((tag: string[]) => tag[0] === name).at(-1);
+  const [, item] = itemTag || [null, null];
   return item;
 };
+
+export function isReply(event: RelayEvent): boolean {
+  return !!getTagValues("e", event.tags) && !!getTagValues("p", event.tags);
+}
 
 export function groupEventsByParent(
   events: RelayEvent[]
