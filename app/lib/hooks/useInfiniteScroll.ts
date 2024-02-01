@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNotesData } from "./useNotesData";
-import type { NoteEvent } from "../types/event";
+import { useNotesData } from "@/app/lib/hooks/useNotesData";
+import type { NoteEvent } from "@/app/lib/types/event";
 
 type UseInfiniteScroll = {
   notes: NoteEvent[];
