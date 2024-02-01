@@ -19,7 +19,7 @@ export const SuggestionContext = createContext<SuggestionContext | null>(null);
 
 export default function SuggestionProvider({ children }: ProviderProps) {
   const { following } = useFollowing();
-  const { add, remove } = useProfile();
+  const { addProfiles, removeProfiles } = useProfile();
   const { relays } = useRelay();
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -50,8 +50,8 @@ export default function SuggestionProvider({ children }: ProviderProps) {
   }, [Array.from(following), Array.from(relays.keys())]);
 
   useEffect(() => {
-    add(suggestions);
-    return () => remove(suggestions);
+    addProfiles(suggestions);
+    return () => removeProfiles(suggestions);
   }, [suggestions]);
 
   const value: SuggestionContext = {

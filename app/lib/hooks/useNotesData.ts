@@ -6,7 +6,7 @@ import { useReposts } from "@/app/lib/context/repost-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 export function useNotesData(notes: RelayEvent[]): void {
-  const { add: addProfiles, remove: removeProfiles } = useProfile();
+  const { addProfiles, removeProfiles } = useProfile();
   const { fetchReactions } = useReactions();
   const { fetchReposts } = useReposts();
 
@@ -25,7 +25,7 @@ export function useNotesData(notes: RelayEvent[]): void {
       const pubkeys = newNotes.map((note) => note.pubkey);
       const ids = newNotes.map((note) => note.id);
 
-      void addProfiles(pubkeys);
+      addProfiles(pubkeys);
       void fetchReactions(ids);
       void fetchReposts(ids);
     }
