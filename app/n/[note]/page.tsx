@@ -4,22 +4,11 @@ import type { JSX } from "react";
 import Note from "@/app/components/note/note";
 import Loading from "@/app/components/ui/loading";
 import { useThread } from "@/app/lib/context/thread-provider";
-import { useEvents } from "@/app/lib/hooks/useEvents";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
-import { useNotesData } from "@/app/lib/hooks/useNotesData";
+import { useNoteReplies } from "@/app/lib/hooks/useNoteReplies";
 
 function NotePage(): JSX.Element {
   const { root } = useThread();
-
-  const {
-    state: { events: notes, isLoading },
-    loadMoreRef,
-  } = useInfiniteScroll({
-    filter: { kinds: [1], "#e": [root?.id || ""] },
-    loadHook: useEvents,
-  });
-
-  useNotesData(notes);
+  const { notes, isLoading, loadMoreRef } = useNoteReplies(root);
 
   if (!root) return <></>;
 

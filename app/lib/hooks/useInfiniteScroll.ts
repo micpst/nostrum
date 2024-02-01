@@ -1,56 +1,56 @@
-import { useCallback, useRef, useState } from "react";
-import { useDeepCompareEffect } from "react-use";
-import type { Filter } from "nostr-tools";
-
-type HookState = {
-  events: any[];
-  newEvents: any[];
-  isLoading: boolean;
-};
-
-type UseInfiniteScrollProps = {
-  filter: Filter;
-  loadHook: (filter: Filter) => HookState;
-  initPageSize?: number;
-  pageSize?: number;
-};
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNotesData } from "@/app/lib/hooks/useNotesData";
+import type { NoteEvent } from "@/app/lib/types/event";
 
 type UseInfiniteScroll = {
-  state: HookState;
+  notes: NoteEvent[];
+  isLoading: boolean;
   loadMoreRef: (note: any) => void;
 };
 
-export function useInfiniteScroll({
-  filter,
-  loadHook,
-  initPageSize = 20,
-  pageSize = 10,
-}: UseInfiniteScrollProps): UseInfiniteScroll {
-  const [_filter, setFilter] = useState<Filter>({
-    ...filter,
-    limit: initPageSize,
-  });
-  const state = loadHook(_filter);
-
-  useDeepCompareEffect(() => {
-    setFilter((prev) => ({
-      ...prev,
-      ...filter,
-    }));
-  }, [filter]);
-
+export function useInfiniteScroll(
+  loadNextPage: (lastNote?: NoteEvent) => Promise<NoteEvent[]>
+): UseInfiniteScroll {
   const intObserver: any = useRef();
 
+  const [notes, setNotes] = useState<NoteEvent[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [reachedLimit, setReachedLimit] = useState<boolean>(false);
+
+  useNotesData(notes);
+
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      setReachedLimit(false);
+
+      const newNotes = await loadNextPage();
+      if (newNotes.length === 0) {
+        setReachedLimit(true);
+      } else {
+        setNotes(newNotes);
+      }
+
+      setIsLoading(false);
+    })();
+  }, [loadNextPage]);
+
   const loadMore = useCallback(async (): Promise<void> => {
-    setFilter((prev) => ({
-      ...prev,
-      limit: pageSize,
-      until:
-        state.events.length > 0
-          ? state.events.slice(-1)[0].created_at
-          : undefined,
-    }));
-  }, [state.events, pageSize]);
+    setIsLoading(true);
+
+    const newNotes = await loadNextPage(notes.at(-1));
+    const uniqueNewNotes = newNotes.filter(
+      (note) => !notes.some((n) => n.id === note.id)
+    );
+
+    if (uniqueNewNotes.length === 0) {
+      setReachedLimit(true);
+    } else {
+      setNotes((prev) => [...prev, ...uniqueNewNotes]);
+    }
+
+    setIsLoading(false);
+  }, [notes, loadNextPage]);
 
   const loadMoreRef = useCallback(
     (element: any): void => {
@@ -58,7 +58,7 @@ export function useInfiniteScroll({
         intObserver.current.disconnect();
       }
       intObserver.current = new IntersectionObserver(async (elements) => {
-        if (elements[0].isIntersecting && !state.isLoading) {
+        if (elements[0].isIntersecting && !isLoading && !reachedLimit) {
           await loadMore();
         }
       });
@@ -66,11 +66,12 @@ export function useInfiniteScroll({
         intObserver.current.observe(element);
       }
     },
-    [state.isLoading, loadMore]
+    [isLoading, reachedLimit, loadMore]
   );
 
   return {
-    state,
+    notes,
+    isLoading,
     loadMoreRef,
   };
 }

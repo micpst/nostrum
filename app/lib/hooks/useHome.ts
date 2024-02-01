@@ -1,21 +1,21 @@
 import { useCallback } from "react";
 import { useFollowing } from "@/app/lib/context/following-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScrollTemp";
+import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 import noteService from "@/app/lib/services/noteService";
 import type { NoteEvent } from "@/app/lib/types/event";
 
-type UseHomeFeed = {
+type UseHome = {
   notes: NoteEvent[];
   isLoading: boolean;
   loadMoreRef: (note: any) => void;
 };
 
-export function useHomeFeed(): UseHomeFeed {
+export function useHome(): UseHome {
   const { relays } = useRelay();
   const { following, isLoading: isLoadingFollowing } = useFollowing();
 
-  const loadHomeFeed = useCallback(
+  const loadNotes = useCallback(
     async (lastNote?: NoteEvent): Promise<NoteEvent[]> => {
       if (following.size === 0) return [];
 
@@ -23,7 +23,7 @@ export function useHomeFeed(): UseHomeFeed {
         relays: Array.from(relays.values()),
         pubkeys: Array.from(following.values()),
         limit: 20,
-        until: lastNote?.created_at,
+        until: lastNote?.repostedAt || lastNote?.created_at,
       });
     },
     [relays, following]
@@ -33,7 +33,7 @@ export function useHomeFeed(): UseHomeFeed {
     notes,
     isLoading: isLoadingNotes,
     loadMoreRef,
-  } = useInfiniteScroll(loadHomeFeed);
+  } = useInfiniteScroll(loadNotes);
 
   return {
     notes,

@@ -1,20 +1,20 @@
 import { useCallback } from "react";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScrollTemp";
+import { useInfiniteScroll } from "@/app/lib/hooks/useInfiniteScroll";
 import noteService from "@/app/lib/services/noteService";
 import type { NoteEvent } from "@/app/lib/types/event";
 import type { User } from "@/app/lib/types/user";
 
-type UseUserFeed = {
+type UseUserNotes = {
   notes: NoteEvent[];
   isLoading: boolean;
   loadMoreRef: (note: any) => void;
 };
 
-export function useUserFeed(user?: User): UseUserFeed {
+export function useUserNotes(user?: User): UseUserNotes {
   const { relays } = useRelay();
 
-  const loadUserFeed = useCallback(
+  const loadNotes = useCallback(
     async (lastNote?: NoteEvent): Promise<NoteEvent[]> => {
       if (!user) return [];
 
@@ -28,5 +28,5 @@ export function useUserFeed(user?: User): UseUserFeed {
     [relays, user]
   );
 
-  return useInfiniteScroll(loadUserFeed);
+  return useInfiniteScroll(loadNotes);
 }

@@ -3,12 +3,20 @@ import type { Filter, Relay } from "nostr-tools";
 import nostrService from "@/app/lib/services/nostrService";
 import reactionService from "@/app/lib/services/reactionService";
 import repostService from "@/app/lib/services/repostService";
+import { getTagValues, isReply } from "@/app/lib/utils/events";
 import { combineNotes } from "@/app/lib/utils/notes";
 import type { NoteEvent, RelayEvent } from "@/app/lib/types/event";
 
 export type ListNotesRequest = {
   relays: Relay[];
   filter?: Filter;
+};
+
+export type ListNoteRepliesRequest = {
+  relays: Relay[];
+  noteId: string;
+  limit?: number;
+  until?: number;
 };
 
 export type ListUserNotesRequest = {
@@ -47,6 +55,7 @@ export type CreateNoteReplyRequest = {
 interface NoteService {
   listNotesAsync(request: ListNotesRequest): Promise<NoteEvent[]>;
   listRootNotesAsync(request: ListNotesRequest): Promise<NoteEvent[]>;
+  listNoteRepliesAsync(request: ListNoteRepliesRequest): Promise<NoteEvent[]>;
   listExploreNotesAsync(request: ListExploreNotesRequest): Promise<NoteEvent[]>;
   listHomeNotesAsync(request: ListHomeNotesRequest): Promise<NoteEvent[]>;
   listUserNotesAsync(request: ListUserNotesRequest): Promise<NoteEvent[]>;
@@ -66,18 +75,39 @@ async function listNotesAsync({
     kinds: [1],
     ...filter,
   });
-  return notes.map((note) => ({ ...note, parent: false }));
+  return notes.map((note) => ({
+    ...note,
+    parent: isReply(note)
+      ? {
+          id: getTagValues("e", note.tags) as string,
+          pubkey: getTagValues("p", note.tags) as string,
+        }
+      : undefined,
+  }));
 }
 
 async function listRootNotesAsync({
   relays,
   filter,
 }: ListNotesRequest): Promise<NoteEvent[]> {
-  // TODO: temporary solution, should be fixed with fetching with note parents
-  return await listNotesAsync({
+  const notes = await listNotesAsync({
     relays,
     filter,
   });
+  return notes.filter((note) => !note.parent);
+}
+
+async function listNoteRepliesAsync({
+  relays,
+  noteId,
+  limit,
+  until,
+}: ListNoteRepliesRequest): Promise<NoteEvent[]> {
+  const noteReplies = await listNotesAsync({
+    relays,
+    filter: { "#e": [noteId], limit, until },
+  });
+  return noteReplies.slice(0, limit);
 }
 
 async function listHomeNotesAsync({
@@ -86,10 +116,21 @@ async function listHomeNotesAsync({
   limit,
   until,
 }: ListHomeNotesRequest): Promise<NoteEvent[]> {
-  return await listNotesAsync({
+  const usersRepostedNotes = await Promise.all(
+    pubkeys.map(async (pubkey) =>
+      listUserRepostedNotesAsync({
+        relays,
+        pubkey,
+        limit,
+        until,
+      })
+    )
+  );
+  const usersNotes = await listRootNotesAsync({
     relays,
     filter: { authors: pubkeys, limit, until },
   });
+  return combineNotes(usersRepostedNotes.flat(), usersNotes).slice(0, limit);
 }
 
 async function listExploreNotesAsync({
@@ -97,10 +138,11 @@ async function listExploreNotesAsync({
   limit,
   until,
 }: ListExploreNotesRequest): Promise<NoteEvent[]> {
-  return await listNotesAsync({
+  const rootNotes = await listRootNotesAsync({
     relays,
     filter: { limit, until },
   });
+  return rootNotes.slice(0, limit);
 }
 
 async function listUserNotesAsync({
@@ -147,7 +189,8 @@ async function listUserLikedNotesAsync({
   });
   return likedNotes.map((note) => ({
     ...note,
-    likedAt: userReactionsMap.get(note.id)?.created_at as number,
+    likedBy: userReactionsMap.get(note.id)?.pubkey,
+    likedAt: userReactionsMap.get(note.id)?.created_at,
   }));
 }
 
@@ -176,7 +219,8 @@ async function listUserRepostedNotesAsync({
   });
   return repostedNotes.map((note) => ({
     ...note,
-    repostedAt: userRepostsMap.get(note.id)?.created_at as number,
+    repostedBy: userRepostsMap.get(note.id)?.pubkey,
+    repostedAt: userRepostsMap.get(note.id)?.created_at,
   }));
 }
 
@@ -203,6 +247,7 @@ async function createNoteReplyAsync({
 const NoteService: NoteService = {
   listNotesAsync,
   listRootNotesAsync,
+  listNoteRepliesAsync,
   listExploreNotesAsync,
   listHomeNotesAsync,
   listUserNotesAsync,
