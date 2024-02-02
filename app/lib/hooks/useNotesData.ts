@@ -1,3 +1,4 @@
+import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRef } from "react";
 import { useDeepCompareEffect, useUnmount } from "react-use";
 import { useProfile } from "@/app/lib/context/profile-provider";
@@ -6,8 +7,9 @@ import { useReposts } from "@/app/lib/context/repost-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 export function useNotesData(notes: RelayEvent[]): void {
+  const { publicKey } = useAuth();
   const { addProfiles, removeProfiles } = useProfile();
-  const { fetchReactions } = useReactions();
+  const { addReactions, removeReactions } = useReactions();
   const { fetchReposts } = useReposts();
 
   const prevNotesRef = useRef<RelayEvent[]>([]);
@@ -26,20 +28,34 @@ export function useNotesData(notes: RelayEvent[]): void {
       const ids = newNotes.map((note) => note.id);
 
       addProfiles(pubkeys);
-      void fetchReactions(ids);
+      addReactions(ids);
       void fetchReposts(ids);
     }
 
     if (removedNotes.length > 0) {
       const pubkeys = removedNotes.map((note) => note.pubkey);
+      const ids = removedNotes.map((note) => note.id);
+
       removeProfiles(pubkeys);
+      removeReactions(ids);
     }
 
     prevNotesRef.current = notes;
   }, [notes]);
 
+  useDeepCompareEffect(() => {
+    if (publicKey) {
+      const ids = notes.map((note) => note.id);
+      addReactions(ids);
+      return () => removeReactions(ids);
+    }
+  }, [publicKey]);
+
   useUnmount(() => {
     const pubkeys = notes.map((note) => note.pubkey);
+    const ids = notes.map((note) => note.id);
+
     removeProfiles(pubkeys);
+    removeReactions(ids);
   });
 }

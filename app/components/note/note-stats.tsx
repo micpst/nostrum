@@ -32,7 +32,7 @@ function NoteStats({
   } = useReposts();
 
   const reactionLoading = isLoadingReactions.has(note.id);
-  const noteIsLiked = reactions.has(note.id);
+  const noteIsLiked = !!reactions.get(note.id)?.length;
 
   const repostLoading = isLoadingReposts.has(note.id);
   const noteIsReposted = reposts.has(note.id);

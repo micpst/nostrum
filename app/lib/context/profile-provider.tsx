@@ -2,8 +2,8 @@
 "use client";
 
 import { createContext, useContext, useEffect } from "react";
-import { thunk } from "redux-thunk";
 import { createReducer, useDeepCompareEffect } from "react-use";
+import { thunk } from "redux-thunk";
 import {
   addProfilesAsync,
   reloadProfilesAsync,
@@ -29,8 +29,6 @@ type ProfileContext = {
   setProfile: (profile: EditableUserData) => void;
 };
 
-export const ProfileContext = createContext<ProfileContext | null>(null);
-
 const initialState: ProfileState = {
   profiles: new Map(),
   refCounter: new Map(),
@@ -38,6 +36,8 @@ const initialState: ProfileState = {
 };
 
 const useReducer = createReducer<ProfileAction, ProfileState>(thunk);
+
+export const ProfileContext = createContext<ProfileContext | null>(null);
 
 export default function ProfileProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
