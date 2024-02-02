@@ -6,7 +6,7 @@ import FollowingProvider from "@/app/lib/context/following-provider";
 import ProfileProvider from "@/app/lib/context/profile-provider";
 import ReactionsProvider from "@/app/lib/context/reactions-provider";
 import RelayProvider from "@/app/lib/context/relay-provider";
-import RepostProvider from "@/app/lib/context/repost-provider";
+import RepostsProvider from "@/app/lib/context/reposts-provider";
 import SuggestionProvider from "@/app/lib/context/suggestion-provider";
 
 export type ProviderProps = {
@@ -33,7 +33,7 @@ const Providers = buildProvidersTree([
   ProfileProvider,
   FollowingProvider,
   ReactionsProvider,
-  RepostProvider,
+  RepostsProvider,
   SuggestionProvider,
 ]);
 
