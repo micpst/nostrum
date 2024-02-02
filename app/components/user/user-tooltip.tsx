@@ -21,7 +21,7 @@ function UserTooltip({
     <div
       className={cn(
         "group relative self-start text-light-primary",
-        avatar ? "[&>div]:translate-y-2" : "grid [&>div]:translate-y-7"
+        avatar ? "[&>div]:translate-y-2" : "grid [&>div]:translate-y-7",
       )}
     >
       {children}

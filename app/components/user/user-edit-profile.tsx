@@ -24,7 +24,7 @@ type UserEditProfileProps = {
 
 function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
-  const { set: setProfile } = useProfile();
+  const { setProfile } = useProfile();
   const { about, name, picture, banner, nip05 } = user;
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     about,
@@ -96,7 +96,7 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
     ];
     const newUserData = trimmedKeys.reduce(
       (acc, curr) => ({ ...acc, [curr]: editUserData[curr]?.trim() ?? null }),
-      {} as EditableUserData
+      {} as EditableUserData,
     );
 
     setProfile(newUserData);

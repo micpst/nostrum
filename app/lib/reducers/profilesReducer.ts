@@ -14,7 +14,7 @@ export type ProfileAction = {
 
 export default function profilesReducer(
   state: ProfileState,
-  action: ProfileAction
+  action: ProfileAction,
 ): ProfileState {
   switch (action.type) {
     case "ADD_PROFILES": {

@@ -24,7 +24,7 @@ export function useNoteReplies(note?: NoteEvent): UseNoteReplies {
         until: lastNote?.likedAt,
       });
     },
-    [relays, note]
+    [relays, note],
   );
 
   return useInfiniteScroll(loadNoteReplies);

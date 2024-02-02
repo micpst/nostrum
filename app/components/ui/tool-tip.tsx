@@ -24,7 +24,7 @@ export default function ToolTip({
              group-focus-visible/inner:visible group-focus-visible/inner:opacity-100 group-focus-visible/inner:delay-200`
           : `group-hover:visible group-hover:opacity-100 group-hover:delay-500 group-focus-visible:visible 
              group-focus-visible:opacity-100`,
-        className ?? "translate-y-3"
+        className ?? "translate-y-3",
       )}
     >
       <span>{tip}</span>

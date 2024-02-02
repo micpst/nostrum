@@ -59,7 +59,7 @@ export default function Modal({
           <div
             className={cn(
               "fixed inset-0 p-4",
-              className ?? "flex items-center justify-center"
+              className ?? "flex items-center justify-center",
             )}
           >
             <Dialog.Panel

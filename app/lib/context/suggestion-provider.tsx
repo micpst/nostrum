@@ -19,7 +19,7 @@ export const SuggestionContext = createContext<SuggestionContext | null>(null);
 
 export default function SuggestionProvider({ children }: ProviderProps) {
   const { following } = useFollowing();
-  const { add, remove } = useProfile();
+  const { addProfiles, removeProfiles } = useProfile();
   const { relays } = useRelay();
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -36,10 +36,10 @@ export default function SuggestionProvider({ children }: ProviderProps) {
 
       if (suggestions.length < 3) {
         const defaultSuggestions = DEFAULT_SUGGESTIONS.filter(
-          (pubkey) => !following.has(pubkey)
+          (pubkey) => !following.has(pubkey),
         );
         suggestions.push(
-          ...defaultSuggestions.slice(0, 3 - suggestions.length)
+          ...defaultSuggestions.slice(0, 3 - suggestions.length),
         );
       }
 
@@ -50,8 +50,8 @@ export default function SuggestionProvider({ children }: ProviderProps) {
   }, [Array.from(following), Array.from(relays.keys())]);
 
   useEffect(() => {
-    add(suggestions);
-    return () => remove(suggestions);
+    addProfiles(suggestions);
+    return () => removeProfiles(suggestions);
   }, [suggestions]);
 
   const value: SuggestionContext = {

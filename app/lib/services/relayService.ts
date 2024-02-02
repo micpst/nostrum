@@ -20,7 +20,7 @@ function getRelaysLocal(): Relay[] {
 
   try {
     return JSON.parse(urls, (key, value) =>
-      typeof value === "string" ? relayInit(value) : value
+      typeof value === "string" ? relayInit(value) : value,
     );
   } catch (err) {
     return [];
@@ -32,7 +32,7 @@ function setRelaysLocal(relays: Relay[]): void {
 
   window.localStorage.setItem(
     "relays",
-    JSON.stringify(relays.map((relay) => relay.url))
+    JSON.stringify(relays.map((relay) => relay.url)),
   );
 }
 

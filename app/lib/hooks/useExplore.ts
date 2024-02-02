@@ -21,7 +21,7 @@ export function useExplore(): UseExplore {
         until: lastNote?.created_at,
       });
     },
-    [relays]
+    [relays],
   );
 
   return useInfiniteScroll(loadNotes);

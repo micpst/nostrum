@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
 import { forwardRef } from "react";
+import Modal from "@/app/components/modal/modal";
+import NoteReplyModal from "@/app/components/modal/note-replay-modal";
 import NoteContent from "@/app/components/note/note-content";
 import NoteDate from "@/app/components/note/note-date";
 import NoteRelays from "@/app/components/note/note-relays";
@@ -16,21 +18,19 @@ import UserNpub from "@/app/components/user/user-npub";
 import UserTooltip from "@/app/components/user/user-tooltip";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
-import { useReposts } from "@/app/lib/context/repost-provider";
+import { useReposts } from "@/app/lib/context/reposts-provider";
+import { useModal } from "@/app/lib/hooks/useModal";
 import { getUserName, shortenHash } from "@/app/lib/utils/common";
 import type { RelayEvent } from "@/app/lib/types/event";
-import Modal from "@/app/components/modal/modal";
-import { useModal } from "@/app/lib/hooks/useModal";
-import NoteReplyModal from "@/app/components/modal/note-replay-modal";
 
-export type NoteProps = {
+interface INoteProps {
   event: RelayEvent;
   modal?: boolean;
   parentNote?: boolean;
-};
+}
 
 const Note = forwardRef(
-  ({ event, modal, parentNote, ...rest }: NoteProps, ref: any) => {
+  ({ event, modal, parentNote, ...rest }: INoteProps, ref: any) => {
     const { publicKey } = useAuth();
     const { open, openModal, closeModal } = useModal();
     const { profiles } = useProfile();
@@ -43,14 +43,14 @@ const Note = forwardRef(
     const shortNpub = shortenHash(npub, 4);
     const authorUsername = author ? getUserName(author) : "";
     const isOwner = publicKey === event.pubkey;
-    const isNoteReposted = reposts.has(event.id);
+    const isNoteReposted = !!reposts.get(event.id)?.length;
 
     return (
       <article
         className={cn(
           `accent-tab hover:bg-dark-primary/30 relative flex flex-col gap-y-4 px-4 py-3 
          outline-none duration-200 cursor-pointer`,
-          parentNote ? "mt-0.5 pt-2.5 pb-0" : "border-b border-light-border"
+          parentNote ? "mt-0.5 pt-2.5 pb-0" : "border-b border-light-border",
         )}
         {...rest}
         ref={ref}
@@ -110,7 +110,7 @@ const Note = forwardRef(
               <p
                 className={cn(
                   "text-light-secondary dark:text-dark-secondary",
-                  modal && "order-1 my-2"
+                  modal && "order-1 my-2",
                 )}
               >
                 Replying to{" "}
@@ -137,7 +137,7 @@ const Note = forwardRef(
         </div>
       </article>
     );
-  }
+  },
 );
 
 Note.displayName = "Note";

@@ -2,12 +2,12 @@
 "use client";
 
 import { createContext, useContext, useEffect } from "react";
-import { thunk } from "redux-thunk";
 import { createReducer, useDeepCompareEffect } from "react-use";
+import { thunk } from "redux-thunk";
 import {
   addProfilesAsync,
   reloadProfilesAsync,
-  removeProfiles,
+  removeProfiles as removeProfilesAction,
   updateProfileAsync,
 } from "@/app/lib/actions/profilesActions";
 import { useAuth } from "@/app/lib/context/auth-provider";
@@ -23,13 +23,11 @@ import type { EditableUserData, User } from "@/app/lib/types/user";
 type ProfileContext = {
   profiles: Map<string, User>;
   isLoading: Set<string>;
-  add: (pubkeys: string[]) => void;
-  remove: (pubkeys: string[]) => void;
-  set: (profile: EditableUserData) => void;
-  reload: (pubkeys: string[]) => void;
+  addProfiles: (pubkeys: string[]) => void;
+  removeProfiles: (pubkeys: string[]) => void;
+  reloadProfiles: (pubkeys: string[]) => void;
+  setProfile: (profile: EditableUserData) => void;
 };
-
-export const ProfileContext = createContext<ProfileContext | null>(null);
 
 const initialState: ProfileState = {
   profiles: new Map(),
@@ -39,67 +37,69 @@ const initialState: ProfileState = {
 
 const useReducer = createReducer<ProfileAction, ProfileState>(thunk);
 
+export const ProfileContext = createContext<ProfileContext | null>(null);
+
 export default function ProfileProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
   const { relays } = useRelay();
   const [{ profiles, isLoading }, dispatch]: [ProfileState, any] = useReducer(
     profilesReducer,
-    initialState
+    initialState,
   );
 
   useEffect(() => {
     if (publicKey) {
-      void add([publicKey]);
-      return () => remove([publicKey]);
+      void addProfiles([publicKey]);
+      return () => removeProfiles([publicKey]);
     }
   }, [publicKey]);
 
   useDeepCompareEffect(() => {
     if (publicKey) {
-      void reload([publicKey]);
+      void reloadProfiles([publicKey]);
     }
   }, [relays]);
 
-  const set = (data: EditableUserData): void => {
+  const setProfile = (data: EditableUserData): void => {
     if (!publicKey) return;
     dispatch(
       updateProfileAsync({
         relays: Array.from(relays.values()),
         pubkey: publicKey,
         data,
-      })
+      }),
     );
   };
 
-  const add = (pubkeys: string[]): void => {
+  const addProfiles = (pubkeys: string[]): void => {
     dispatch(
       addProfilesAsync({
         relays: Array.from(relays.values()),
         pubkeys,
-      })
+      }),
     );
   };
 
-  const reload = (pubkeys: string[]): void => {
+  const reloadProfiles = (pubkeys: string[]): void => {
     dispatch(
       reloadProfilesAsync({
         relays: Array.from(relays.values()),
         pubkeys,
-      })
+      }),
     );
   };
 
-  const remove = (pubkeys: string[]): void => {
-    dispatch(removeProfiles(pubkeys));
+  const removeProfiles = (pubkeys: string[]): void => {
+    dispatch(removeProfilesAction(pubkeys));
   };
 
   const value: ProfileContext = {
     profiles,
     isLoading,
-    add,
-    remove,
-    set,
-    reload,
+    addProfiles,
+    removeProfiles,
+    setProfile,
+    reloadProfiles,
   };
 
   return (

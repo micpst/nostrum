@@ -30,14 +30,14 @@ function NoteOption({
         `group flex items-center gap-1.5 p-0 transition-none
          disabled:cursor-not-allowed inner:transition inner:duration-200`,
         disabled && "cursor-not-allowed",
-        className
+        className,
       )}
       onClick={onClick}
     >
       <CustomIcon
         className={cn(
           "fill-light-secondary h-9 w-9 rounded-full p-2 not-italic group-focus-visible:ring-2",
-          iconClassName
+          iconClassName,
         )}
         iconName={iconName}
         solid={solid}

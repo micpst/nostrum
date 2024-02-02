@@ -16,7 +16,7 @@ export function useEvents(filter: Filter = {}): UseEvents {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [allEvents, setAllEvents] = useState<Map<string, RelayEvent>>(
-    new Map()
+    new Map(),
   );
   const [newEvents, setNewEvents] = useState<RelayEvent[]>([]);
 
@@ -33,7 +33,7 @@ export function useEvents(filter: Filter = {}): UseEvents {
           .filter((event) => !allEvents.has(event.id))
           .sort((a, b) => b.created_at - a.created_at)
           .slice(0, filter.limit)
-          .map((event) => [event.id, event])
+          .map((event) => [event.id, event]),
       );
 
       setAllEvents((prev) => new Map([...prev, ...newEvents]));

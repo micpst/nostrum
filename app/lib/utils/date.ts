@@ -13,7 +13,7 @@ const UNITS: Units = {
 
 export function formatDate(
   targetDate: number,
-  mode: "note" | "message" | "full" | "joined"
+  mode: "note" | "message" | "full" | "joined",
 ): string {
   const date = new Date(targetDate);
 

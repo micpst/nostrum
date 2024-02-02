@@ -21,7 +21,7 @@ function NoteRelays({
           onClick={(e) => e.stopPropagation()}
           className={cn(
             "custom-underline peer whitespace-nowrap",
-            viewNote && "text-light-secondary"
+            viewNote && "text-light-secondary",
           )}
         >
           seen on {relays.length} relay{relays.length > 1 ? "s" : ""}

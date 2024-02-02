@@ -116,7 +116,7 @@ function Input({
             : replyModal
             ? "pt-0"
             : "border-b-2 border-light-border dark:border-dark-border",
-          (disabled || loading) && "pointer-events-none opacity-50"
+          (disabled || loading) && "pointer-events-none opacity-50",
         )}
         // className={cn(
         //   "hover-animation grid w-full grid-cols-[auto,1fr] gap-3 p-4 border-b-2 border-light-border",

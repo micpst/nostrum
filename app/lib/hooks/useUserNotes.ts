@@ -25,7 +25,7 @@ export function useUserNotes(user?: User): UseUserNotes {
         until: lastNote?.repostedAt || lastNote?.created_at,
       });
     },
-    [relays, user]
+    [relays, user],
   );
 
   return useInfiniteScroll(loadNotes);

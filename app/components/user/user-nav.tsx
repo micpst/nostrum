@@ -16,7 +16,7 @@ function UserNav(): JSX.Element {
     <nav
       className={cn(
         `hover-animation flex justify-between overflow-y-auto
-         border-b border-light-border`
+         border-b border-light-border`,
       )}
     >
       {navLinks.map((link) => (

@@ -39,10 +39,10 @@ export type DeleteReactionRequest = {
 interface ReactionService {
   listReactionsAsync(request: ListReactionsRequest): Promise<RelayEvent[]>;
   listNotesReactionsAsync(
-    request: ListNotesReactionsRequest
+    request: ListNotesReactionsRequest,
   ): Promise<[string, string][]>;
   listUserReactionsAsync(
-    request: ListUserReactionsRequest
+    request: ListUserReactionsRequest,
   ): Promise<RelayEvent[]>;
   createReactionAsync(request: CreateReactionRequest): Promise<RelayEvent>;
   deleteReactionAsync(request: DeleteReactionRequest): Promise<RelayEvent>;
@@ -103,7 +103,7 @@ async function createReactionAsync({
   noteToReact,
 }: CreateReactionRequest): Promise<RelayEvent> {
   const tags = noteToReact.tags.filter(
-    (tag) => tag.length >= 2 && (tag[0] === "e" || tag[0] === "p")
+    (tag) => tag.length >= 2 && (tag[0] === "e" || tag[0] === "p"),
   );
   tags.push(["e", noteToReact.id]);
   tags.push(["p", noteToReact.pubkey]);

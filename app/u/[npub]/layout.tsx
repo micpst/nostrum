@@ -26,7 +26,7 @@ function ProfileLayout({
   children: ReactNode;
 }) {
   const { publicKey } = useAuth();
-  const { profiles, isLoading, add, remove } = useProfile();
+  const { profiles, isLoading, addProfiles, removeProfiles } = useProfile();
   const { back } = useRouter();
 
   let pubkey = "";
@@ -58,12 +58,12 @@ function ProfileLayout({
 
   useMount(() => {
     if (!isPubkeyValid) return;
-    void add([pubkey]);
+    addProfiles([pubkey]);
   });
 
   useUnmount(() => {
     if (!isPubkeyValid) return;
-    remove([pubkey]);
+    removeProfiles([pubkey]);
   });
 
   return (

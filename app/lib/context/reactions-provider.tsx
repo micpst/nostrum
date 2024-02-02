@@ -1,83 +1,91 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
+import { createReducer } from "react-use";
+import { thunk } from "redux-thunk";
+import {
+  addReactionAsync,
+  addReactionsAsync,
+  removeReactionAsync,
+  removeReactions as removeReactionsAction,
+} from "@/app/lib/actions/reactionsActions";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
-import reactionService from "@/app/lib/services/reactionService";
+import reactionsReducer from "@/app/lib/reducers/reactionsReducer";
 import type { ProviderProps } from "@/app/lib/context/providers";
+import type {
+  ReactionsAction,
+  ReactionsState,
+} from "@/app/lib/reducers/reactionsReducer";
 import type { RelayEvent } from "@/app/lib/types/event";
 
-type ReactionsContext = {
-  reactions: Map<string, string>;
+interface IReactionsContext {
+  reactions: Map<string, string[]>;
   isLoading: Set<string>;
-  fetchReactions: (eventIds: string[]) => Promise<void>;
-  like: (event: RelayEvent) => Promise<void>;
-  unlike: (event: RelayEvent) => Promise<void>;
+  addReactions: (notesIds: string[]) => void;
+  removeReactions: (notesIds: string[]) => void;
+  like: (note: RelayEvent) => void;
+  unlike: (note: RelayEvent) => void;
+}
+
+const initialState: ReactionsState = {
+  reactions: new Map(),
+  isLoading: new Set(),
 };
 
-export const ReactionsContext = createContext<ReactionsContext | null>(null);
+const useReducer = createReducer<ReactionsAction, ReactionsState>(thunk);
+
+export const ReactionsContext = createContext<IReactionsContext | null>(null);
 
 export default function ReactionsProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
   const { relays } = useRelay();
+  const [{ reactions, isLoading }, dispatch]: [ReactionsState, any] =
+    useReducer(reactionsReducer, initialState);
 
-  const [reactions, setReactions] = useState<Map<string, string>>(new Map());
-  const [isLoading, setIsLoading] = useState<Set<string>>(new Set());
-
-  const fetchReactions = async (notesIds: string[]): Promise<void> => {
-    const newNotesIds = notesIds.filter((id) => !reactions.has(id));
-    if (!publicKey || newNotesIds.length === 0) return;
-
-    setIsLoading((prev) => new Set([...prev, ...newNotesIds]));
-
-    const newReactions = await reactionService.listNotesReactionsAsync({
-      relays: Array.from(relays.values()),
-      pubkey: publicKey,
-      notesIds: newNotesIds,
-    });
-
-    setReactions((prev) => new Map([...prev, ...new Map(newReactions)]));
-    setIsLoading((prev) => {
-      const newLoading = new Set(prev);
-      newNotesIds.forEach((id) => newLoading.delete(id));
-      return newLoading;
-    });
-  };
-
-  const like = async (note: RelayEvent): Promise<void> => {
+  const addReactions = (notesIds: string[]): void => {
     if (!publicKey) return;
-
-    const likeEvent = await reactionService.createReactionAsync({
-      relays: Array.from(relays.values()),
-      pubkey: publicKey,
-      noteToReact: note,
-    });
-
-    setReactions((prev) => new Map([...prev, [note.id, likeEvent.id]]));
+    dispatch(
+      addReactionsAsync({
+        relays: Array.from(relays.values()),
+        pubkey: publicKey,
+        notesIds: notesIds,
+      }),
+    );
   };
 
-  const unlike = async (note: RelayEvent): Promise<void> => {
-    const reactionId = reactions.get(note.id);
-    if (!publicKey || !reactionId) return;
-
-    await reactionService.deleteReactionAsync({
-      relays: Array.from(relays.values()),
-      pubkey: publicKey,
-      reactionId,
-    });
-
-    setReactions((prev) => {
-      const newReactions = new Map(prev);
-      newReactions.delete(note.id);
-      return newReactions;
-    });
+  const removeReactions = (notesIds: string[]): void => {
+    if (!publicKey) return;
+    dispatch(removeReactionsAction(notesIds));
   };
 
-  const value: ReactionsContext = {
+  const like = (note: RelayEvent): void => {
+    if (!publicKey) return;
+    dispatch(
+      addReactionAsync({
+        relays: Array.from(relays.values()),
+        pubkey: publicKey,
+        noteToReact: note,
+      }),
+    );
+  };
+
+  const unlike = (note: RelayEvent): void => {
+    if (!publicKey) return;
+    dispatch(
+      removeReactionAsync({
+        relays: Array.from(relays.values()),
+        pubkey: publicKey,
+        noteToReact: note,
+      }),
+    );
+  };
+
+  const value: IReactionsContext = {
     reactions,
     isLoading,
-    fetchReactions,
+    addReactions,
+    removeReactions,
     like,
     unlike,
   };
@@ -89,7 +97,7 @@ export default function ReactionsProvider({ children }: ProviderProps) {
   );
 }
 
-export function useReactions(): ReactionsContext {
+export function useReactions(): IReactionsContext {
   const context = useContext(ReactionsContext);
 
   if (!context)

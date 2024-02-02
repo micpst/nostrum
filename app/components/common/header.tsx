@@ -31,7 +31,7 @@ function Header({
       className={cn(
         "hover-animation even z-10 bg-main-background/60 px-3 py-4 backdrop-blur-md",
         className ?? "flex items-center gap-6",
-        !disableSticky && "sticky top-0"
+        !disableSticky && "sticky top-0",
       )}
     >
       {useActionButton && (

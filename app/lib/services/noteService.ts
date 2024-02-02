@@ -61,7 +61,7 @@ interface NoteService {
   listUserNotesAsync(request: ListUserNotesRequest): Promise<NoteEvent[]>;
   listUserLikedNotesAsync(request: ListUserNotesRequest): Promise<NoteEvent[]>;
   listUserRepostedNotesAsync(
-    request: ListUserNotesRequest
+    request: ListUserNotesRequest,
   ): Promise<NoteEvent[]>;
   createNoteAsync(request: CreateNoteRequest): Promise<RelayEvent>;
   createNoteReplyAsync(request: CreateNoteReplyRequest): Promise<RelayEvent>;
@@ -123,8 +123,8 @@ async function listHomeNotesAsync({
         pubkey,
         limit,
         until,
-      })
-    )
+      }),
+    ),
   );
   const usersNotes = await listRootNotesAsync({
     relays,
@@ -180,7 +180,7 @@ async function listUserLikedNotesAsync({
     userReactions.map((reaction) => [
       nip25.getReactedEventPointer(reaction)?.id,
       reaction,
-    ]) as [string, RelayEvent][]
+    ]) as [string, RelayEvent][],
   );
   const likedNotesIds = Array.from(userReactionsMap.keys());
   const likedNotes = await listNotesAsync({
@@ -210,7 +210,7 @@ async function listUserRepostedNotesAsync({
     userReposts.map((repost) => [
       nip18.getRepostedEventPointer(repost)?.id,
       repost,
-    ]) as [string, RelayEvent][]
+    ]) as [string, RelayEvent][],
   );
   const repostedNotesIds = Array.from(userRepostsMap.keys());
   const repostedNotes = await listNotesAsync({

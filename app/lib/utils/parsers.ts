@@ -40,11 +40,11 @@ const topDomains = [
 ] as const;
 
 const imageRegex = new RegExp(
-  /(https?:\/\/)?[\w\-~]+(\.[\w\-~]+)+(\/[\w\-~@:%]*)*(#[\w\-]*)?(\?\S*)?.(jpg|jpeg|png|gif|svg|webp)/g
+  /(https?:\/\/)?[\w\-~]+(\.[\w\-~]+)+(\/[\w\-~@:%]*)*(#[\w\-]*)?(\?\S*)?.(jpg|jpeg|png|gif|svg|webp)/g,
 );
 
 const linkRegex = new RegExp(
-  /(https?:\/\/)?[\w\-~]+(\.[\w\-~]+)+(\/[\w\-~@:%]*)*(#[\w\-]*)?(\?\S*)?.(html|htm|php)?/g
+  /(https?:\/\/)?[\w\-~]+(\.[\w\-~]+)+(\/[\w\-~@:%]*)*(#[\w\-]*)?(\?\S*)?.(html|htm|php)?/g,
 );
 
 const tagRegex = new RegExp(/#\w+/g);
@@ -58,7 +58,7 @@ export const parseLinks = (text: string): string[] => {
   if (!matches) return [];
 
   return matches.filter((match) =>
-    topDomains.some((domain) => match.match(domain))
+    topDomains.some((domain) => match.match(domain)),
   );
 };
 

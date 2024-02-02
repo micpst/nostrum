@@ -39,7 +39,7 @@ export type DeleteRepostRequest = {
 interface RepostService {
   listRepostsAsync(request: ListRepostsRequest): Promise<RelayEvent[]>;
   listNotesRepostsAsync(
-    request: ListNotesRepostsRequest
+    request: ListNotesRepostsRequest,
   ): Promise<[string, string][]>;
   listUserRepostsAsync(request: ListUserRepostsRequest): Promise<RelayEvent[]>;
   createRepostAsync(request: CreateRepostRequest): Promise<RelayEvent>;
@@ -101,7 +101,7 @@ async function createRepostAsync({
   noteToRepost,
 }: CreateRepostRequest): Promise<RelayEvent> {
   const tags = noteToRepost.tags.filter(
-    (tag) => tag.length >= 2 && (tag[0] === "e" || tag[0] === "p")
+    (tag) => tag.length >= 2 && (tag[0] === "e" || tag[0] === "p"),
   );
   tags.push(["e", noteToRepost.id]);
   tags.push(["p", noteToRepost.pubkey]);
@@ -110,7 +110,7 @@ async function createRepostAsync({
     6,
     pubkey,
     noteToRepost.content,
-    tags
+    tags,
   );
   return await nostrService.publishEvent(relays, repostEvent);
 }
