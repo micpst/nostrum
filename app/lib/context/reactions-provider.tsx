@@ -19,14 +19,14 @@ import type {
 } from "@/app/lib/reducers/reactionsReducer";
 import type { RelayEvent } from "@/app/lib/types/event";
 
-type ReactionsContext = {
+interface IReactionsContext {
   reactions: Map<string, string[]>;
   isLoading: Set<string>;
   addReactions: (notesIds: string[]) => void;
   removeReactions: (notesIds: string[]) => void;
   like: (note: RelayEvent) => void;
   unlike: (note: RelayEvent) => void;
-};
+}
 
 const initialState: ReactionsState = {
   reactions: new Map(),
@@ -35,7 +35,7 @@ const initialState: ReactionsState = {
 
 const useReducer = createReducer<ReactionsAction, ReactionsState>(thunk);
 
-export const ReactionsContext = createContext<ReactionsContext | null>(null);
+export const ReactionsContext = createContext<IReactionsContext | null>(null);
 
 export default function ReactionsProvider({ children }: ProviderProps) {
   const { publicKey } = useAuth();
@@ -81,7 +81,7 @@ export default function ReactionsProvider({ children }: ProviderProps) {
     );
   };
 
-  const value: ReactionsContext = {
+  const value: IReactionsContext = {
     reactions,
     isLoading,
     addReactions,
@@ -97,7 +97,7 @@ export default function ReactionsProvider({ children }: ProviderProps) {
   );
 }
 
-export function useReactions(): ReactionsContext {
+export function useReactions(): IReactionsContext {
   const context = useContext(ReactionsContext);
 
   if (!context)
