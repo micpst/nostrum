@@ -5,7 +5,7 @@ import { useDeepCompareEffect, useUnmount } from "react-use";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
-import { useReposts } from "@/app/lib/context/repost-provider";
+import { useReposts } from "@/app/lib/context/reposts-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
 export function useNotesData(notes: RelayEvent[]): void {

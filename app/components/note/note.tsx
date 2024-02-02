@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
 import { forwardRef } from "react";
+import Modal from "@/app/components/modal/modal";
+import NoteReplyModal from "@/app/components/modal/note-replay-modal";
 import NoteContent from "@/app/components/note/note-content";
 import NoteDate from "@/app/components/note/note-date";
 import NoteRelays from "@/app/components/note/note-relays";
@@ -16,21 +18,19 @@ import UserNpub from "@/app/components/user/user-npub";
 import UserTooltip from "@/app/components/user/user-tooltip";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
-import { useReposts } from "@/app/lib/context/repost-provider";
+import { useReposts } from "@/app/lib/context/reposts-provider";
+import { useModal } from "@/app/lib/hooks/useModal";
 import { getUserName, shortenHash } from "@/app/lib/utils/common";
 import type { RelayEvent } from "@/app/lib/types/event";
-import Modal from "@/app/components/modal/modal";
-import { useModal } from "@/app/lib/hooks/useModal";
-import NoteReplyModal from "@/app/components/modal/note-replay-modal";
 
-export type NoteProps = {
+interface INoteProps {
   event: RelayEvent;
   modal?: boolean;
   parentNote?: boolean;
-};
+}
 
 const Note = forwardRef(
-  ({ event, modal, parentNote, ...rest }: NoteProps, ref: any) => {
+  ({ event, modal, parentNote, ...rest }: INoteProps, ref: any) => {
     const { publicKey } = useAuth();
     const { open, openModal, closeModal } = useModal();
     const { profiles } = useProfile();

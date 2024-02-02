@@ -1,22 +1,23 @@
 import cn from "clsx";
+import type { JSX } from "react";
 import NoteOption from "@/app/components/note/note-option";
 import { useAuth } from "@/app/lib/context/auth-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
-import { useReposts } from "@/app/lib/context/repost-provider";
+import { useReposts } from "@/app/lib/context/reposts-provider";
 import type { RelayEvent } from "@/app/lib/types/event";
 
-type TweetStatsProps = {
+interface INotesStatsProps {
   isOwner: boolean;
   note: RelayEvent;
   viewNote?: boolean;
   openModal?: () => void;
-};
+}
 
 function NoteStats({
   note,
   viewNote,
   openModal,
-}: TweetStatsProps): JSX.Element {
+}: INotesStatsProps): JSX.Element {
   const { publicKey } = useAuth();
   const {
     reactions,
