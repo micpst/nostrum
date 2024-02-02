@@ -11,7 +11,7 @@ export type ReactionsAction = {
 
 export default function reactionsReducer(
   state: ReactionsState,
-  action: ReactionsAction
+  action: ReactionsAction,
 ): ReactionsState {
   switch (action.type) {
     case "ADD_REACTIONS": {

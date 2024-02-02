@@ -11,7 +11,7 @@ export function isReply(event: RelayEvent): boolean {
 }
 
 export function groupEventsByParent(
-  events: RelayEvent[]
+  events: RelayEvent[],
 ): Map<string | undefined, RelayEvent[]> {
   return events.reduce((acc, event) => {
     const parent = getTagValues("e", event.tags);
@@ -23,7 +23,7 @@ export function groupEventsByParent(
 }
 
 export function groupEventsByPubkey(
-  events: RelayEvent[]
+  events: RelayEvent[],
 ): Map<string, RelayEvent[]> {
   return events.reduce((acc, event) => {
     const pubkeyEvents = acc.get(event.pubkey);
@@ -34,7 +34,7 @@ export function groupEventsByPubkey(
 }
 
 export function selectMostFrequentEvent(
-  events: RelayEvent[]
+  events: RelayEvent[],
 ): RelayEvent | undefined {
   const idCounts = events.reduce((acc, event) => {
     const count = acc.get(event.id) || 0;
@@ -46,7 +46,7 @@ export function selectMostFrequentEvent(
   const mostFrequentId = ids.reduce(
     (prevId, currId) =>
       idCounts.get(currId) >= idCounts.get(prevId) ? currId : prevId,
-    ids[0]
+    ids[0],
   );
 
   return events.find((event) => event.id === mostFrequentId);

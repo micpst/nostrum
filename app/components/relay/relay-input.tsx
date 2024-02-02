@@ -42,7 +42,7 @@ function RelayInput() {
         className={cn(
           "rounded-full disabled:fill-gray-400 fill-accent-green ",
           relayUrl &&
-            "hover:bg-accent-green/10 focus-visible:bg-accent-green/10"
+            "hover:bg-accent-green/10 focus-visible:bg-accent-green/10",
         )}
         type="submit"
         disabled={!relayUrl}

@@ -18,7 +18,7 @@ export const AuthContext = createContext<AuthContext | null>(null);
 export default function AuthProvider({ children }: ProviderProps) {
   const [isConnected, setIsConnected] = useLocalStorage<boolean>(
     "connected",
-    false
+    false,
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [publicKey, setPublicKey] = useState<string | null>(null);

@@ -58,7 +58,7 @@ export default function FollowingProvider({ children }: ProviderProps) {
     if (!pubkey || !publicKey) return;
 
     const newFollowing = Array.from(following).filter(
-      (following) => following !== pubkey
+      (following) => following !== pubkey,
     );
     await followingService.publishFollowingAsync({
       relays: Array.from(relays.values()),

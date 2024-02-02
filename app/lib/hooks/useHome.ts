@@ -26,7 +26,7 @@ export function useHome(): UseHome {
         until: lastNote?.repostedAt || lastNote?.created_at,
       });
     },
-    [relays, following]
+    [relays, following],
   );
 
   const {

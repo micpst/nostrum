@@ -43,14 +43,14 @@ const Note = forwardRef(
     const shortNpub = shortenHash(npub, 4);
     const authorUsername = author ? getUserName(author) : "";
     const isOwner = publicKey === event.pubkey;
-    const isNoteReposted = reposts.has(event.id);
+    const isNoteReposted = !!reposts.get(event.id)?.length;
 
     return (
       <article
         className={cn(
           `accent-tab hover:bg-dark-primary/30 relative flex flex-col gap-y-4 px-4 py-3 
          outline-none duration-200 cursor-pointer`,
-          parentNote ? "mt-0.5 pt-2.5 pb-0" : "border-b border-light-border"
+          parentNote ? "mt-0.5 pt-2.5 pb-0" : "border-b border-light-border",
         )}
         {...rest}
         ref={ref}
@@ -110,7 +110,7 @@ const Note = forwardRef(
               <p
                 className={cn(
                   "text-light-secondary dark:text-dark-secondary",
-                  modal && "order-1 my-2"
+                  modal && "order-1 my-2",
                 )}
               >
                 Replying to{" "}
@@ -137,7 +137,7 @@ const Note = forwardRef(
         </div>
       </article>
     );
-  }
+  },
 );
 
 Note.displayName = "Note";

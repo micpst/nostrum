@@ -35,7 +35,7 @@ function SidebarProfile(): JSX.Element | null {
         <Menu.Button
           className={cn(
             `rounded-full p-3 my-2.5 dark-bg-tab flex gap-6 items-center xl:w-60
-                 justify-between hover:bg-gray-100 active:bg-gray-100 bg-dark-primary/10`
+                 justify-between hover:bg-gray-100 active:bg-gray-100 bg-dark-primary/10`,
           )}
         >
           <div className="flex gap-3 truncate">
@@ -68,7 +68,7 @@ function SidebarProfile(): JSX.Element | null {
                 <button
                   className={cn(
                     "flex w-full gap-3 p-3 font-bold",
-                    active && "bg-gray-100"
+                    active && "bg-gray-100",
                   )}
                   onClick={logout}
                 >

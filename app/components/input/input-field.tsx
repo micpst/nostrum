@@ -10,7 +10,7 @@ export type InputFieldProps = {
   useTextArea?: boolean;
   errorMessage?: string;
   handleChange: (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   handleKeyboardShortcut?: ({
     key,
@@ -41,7 +41,7 @@ export function InputField({
           errorMessage
             ? "ring-accent-red"
             : `ring-light-line-reply focus-within:ring-2 
-                 focus-within:!ring-main-accent`
+                 focus-within:!ring-main-accent`,
         )}
       >
         {useTextArea ? (
@@ -74,7 +74,7 @@ export function InputField({
              peer-placeholder-shown:text-lg peer-focus:translate-y-1 peer-focus:text-sm`,
             errorMessage
               ? "!text-accent-red peer-focus:text-accent-red"
-              : "peer-focus:text-main-accent"
+              : "peer-focus:text-main-accent",
           )}
           htmlFor={inputId}
         >
@@ -85,7 +85,7 @@ export function InputField({
             className={cn(
               `absolute right-3 top-0 translate-y-1 text-sm text-light-secondary transition-opacity 
                duration-200 peer-focus:visible peer-focus:opacity-100`,
-              errorMessage ? "visible opacity-100" : "invisible opacity-0"
+              errorMessage ? "visible opacity-100" : "invisible opacity-0",
             )}
           >
             {inputLength} / {inputLimit}

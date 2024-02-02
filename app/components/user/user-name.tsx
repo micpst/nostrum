@@ -30,7 +30,7 @@ function UserName({
       className={cn(
         "flex items-center gap-1 truncate font-bold decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className,
-        pubkey && "underline"
+        pubkey && "underline",
       )}
       tabIndex={pubkey ? 0 : -1}
     >

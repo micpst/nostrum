@@ -26,7 +26,7 @@ function UserNpub({
       className={cn(
         "truncate text-light-secondary underline decoration-transparent outline-none hover:decoration-inherit focus-visible:decoration-inherit",
         className,
-        disableLink && "pointer-events-none"
+        disableLink && "pointer-events-none",
       )}
       tabIndex={disableLink ? -1 : 0}
     >

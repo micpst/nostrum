@@ -16,7 +16,7 @@ function LoginButton({ text, className }: LoginButtonProps): JSX.Element {
       className={cn(
         "p-2.5 rounded-full border-[1px] border-black font-bold",
         !isAvailable && "opacity-60",
-        className
+        className,
       )}
       onClick={login}
       disabled={!isAvailable}

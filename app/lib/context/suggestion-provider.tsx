@@ -36,10 +36,10 @@ export default function SuggestionProvider({ children }: ProviderProps) {
 
       if (suggestions.length < 3) {
         const defaultSuggestions = DEFAULT_SUGGESTIONS.filter(
-          (pubkey) => !following.has(pubkey)
+          (pubkey) => !following.has(pubkey),
         );
         suggestions.push(
-          ...defaultSuggestions.slice(0, 3 - suggestions.length)
+          ...defaultSuggestions.slice(0, 3 - suggestions.length),
         );
       }
 

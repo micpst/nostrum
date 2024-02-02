@@ -18,7 +18,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "custom-button main-tab",
           loading && "relative !text-transparent disabled:cursor-wait",
-          className
+          className,
         )}
         type="button"
         disabled={isDisabled}
@@ -34,7 +34,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
 export default Button;

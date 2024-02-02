@@ -44,7 +44,7 @@ function AsideSearchbar(): JSX.Element {
           <CustomIcon
             className={cn(
               "h-5 w-5 transition-colors",
-              inputValue ? "fill-main-accent" : "fill-light-secondary"
+              inputValue ? "fill-main-accent" : "fill-light-secondary",
             )}
             iconName="SearchIcon"
           />
@@ -63,7 +63,7 @@ function AsideSearchbar(): JSX.Element {
           className={cn(
             "rounded-full scale-50 bg-main-accent fill-main-background p-1.5 cursor-pointer opacity-0 transition hover:brightness-90 disabled:opacity-0",
             inputValue &&
-              "focus:scale-100 focus:opacity-100 peer-focus:scale-100 peer-focus:opacity-100"
+              "focus:scale-100 focus:opacity-100 peer-focus:scale-100 peer-focus:opacity-100",
           )}
           onClick={clearInputValue(true)}
         >

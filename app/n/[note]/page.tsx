@@ -20,7 +20,7 @@ function NotePage(): JSX.Element {
           <Note ref={loadMoreRef} key={note.id} event={note} />
         ) : (
           <Note key={note.id} event={note} />
-        )
+        ),
       )}
       {isLoading ? <Loading className="my-5" /> : null}
     </>

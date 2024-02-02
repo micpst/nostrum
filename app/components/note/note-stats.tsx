@@ -35,7 +35,7 @@ function NoteStats({
   const noteIsLiked = !!reactions.get(note.id)?.length;
 
   const repostLoading = isLoadingReposts.has(note.id);
-  const noteIsReposted = reposts.has(note.id);
+  const noteIsReposted = !!reposts.get(note.id)?.length;
 
   const handleReply = (e: any): void => {
     e.stopPropagation();
@@ -58,7 +58,7 @@ function NoteStats({
     <div
       className={cn(
         "flex text-light-secondary inner:outline-none",
-        viewNote ? "justify-around py-2" : "max-w-md justify-between"
+        viewNote ? "justify-around py-2" : "max-w-md justify-between",
       )}
     >
       <NoteOption
@@ -73,7 +73,7 @@ function NoteStats({
       <NoteOption
         className={cn(
           "hover:text-accent-green focus-visible:text-accent-green",
-          noteIsReposted && "text-accent-green [&>svg]:fill-accent-green"
+          noteIsReposted && "text-accent-green [&>svg]:fill-accent-green",
         )}
         iconClassName="group-hover:bg-accent-green/10 group-active:bg-accent-green/20 group-hover:fill-accent-green
                        group-focus-visible:bg-accent-green/10 group-focus-visible:ring-accent-green/80 group-focus-visible:fill-accent-green"
@@ -86,7 +86,7 @@ function NoteStats({
       <NoteOption
         className={cn(
           "hover:text-accent-pink focus-visible:text-accent-pink",
-          noteIsLiked && "text-accent-pink [&>svg]:fill-accent-pink"
+          noteIsLiked && "text-accent-pink [&>svg]:fill-accent-pink",
         )}
         iconClassName="group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20 group-hover:fill-accent-pink
                        group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80 group-focus-visible:fill-accent-pink"

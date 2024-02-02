@@ -45,11 +45,11 @@ async function listProfilesAsync({
   });
 
   const groupedEvents = groupEventsByPubkey(
-    events.filter((event) => validateProfileContent(event.content))
+    events.filter((event) => validateProfileContent(event.content)),
   );
 
   const selectedEvents = Array.from(groupedEvents.values()).map(
-    (eventsForPubkey) => selectMostFrequentEvent(eventsForPubkey)
+    (eventsForPubkey) => selectMostFrequentEvent(eventsForPubkey),
   ) as RelayEvent[];
 
   const newProfiles = await Promise.all(
@@ -61,7 +61,7 @@ async function listProfilesAsync({
         verified: pointer?.pubkey === event.pubkey,
         pubkey: event.pubkey,
       };
-    })
+    }),
   );
 
   return pubkeys.map((pubkey) => ({

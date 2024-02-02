@@ -9,7 +9,7 @@ type UseInfiniteScroll = {
 };
 
 export function useInfiniteScroll(
-  loadNextPage: (lastNote?: NoteEvent) => Promise<NoteEvent[]>
+  loadNextPage: (lastNote?: NoteEvent) => Promise<NoteEvent[]>,
 ): UseInfiniteScroll {
   const intObserver: any = useRef();
 
@@ -40,7 +40,7 @@ export function useInfiniteScroll(
 
     const newNotes = await loadNextPage(notes.at(-1));
     const uniqueNewNotes = newNotes.filter(
-      (note) => !notes.some((n) => n.id === note.id)
+      (note) => !notes.some((n) => n.id === note.id),
     );
 
     if (uniqueNewNotes.length === 0) {
@@ -66,7 +66,7 @@ export function useInfiniteScroll(
         intObserver.current.observe(element);
       }
     },
-    [isLoading, reachedLimit, loadMore]
+    [isLoading, reachedLimit, loadMore],
   );
 
   return {

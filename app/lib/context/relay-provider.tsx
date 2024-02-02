@@ -33,7 +33,7 @@ export default function RelayProvider({ children }: ProviderProps) {
     relays.forEach((relay) => void connect(relay));
     const timeout = setInterval(
       () => relays.forEach((relay) => void connect(relay)),
-      10_000
+      10_000,
     );
     return () => clearInterval(timeout);
   }, [relays]);

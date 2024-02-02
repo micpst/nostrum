@@ -20,7 +20,7 @@ function UserNavLink({ linkName, href }: NavLink): JSX.Element {
             "flex flex-col gap-3 whitespace-nowrap font-medium pt-3 transition-colors duration-200",
             isActive
               ? "text-light-primary [&>i]:scale-100 [&>i]:opacity-100"
-              : "text-light-secondary"
+              : "text-light-secondary",
           )}
         >
           {linkName}

@@ -44,7 +44,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
   const { relays } = useRelay();
   const [{ profiles, isLoading }, dispatch]: [ProfileState, any] = useReducer(
     profilesReducer,
-    initialState
+    initialState,
   );
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
         relays: Array.from(relays.values()),
         pubkey: publicKey,
         data,
-      })
+      }),
     );
   };
 
@@ -76,7 +76,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
       addProfilesAsync({
         relays: Array.from(relays.values()),
         pubkeys,
-      })
+      }),
     );
   };
 
@@ -85,7 +85,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
       reloadProfilesAsync({
         relays: Array.from(relays.values()),
         pubkeys,
-      })
+      }),
     );
   };
 

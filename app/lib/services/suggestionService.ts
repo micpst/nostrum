@@ -17,11 +17,11 @@ async function listSuggestionsAsync({
 }: ListSuggestionsRequest): Promise<string[]> {
   const following = await Promise.all(
     pubkeys.map((pubkey) =>
-      followingService.listFollowingAsync({ relays, pubkey })
-    )
+      followingService.listFollowingAsync({ relays, pubkey }),
+    ),
   );
   return findMostFrequent(
-    following.flat().filter((pubkey) => !pubkeys.includes(pubkey))
+    following.flat().filter((pubkey) => !pubkeys.includes(pubkey)),
   );
 }
 

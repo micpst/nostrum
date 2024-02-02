@@ -7,18 +7,18 @@ interface NostrService {
     kind: number,
     pubkey: string,
     content?: string,
-    tags?: string[][]
+    tags?: string[][],
   ) => Promise<Event>;
   listEvents: (relays: Relay[], filter: Filter) => Promise<RelayEvent[]>;
   publishEvent: (
     relays: Relay[],
     event: Event,
-    timeout?: number
+    timeout?: number,
   ) => Promise<RelayEvent>;
   subscribeEvents: (
     relays: Relay[],
     filter: Filter,
-    onEvent: (event: RelayEvent) => void
+    onEvent: (event: RelayEvent) => void,
   ) => void;
 }
 
@@ -26,7 +26,7 @@ async function createEvent(
   kind: number,
   pubkey: string,
   content: string = "",
-  tags: string[][] = []
+  tags: string[][] = [],
 ): Promise<Event> {
   const event = await window.nostr?.signEvent({
     kind,
@@ -44,7 +44,7 @@ async function createEvent(
 
 async function listEvents(
   relays: Relay[],
-  filter: Filter
+  filter: Filter,
 ): Promise<RelayEvent[]> {
   const newEvents: Map<string, RelayEvent> = new Map();
   await Promise.all(
@@ -57,7 +57,7 @@ async function listEvents(
           relays: [...(ev?.relays ?? []), relay.url],
         });
       });
-    })
+    }),
   );
   return Array.from([...newEvents.values()]);
 }
@@ -65,7 +65,7 @@ async function listEvents(
 async function publishEvent(
   relays: Relay[],
   event: Event,
-  timeout: number = 1_500
+  timeout: number = 1_500,
 ): Promise<RelayEvent> {
   const urls = await Promise.all(
     relays.map(
@@ -79,8 +79,8 @@ async function publishEvent(
           } catch (err) {
             resolve();
           }
-        })
-    )
+        }),
+    ),
   );
   return {
     ...event,
@@ -91,13 +91,13 @@ async function publishEvent(
 function subscribeEvents(
   relays: Relay[],
   filter: Filter,
-  onEvent: (event: RelayEvent) => void
+  onEvent: (event: RelayEvent) => void,
 ): void {
   relays.forEach((relay: Relay) => {
     relay
       .sub([filter])
       .on("event", (event: Event) =>
-        onEvent({ ...event, relays: [relay.url] })
+        onEvent({ ...event, relays: [relay.url] }),
       );
   });
 }

@@ -22,10 +22,10 @@ import type { RelayEvent } from "@/app/lib/types/event";
 type ReactionsContext = {
   reactions: Map<string, string[]>;
   isLoading: Set<string>;
-  addReactions: (eventIds: string[]) => void;
-  removeReactions: (eventIds: string[]) => void;
-  like: (event: RelayEvent) => Promise<void>;
-  unlike: (event: RelayEvent) => Promise<void>;
+  addReactions: (notesIds: string[]) => void;
+  removeReactions: (notesIds: string[]) => void;
+  like: (note: RelayEvent) => void;
+  unlike: (note: RelayEvent) => void;
 };
 
 const initialState: ReactionsState = {
@@ -50,7 +50,7 @@ export default function ReactionsProvider({ children }: ProviderProps) {
         relays: Array.from(relays.values()),
         pubkey: publicKey,
         notesIds: notesIds,
-      })
+      }),
     );
   };
 
@@ -59,25 +59,25 @@ export default function ReactionsProvider({ children }: ProviderProps) {
     dispatch(removeReactionsAction(notesIds));
   };
 
-  const like = async (note: RelayEvent): Promise<void> => {
+  const like = (note: RelayEvent): void => {
     if (!publicKey) return;
     dispatch(
       addReactionAsync({
         relays: Array.from(relays.values()),
         pubkey: publicKey,
         noteToReact: note,
-      })
+      }),
     );
   };
 
-  const unlike = async (note: RelayEvent): Promise<void> => {
+  const unlike = (note: RelayEvent): void => {
     if (!publicKey) return;
     dispatch(
       removeReactionAsync({
         relays: Array.from(relays.values()),
         pubkey: publicKey,
         noteToReact: note,
-      })
+      }),
     );
   };
 

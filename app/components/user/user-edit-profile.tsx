@@ -96,7 +96,7 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
     ];
     const newUserData = trimmedKeys.reduce(
       (acc, curr) => ({ ...acc, [curr]: editUserData[curr]?.trim() ?? null }),
-      {} as EditableUserData
+      {} as EditableUserData,
     );
 
     setProfile(newUserData);

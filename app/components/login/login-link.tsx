@@ -14,7 +14,7 @@ function LoginButton({ text, className, href }: LoginButtonProps): JSX.Element {
       href={href}
       className={cn(
         "p-2.5 rounded-full border-[1px] border-black font-bold text-center",
-        className
+        className,
       )}
       target="blank"
     >

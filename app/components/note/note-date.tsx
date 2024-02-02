@@ -22,7 +22,7 @@ function NoteDate({
           onClick={(e) => e.stopPropagation()}
           className={cn(
             "custom-underline peer whitespace-nowrap",
-            viewNote && "text-light-secondary"
+            viewNote && "text-light-secondary",
           )}
         >
           {formatDate(createdAt, viewNote ? "full" : "note")}

@@ -28,7 +28,7 @@ export function validateProfileContent(content: string): boolean {
 
 export const findMostFrequent = (
   items: string[],
-  numItems: number = 3
+  numItems: number = 3,
 ): string[] => {
   const frequencyMap = items.reduce((acc, item) => {
     const count = acc.get(item) || 0;

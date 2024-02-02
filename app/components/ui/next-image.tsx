@@ -35,7 +35,7 @@ function NextImage({
   const handleLoad = (): void => setLoading(false);
 
   const handleError = (
-    event: SyntheticEvent<HTMLImageElement, Event>
+    event: SyntheticEvent<HTMLImageElement, Event>,
   ): void => {
     event.currentTarget.src = fallbackSrc || "";
   };
@@ -51,7 +51,7 @@ function NextImage({
             ? blurClassName ?? "bg-main-sidebar-background"
             : previewCount === 1
             ? "!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain"
-            : "object-cover"
+            : "object-cover",
         )}
         width={width}
         height={height}

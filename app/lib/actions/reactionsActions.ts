@@ -23,7 +23,7 @@ export function removeReactions(notesIds: string[]): ReactionsAction {
 }
 
 export function updateReactions(
-  reactions: [string, string[]][]
+  reactions: [string, string[]][],
 ): ReactionsAction {
   return {
     type: "UPDATE_REACTIONS",
@@ -37,7 +37,7 @@ export function addReactionsAsync({
   notesIds,
 }: ListNotesReactionsRequest): (
   dispatch: any,
-  getState: () => ReactionsState
+  getState: () => ReactionsState,
 ) => void {
   return async (dispatch, getState) => {
     const prevLoading = new Set(getState().isLoading);
@@ -45,7 +45,7 @@ export function addReactionsAsync({
     dispatch(addReactions(notesIds));
 
     const newNoteIds = Array.from(getState().isLoading).filter(
-      (noteId) => !prevLoading.has(noteId)
+      (noteId) => !prevLoading.has(noteId),
     );
     const newReactions = await reactionService.listNotesReactionsAsync({
       relays,
@@ -70,7 +70,7 @@ export function addReactionAsync({
   noteToReact,
 }: CreateReactionRequest): (
   dispatch: any,
-  getState: () => ReactionsState
+  getState: () => ReactionsState,
 ) => void {
   return async (dispatch, getState) => {
     const likeEvent = await reactionService.createReactionAsync({
@@ -88,7 +88,7 @@ export function removeReactionAsync({
   noteToReact,
 }: CreateReactionRequest): (
   dispatch: any,
-  getState: () => ReactionsState
+  getState: () => ReactionsState,
 ) => void {
   return async (dispatch, getState) => {
     const reactionIds = getState().reactions.get(noteToReact.id);
@@ -100,8 +100,8 @@ export function removeReactionAsync({
           relays,
           pubkey,
           reactionId,
-        })
-      )
+        }),
+      ),
     );
     dispatch(removeReactions([noteToReact.id]));
   };

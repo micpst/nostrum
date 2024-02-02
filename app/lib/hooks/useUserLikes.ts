@@ -25,7 +25,7 @@ export function useUserLikes(user?: User): UseUserLikes {
         until: lastNote?.likedAt,
       });
     },
-    [relays, user]
+    [relays, user],
   );
 
   return useInfiniteScroll(loadNotes);

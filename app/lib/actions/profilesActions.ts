@@ -48,7 +48,7 @@ export function addProfilesAsync({
     dispatch(addProfiles(pubkeys));
 
     const newPubkeys = Array.from(getState().isLoading).filter(
-      (pubkey) => !prevLoading.has(pubkey)
+      (pubkey) => !prevLoading.has(pubkey),
     );
     const profiles = await profilesService.listProfilesAsync({
       relays,
@@ -65,7 +65,7 @@ export function updateProfileAsync({
   data,
 }: PublishProfileRequest): (
   dispatch: any,
-  getState: () => ProfileState
+  getState: () => ProfileState,
 ) => void {
   return async (dispatch, getState) => {
     const pointer = await nip05.queryProfile(data.nip05 || "");
@@ -85,7 +85,7 @@ export function updateProfileAsync({
 }
 
 export function reloadProfilesAsync(
-  request: ListProfilesRequest
+  request: ListProfilesRequest,
 ): (dispatch: any, getState: () => ProfileState) => void {
   return async (dispatch, getState) => {
     dispatch(reloadProfiles(request.pubkeys));

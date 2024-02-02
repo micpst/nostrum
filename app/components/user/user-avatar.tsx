@@ -24,7 +24,7 @@ function UserAvatar({
       className={cn(
         "blur-picture flex self-start transition hover:brightness-75 hover:duration-200",
         !pubkey && "pointer-events-none",
-        className
+        className,
       )}
       tabIndex={pubkey ? 0 : -1}
     >

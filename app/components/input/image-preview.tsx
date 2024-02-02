@@ -23,7 +23,7 @@ function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
     <div
       className={cn(
         "grid grid-cols-2 grid-rows-2 rounded-2xl mt-2 gap-0.5",
-        previewCount > 1 && "h-[271px]"
+        previewCount > 1 && "h-[271px]",
       )}
     >
       {images.map(({ id, src, alt }, index) => (
@@ -37,7 +37,7 @@ function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
               "col-span-2 row-span-2": previewCount === 1,
               "row-span-2":
                 previewCount === 2 || (index === 0 && previewCount === 3),
-            }
+            },
           )}
         >
           <NextImage
@@ -45,7 +45,7 @@ function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
             imgClassName={cn(
               "relative cursor-pointer object-cover",
               postImageBorderRadius[previewCount][index],
-              previewCount > 1 ? "w-full h-full" : "max-h-[500px]"
+              previewCount > 1 ? "w-full h-full" : "max-h-[500px]",
             )}
             src={src}
             alt={alt}
