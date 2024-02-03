@@ -77,19 +77,14 @@ function NoteContent({ event, expanded }: INoteContentProps): JSX.Element {
 
   augmentedContent = augmentedContent.trim();
 
-  const imagesPreview = images.map((image) => ({
-    id: image.href,
-    src: image.href,
-    alt: "Note image preview.",
-  }));
-
-  const videosUrls = videos.map((video) => video.href);
-
   const truncate = augmentedContent.length > 300 && !expanded;
 
   augmentedContent = truncate
     ? `${augmentedContent.slice(0, 250)}...`
     : augmentedContent;
+
+  const imagesUrls = images.map((image) => image.href);
+  const videosUrls = videos.map((video) => video.href);
 
   return (
     <>
@@ -109,9 +104,7 @@ function NoteContent({ event, expanded }: INoteContentProps): JSX.Element {
         </Link>
       )}
       <div className="mt-1 flex flex-col gap-2">
-        {imagesPreview.length ? (
-          <ImagePreview imagesPreview={imagesPreview} />
-        ) : null}
+        {images.length ? <ImagePreview urls={imagesUrls} /> : null}
         {videos.length ? (
           <ReactPlayer
             className="video-player"
