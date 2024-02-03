@@ -22,7 +22,7 @@ function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
   return (
     <div
       className={cn(
-        "grid grid-cols-2 grid-rows-2 rounded-2xl mt-2 gap-0.5",
+        "grid grid-cols-2 grid-rows-2 rounded-2xl mt-2 gap-0.5 w-fit h-fit border-[1px] border-light-border",
         previewCount > 1 && "h-[271px]",
       )}
     >

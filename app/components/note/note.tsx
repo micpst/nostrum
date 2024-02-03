@@ -25,12 +25,13 @@ import type { RelayEvent } from "@/app/lib/types/event";
 
 interface INoteProps {
   event: RelayEvent;
+  expanded?: boolean;
   modal?: boolean;
   parentNote?: boolean;
 }
 
 const Note = forwardRef(
-  ({ event, modal, parentNote, ...rest }: INoteProps, ref: any) => {
+  ({ event, expanded, modal, parentNote, ...rest }: INoteProps, ref: any) => {
     const { publicKey } = useAuth();
     const { open, openModal, closeModal } = useModal();
     const { profiles } = useProfile();
@@ -123,7 +124,7 @@ const Note = forwardRef(
                 </Link>
               </p>
             )}
-            <NoteContent event={event} />
+            <NoteContent event={event} expanded={expanded} />
             <div className="mt-3 flex flex-col gap-2">
               {!modal ? (
                 <NoteStats

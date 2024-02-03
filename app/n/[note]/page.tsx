@@ -14,7 +14,7 @@ function NotePage(): JSX.Element {
 
   return (
     <>
-      <Note event={root} />
+      <Note event={root} expanded />
       {notes.map((note, i) =>
         i === notes.length - 5 ? (
           <Note ref={loadMoreRef} key={note.id} event={note} />
