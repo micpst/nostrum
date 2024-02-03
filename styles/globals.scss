@@ -81,4 +81,17 @@
         [box-shadow:#65778633_0px_0px_15px,_#65778626_0px_0px_3px_1px]
         dark:[box-shadow:#ffffff33_0px_0px_15px,_#ffffff26_0px_0px_3px_1px];
     }
+
+    .video-player {
+        @apply mt-2;
+        & video, iframe {
+            @apply rounded-2xl border-[1px] border-light-border #{!important};
+        }
+        & video {
+            @apply max-h-[300px] #{!important};
+        }
+        & iframe {
+            @apply h-[300px] #{!important};
+        }
+    }
 }

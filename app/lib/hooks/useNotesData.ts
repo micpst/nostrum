@@ -6,15 +6,28 @@ import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import { useReactions } from "@/app/lib/context/reactions-provider";
 import { useReposts } from "@/app/lib/context/reposts-provider";
-import type { RelayEvent } from "@/app/lib/types/event";
+import type { NoteEvent } from "@/app/lib/types/event";
 
-export function useNotesData(notes: RelayEvent[]): void {
+export function useNotesData(notes: NoteEvent[]): void {
   const { publicKey } = useAuth();
   const { addProfiles, removeProfiles } = useProfile();
   const { addReactions, removeReactions } = useReactions();
   const { addReposts, removeReposts } = useReposts();
 
-  const prevNotesRef = useRef<RelayEvent[]>([]);
+  const prevNotesRef = useRef<NoteEvent[]>([]);
+
+  useEffect(() => {
+    if (publicKey) {
+      const ids = notes.map((note) => note.id);
+      addReactions(ids);
+      addReposts(ids);
+
+      return () => {
+        removeReactions(ids);
+        removeReposts(ids);
+      };
+    }
+  }, [publicKey]);
 
   useDeepCompareEffect(() => {
     const newNotes = notes.filter(
@@ -26,7 +39,11 @@ export function useNotesData(notes: RelayEvent[]): void {
     );
 
     if (newNotes.length > 0) {
-      const pubkeys = newNotes.map((note) => note.pubkey);
+      const pubkeys = newNotes
+        .map((note) =>
+          note.parent ? [note.pubkey, note.parent.pubkey] : note.pubkey,
+        )
+        .flat();
       const ids = newNotes.map((note) => note.id);
 
       addProfiles(pubkeys);
@@ -35,7 +52,11 @@ export function useNotesData(notes: RelayEvent[]): void {
     }
 
     if (removedNotes.length > 0) {
-      const pubkeys = removedNotes.map((note) => note.pubkey);
+      const pubkeys = removedNotes
+        .map((note) =>
+          note.parent ? [note.pubkey, note.parent.pubkey] : note.pubkey,
+        )
+        .flat();
       const ids = removedNotes.map((note) => note.id);
 
       removeProfiles(pubkeys);
@@ -46,22 +67,12 @@ export function useNotesData(notes: RelayEvent[]): void {
     prevNotesRef.current = notes;
   }, [notes]);
 
-  useEffect(() => {
-    if (publicKey) {
-      const ids = notes.map((note) => note.id);
-
-      addReactions(ids);
-      addReposts(ids);
-
-      return () => {
-        removeReactions(ids);
-        removeReposts(ids);
-      };
-    }
-  }, [publicKey]);
-
   useUnmount(() => {
-    const pubkeys = notes.map((note) => note.pubkey);
+    const pubkeys = notes
+      .map((note) =>
+        note.parent ? [note.pubkey, note.parent.pubkey] : note.pubkey,
+      )
+      .flat();
     const ids = notes.map((note) => note.id);
 
     removeProfiles(pubkeys);

@@ -1,9 +1,9 @@
 import cn from "clsx";
 import Link from "next/link";
 import { formatDate } from "@/app/lib/utils/date";
-import type { Note } from "@/app/lib/types/note";
 
-type NoteDateProps = Pick<Note, "createdAt"> & {
+type NoteDateProps = {
+  createdAt: number;
   noteLink: string;
   viewNote?: boolean;
 };
