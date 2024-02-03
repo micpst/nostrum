@@ -1,4 +1,4 @@
-import DOMPurify, { sanitize } from "dompurify";
+import DOMPurify from "isomorphic-dompurify";
 import * as linkify from "linkifyjs";
 import "linkify-plugin-hashtag";
 import Link from "next/link";
@@ -96,7 +96,9 @@ function NoteContent({ event, expanded }: INoteContentProps): JSX.Element {
       <p
         onClick={(e) => e.stopPropagation()}
         className="whitespace-pre-line break-words"
-        dangerouslySetInnerHTML={{ __html: sanitize(augmentedContent) }}
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(augmentedContent),
+        }}
       />
       {truncate && (
         <Link
