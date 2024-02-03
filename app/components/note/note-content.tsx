@@ -1,4 +1,4 @@
-import { sanitize } from "dompurify";
+import DOMPurify, { sanitize } from "dompurify";
 import * as linkify from "linkifyjs";
 import "linkify-plugin-hashtag";
 import Link from "next/link";
@@ -8,6 +8,13 @@ import type { Event } from "nostr-tools";
 import type { JSX } from "react";
 import ImagePreview from "@/app/components/input/image-preview";
 import { validateImageUrl, validateVideoUrl } from "@/app/lib/utils/validators";
+
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+  if ("target" in node) {
+    node.setAttribute("target", "_blank");
+    node.setAttribute("rel", "noopener");
+  }
+});
 
 interface INoteContentProps {
   event: Event;
@@ -24,7 +31,7 @@ function NoteContent({ event, expanded }: INoteContentProps): JSX.Element {
   const hashtags = linkify
     .find(event.content, {
       formatHref: {
-        hashtag: (href) => `t/${href.substring(1)}`,
+        hashtag: (href) => `/t/${href.substring(1).toLowerCase()}`,
       },
     })
     .filter((link) => link.type === "hashtag");
@@ -57,7 +64,7 @@ function NoteContent({ event, expanded }: INoteContentProps): JSX.Element {
   links.forEach((link) => {
     augmentedContent = augmentedContent.replaceAll(
       link.href,
-      `<a class="text-main-accent hover:underline" href=${link.href}>${link.value}</a>`,
+      `<a class="text-main-accent hover:underline" href=${link.href} target="_blank">${link.value}</a>`,
     );
   });
 
@@ -73,7 +80,7 @@ function NoteContent({ event, expanded }: INoteContentProps): JSX.Element {
   const imagesPreview = images.map((image) => ({
     id: image.href,
     src: image.href,
-    alt: image.href,
+    alt: "Note image preview.",
   }));
 
   const videosUrls = videos.map((video) => video.href);
@@ -87,6 +94,7 @@ function NoteContent({ event, expanded }: INoteContentProps): JSX.Element {
   return (
     <>
       <p
+        onClick={(e) => e.stopPropagation()}
         className="whitespace-pre-line break-words"
         dangerouslySetInnerHTML={{ __html: sanitize(augmentedContent) }}
       />

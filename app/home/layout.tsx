@@ -14,6 +14,7 @@ function HomeLayout({ children }: { children: ReactNode }) {
     <>
       {children}
       <Aside>
+        <AsideSearchbar />
         <AsideSuggestions />
       </Aside>
     </>

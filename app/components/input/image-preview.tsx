@@ -47,8 +47,9 @@ function ImagePreview({ imagesPreview }: ImagePreviewProps): JSX.Element {
               postImageBorderRadius[previewCount][index],
               previewCount > 1 ? "w-full h-full" : "max-h-[500px]",
             )}
+            useSkeleton
             src={src}
-            alt={alt}
+            alt="Image preview"
           />
         </button>
       ))}

@@ -1,3 +1,4 @@
+import type { SyntheticEvent } from "react";
 import type { User } from "@/app/lib/types/user";
 
 export const shortenHash = (hash: string, length: number = 4): string => {
@@ -8,6 +9,17 @@ export const shortenHash = (hash: string, length: number = 4): string => {
     hash.substring(0, length) + "..." + hash.substring(hash.length - length)
   );
 };
+
+export function preventBubbling(
+  callback?: ((...args: never[]) => unknown) | null,
+  noPreventDefault?: boolean,
+) {
+  return (e: SyntheticEvent): void => {
+    e.stopPropagation();
+    if (!noPreventDefault) e.preventDefault();
+    if (callback) callback();
+  };
+}
 
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
