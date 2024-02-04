@@ -14,7 +14,6 @@ function NotePage(): JSX.Element {
 
   return (
     <>
-      <Note event={root} expanded inThread />
       {notes.map((note, i) =>
         i === notes.length - 5 ? (
           <Note ref={loadMoreRef} key={note.id} event={note} inThread />

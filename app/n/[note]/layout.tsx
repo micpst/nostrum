@@ -4,18 +4,19 @@ import { useRouter } from "next/navigation";
 import { nip19 } from "nostr-tools";
 import type { ReactNode } from "react";
 import Header from "@/app/components/common/header";
+import Note from "@/app/components/note/note";
 import Loading from "@/app/components/ui/loading";
 import ThreadProvider from "@/app/lib/context/thread-provider";
-import { useEvents } from "@/app/lib/hooks/useEvents";
-import { useNotesData } from "@/app/lib/hooks/useNotesData";
+import { useNoteThread } from "@/app/lib/hooks/useNoteThread";
 
-function NoteLayout({
-  params,
-  children,
-}: {
+type NoteLayoutProps = {
   params: { note: string };
   children: ReactNode;
-}) {
+};
+
+function NoteLayout({ params, children }: NoteLayoutProps) {
+  const { back } = useRouter();
+
   let noteId = "";
   let isNoteValid = true;
   try {
@@ -24,22 +25,10 @@ function NoteLayout({
     isNoteValid = false;
   }
 
-  const { back } = useRouter();
-  const {
-    events: notes,
-    newEvents: newNotes,
-    isLoading,
-  } = useEvents({
-    kinds: [1],
-    ids: [noteId],
-    limit: 1,
-  });
+  const { note, parent, isLoading } = useNoteThread(noteId);
 
-  useNotesData(notes);
-
-  const root = notes[0];
   const value = {
-    root,
+    root: note,
     isLoading,
   };
 
@@ -47,7 +36,7 @@ function NoteLayout({
     <div className="w-full max-w-[40rem] border-x border-light-border">
       <Header title="Note" useActionButton action={back} />
       <section>
-        {!root ? (
+        {!note ? (
           isLoading ? (
             <Loading className="mt-5" />
           ) : (
@@ -61,7 +50,13 @@ function NoteLayout({
             </div>
           )
         ) : (
-          <ThreadProvider value={value}>{children}</ThreadProvider>
+          <>
+            {parent ? (
+              <Note event={parent} expanded inThread parentNote />
+            ) : null}
+            <Note event={note} expanded inThread />
+            <ThreadProvider value={value}>{children}</ThreadProvider>
+          </>
         )}
       </section>
     </div>

@@ -58,7 +58,7 @@ export default function ProfileProvider({ children }: ProviderProps) {
     if (publicKey) {
       void reloadProfiles([publicKey]);
     }
-  }, [relays]);
+  }, [Array.from(relays.keys())]);
 
   const setProfile = (data: EditableUserData): void => {
     if (!publicKey) return;

@@ -10,7 +10,7 @@ type UseNoteReplies = {
   loadMoreRef: (note: any) => void;
 };
 
-export function useNoteReplies(note?: NoteEvent): UseNoteReplies {
+export function useNoteReplies(note?: NoteEvent | null): UseNoteReplies {
   const { relays } = useRelay();
 
   const loadNoteReplies = useCallback(
