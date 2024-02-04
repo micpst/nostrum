@@ -18,6 +18,7 @@ import type {
   ProfileAction,
   ProfileState,
 } from "@/app/lib/reducers/profilesReducer";
+import type { RelayEvent } from "@/app/lib/types/event";
 import type { EditableUserData, User } from "@/app/lib/types/user";
 
 type ProfileContext = {
@@ -26,7 +27,7 @@ type ProfileContext = {
   addProfiles: (pubkeys: string[]) => void;
   removeProfiles: (pubkeys: string[]) => void;
   reloadProfiles: (pubkeys: string[]) => void;
-  setProfile: (profile: EditableUserData) => void;
+  setProfile: (data: EditableUserData) => Promise<RelayEvent | null>;
 };
 
 const initialState: ProfileState = {
@@ -60,9 +61,12 @@ export default function ProfileProvider({ children }: ProviderProps) {
     }
   }, [Array.from(relays.keys())]);
 
-  const setProfile = (data: EditableUserData): void => {
-    if (!publicKey) return;
-    dispatch(
+  const setProfile = async (
+    data: EditableUserData,
+  ): Promise<RelayEvent | null> => {
+    if (!publicKey) return null;
+
+    return await dispatch(
       updateProfileAsync({
         relays: Array.from(relays.values()),
         pubkey: publicKey,
