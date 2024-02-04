@@ -1,17 +1,19 @@
-import Button from "@/app/components/ui/button";
-import { useModal } from "@/app/lib/hooks/useModal";
-import type { EditableData, User } from "@/app/lib/types/user";
-import { useState } from "react";
-import type { EditableUserData } from "@/app/lib/types/user";
 import cn from "clsx";
-import Modal from "@/app/components/modal/modal";
-import { EditProfileModal } from "@/app/components/modal/edit-profile-modal";
-import type { InputFieldProps } from "@/app/components/input/input-field";
-import { InputField } from "@/app/components/input/input-field";
-import { useRelay } from "@/app/lib/context/relay-provider";
-import { useProfile } from "@/app/lib/context/profile-provider";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import type { ChangeEvent, KeyboardEvent } from "react";
-import NostrService from "@/app/lib/services/nostrService";
+import { InputField } from "@/app/components/input/input-field";
+import { EditProfileModal } from "@/app/components/modal/edit-profile-modal";
+import Modal from "@/app/components/modal/modal";
+import Button from "@/app/components/ui/button";
+import { useProfile } from "@/app/lib/context/profile-provider";
+import { useModal } from "@/app/lib/hooks/useModal";
+import type { InputFieldProps } from "@/app/components/input/input-field";
+import type {
+  EditableData,
+  EditableUserData,
+  User,
+} from "@/app/lib/types/user";
 
 type RequiredInputFieldProps = Omit<InputFieldProps, "handleChange"> & {
   inputId: EditableData;
@@ -26,6 +28,7 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
   const { setProfile } = useProfile();
   const { about, name, picture, banner, nip05 } = user;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     about,
     name,
@@ -80,12 +83,14 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
     ctrlKey,
   }: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     if (ctrlKey && key === "Enter") {
-      updateData();
+      void updateData();
     }
   };
 
-  const updateData = (): void => {
+  const updateData = async (): Promise<void> => {
     if (!user) return;
+
+    setIsLoading(true);
 
     const trimmedKeys: Readonly<EditableData[]> = [
       "name",
@@ -99,7 +104,16 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
       {} as EditableUserData,
     );
 
-    setProfile(newUserData);
+    const profileEvent = await setProfile(newUserData);
+
+    setIsLoading(false);
+
+    if (!profileEvent || profileEvent.relays.length === 0) {
+      toast.error("Failed to update profile");
+      return;
+    }
+
+    toast.success("Profile updated successfully");
     closeModal();
   };
 
@@ -110,7 +124,11 @@ function UserEditProfile({ hide, user }: UserEditProfileProps): JSX.Element {
         open={open}
         closeModal={closeModal}
       >
-        <EditProfileModal closeModal={closeModal} updateData={updateData}>
+        <EditProfileModal
+          isLoading={isLoading}
+          closeModal={closeModal}
+          updateData={updateData}
+        >
           {inputFields.map((inputData) => (
             <InputField
               {...inputData}

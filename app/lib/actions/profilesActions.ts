@@ -8,6 +8,7 @@ import type {
   ListProfilesRequest,
   PublishProfileRequest,
 } from "@/app/lib/services/profileService";
+import type { RelayEvent } from "@/app/lib/types/event";
 import type { User } from "@/app/lib/types/user";
 
 function addProfiles(pubkeys: string[]): ProfileAction {
@@ -66,21 +67,25 @@ export function updateProfileAsync({
 }: PublishProfileRequest): (
   dispatch: any,
   getState: () => ProfileState,
-) => void {
-  return async (dispatch, getState) => {
+) => Promise<RelayEvent> {
+  return async (dispatch) => {
     const pointer = await nip05.queryProfile(data.nip05 || "");
     const extendedData = {
       ...data,
       verified: pointer?.pubkey === pubkey,
     };
 
-    await profilesService.publishProfileAsync({
+    const profileEvent = await profilesService.publishProfileAsync({
       relays,
       pubkey,
       data: extendedData,
     });
 
-    dispatch(updateProfiles([{ ...extendedData, pubkey }]));
+    if (profileEvent.relays.length > 0) {
+      dispatch(updateProfiles([{ ...extendedData, pubkey }]));
+    }
+
+    return profileEvent;
   };
 }
 
