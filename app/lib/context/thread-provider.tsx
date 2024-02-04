@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
-import type { RelayEvent } from "@/app/lib/types/event";
+import type { NoteEvent } from "@/app/lib/types/event";
 
 type ThreadContext = {
-  root?: RelayEvent;
+  root: NoteEvent | null;
   isLoading: boolean;
 };
 

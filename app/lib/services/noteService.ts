@@ -12,6 +12,11 @@ export type ListNotesRequest = {
   filter?: Filter;
 };
 
+export type ListNoteWithParentRequest = {
+  relays: Relay[];
+  noteId: string;
+};
+
 export type ListNoteRepliesRequest = {
   relays: Relay[];
   noteId: string;
@@ -56,6 +61,9 @@ interface NoteService {
   listNotesAsync(request: ListNotesRequest): Promise<NoteEvent[]>;
   listRootNotesAsync(request: ListNotesRequest): Promise<NoteEvent[]>;
   listNoteRepliesAsync(request: ListNoteRepliesRequest): Promise<NoteEvent[]>;
+  listNoteWithParentAsync(
+    request: ListNoteWithParentRequest,
+  ): Promise<NoteEvent[]>;
   listExploreNotesAsync(request: ListExploreNotesRequest): Promise<NoteEvent[]>;
   listHomeNotesAsync(request: ListHomeNotesRequest): Promise<NoteEvent[]>;
   listUserNotesAsync(request: ListUserNotesRequest): Promise<NoteEvent[]>;
@@ -95,6 +103,28 @@ async function listRootNotesAsync({
     filter,
   });
   return notes.filter((note) => !note.parent);
+}
+
+async function listNoteWithParentAsync({
+  relays,
+  noteId,
+}: ListNoteWithParentRequest): Promise<NoteEvent[]> {
+  const [note] = await listNotesAsync({
+    relays,
+    filter: { ids: [noteId] },
+  });
+
+  if (!note) return [];
+  if (!note.parent) return [note];
+
+  const [parentNote] = await listNotesAsync({
+    relays,
+    filter: { ids: [note.parent.id] },
+  });
+
+  if (!parentNote) return [note];
+
+  return [parentNote, note];
 }
 
 async function listNoteRepliesAsync({
@@ -248,6 +278,7 @@ const NoteService: NoteService = {
   listNotesAsync,
   listRootNotesAsync,
   listNoteRepliesAsync,
+  listNoteWithParentAsync,
   listExploreNotesAsync,
   listHomeNotesAsync,
   listUserNotesAsync,
