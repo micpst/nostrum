@@ -25,7 +25,6 @@ export function EditProfileModal({
         className="absolute flex w-full items-center gap-6 rounded-tl-2xl"
         title="Edit profile"
         action={closeModal}
-        disableSticky
       >
         <div className="ml-auto flex items-center gap-3">
           <Button

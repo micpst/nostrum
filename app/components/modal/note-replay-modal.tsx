@@ -1,9 +1,9 @@
 import Input from "@/app/components/input/input";
 import Note from "@/app/components/note/note";
-import type { RelayEvent } from "@/app/lib/types/event";
+import type { NoteEvent } from "@/app/lib/types/event";
 
 type NoteReplyModalProps = {
-  note: RelayEvent;
+  note: NoteEvent;
   closeModal: () => void;
 };
 
@@ -12,7 +12,7 @@ export default function NoteReplyModal({
   closeModal,
 }: NoteReplyModalProps): JSX.Element {
   return (
-    <Input modal replyModal parentId={note.id} closeModal={closeModal}>
+    <Input modal replyModal parent={note} closeModal={closeModal}>
       <Note modal parentNote event={note} />
     </Input>
   );
