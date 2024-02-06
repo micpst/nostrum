@@ -54,7 +54,7 @@ export type CreateNoteReplyRequest = {
   relays: Relay[];
   pubkey: string;
   content: string;
-  parentId: string;
+  parent: NoteEvent;
 };
 
 interface NoteService {
@@ -267,9 +267,13 @@ async function createNoteReplyAsync({
   relays,
   pubkey,
   content,
-  parentId,
+  parent,
 }: CreateNoteReplyRequest): Promise<RelayEvent> {
-  const tags = [["e", parentId]];
+  const tags = [
+    ["e", parent.id],
+    ...parent.tags.filter((tag) => tag[0] === "p"),
+    ["p", parent.pubkey],
+  ];
   const replyEvent = await nostrService.createEvent(1, pubkey, content, tags);
   return await nostrService.publishEvent(relays, replyEvent);
 }

@@ -13,12 +13,13 @@ import { useAuth } from "@/app/lib/context/auth-provider";
 import { useProfile } from "@/app/lib/context/profile-provider";
 import { useRelay } from "@/app/lib/context/relay-provider";
 import noteService from "@/app/lib/services/noteService";
+import type { NoteEvent } from "@/app/lib/types/event";
 import type { User } from "@/app/lib/types/user";
 
 type InputProps = {
   modal?: boolean;
   reply?: boolean;
-  parentId?: string;
+  parent?: NoteEvent;
   disabled?: boolean;
   children?: ReactNode;
   replyModal?: boolean;
@@ -33,7 +34,7 @@ export const variants: Variants = {
 function Input({
   modal,
   reply,
-  parentId,
+  parent,
   disabled,
   children,
   replyModal,
@@ -61,12 +62,12 @@ function Input({
 
     const content = inputValue.trim();
     const note =
-      isReplying && parentId
+      isReplying && parent
         ? await noteService.createNoteReplyAsync({
             relays: Array.from(relays.values()),
             pubkey: publicKey,
             content,
-            parentId,
+            parent,
           })
         : await noteService.createNoteAsync({
             relays: Array.from(relays.values()),
