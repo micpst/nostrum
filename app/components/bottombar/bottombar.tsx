@@ -36,7 +36,7 @@ function BottomBar(): JSX.Element | null {
           />
           <LoginLink
             text="Learn more"
-            href="https://guides.getalby.com/overall-guide/alby-browser-extension/features/nostr"
+            href="https://guides.getalby.com/user-guide/v/alby-account-and-browser-extension/alby-browser-extension/features/nostr"
             className="flex-1 bg-main-accent border-white"
           />
         </div>
