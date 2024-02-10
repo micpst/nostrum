@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write app/**/*.{js,jsx,ts,tsx}",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "docker:release": "docker build --target release -t nostrum .",
+    "docker:build": "docker build --target dev -t nostrum-dev .",
+    "docker:run": "docker run -d -v $(pwd):/app -p 3000:3000 -t nostrum-dev"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",
