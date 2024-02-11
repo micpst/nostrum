@@ -1,6 +1,6 @@
 # Nostrum
 
-[![CI](https://github.com/micpst/nostrum/actions/workflows/ci.yml/badge.svg)](https://github.com/micpst/nostrum/actions/workflows/ci.yml)
+[![Build](https://github.com/micpst/nostrum/actions/workflows/build.yml/badge.svg)](https://github.com/micpst/nostrum/actions/workflows/build.yml)
 
 Open web client for Nostr.
 
